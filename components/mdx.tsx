@@ -22,9 +22,14 @@ function QuoteCta({ title = "Get your free quote in 60 seconds" }: { title?: str
     <aside className="not-prose my-10 rounded-[1.75rem] bg-ink-900 p-4 text-white sm:p-6" aria-label="Free quote">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
         <p className="font-display text-xl sm:text-2xl">{title}</p>
-        <a href={site.phoneHref} className="tap text-sm font-semibold text-ink-200 hover:text-white">
-          or call {site.phone}
-        </a>
+        <span className="flex flex-wrap gap-x-4">
+          <Link href="/quote#callback" className="tap text-sm font-semibold text-white underline hover:text-ember-300">
+            Request a callback
+          </Link>
+          <a href={site.phoneHref} className="tap text-sm font-semibold text-ink-200 hover:text-white">
+            or call {site.phone}
+          </a>
+        </span>
       </div>
       <div className="text-ink-900">
         <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" />

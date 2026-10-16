@@ -14,16 +14,16 @@ export function Testimonials({ limit = 3, className = "", cta = false }: { limit
         </div>
         {anySample && (
           <p className="max-w-sm text-xs text-ink-500">
-            Sample reviews shown for layout only. They&apos;ll be replaced with real customer reviews before launch.
+            Placeholder testimonials shown for layout only. These are not real customers; they&apos;ll be replaced with genuine reviews before launch.
           </p>
         )}
       </div>
       <ul className={`mt-8 grid gap-5 ${items.length > 1 ? "md:grid-cols-3" : ""}`}>
         {items.map((t) => (
-          <li key={t.name} className="card flex flex-col p-6">
+          <li key={t.quote} className="card flex flex-col p-6">
             {t.sample && (
               <span className="mb-4 self-start rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-bold tracking-wide text-amber-800 uppercase">
-                Sample review
+                Placeholder testimonial
               </span>
             )}
             <blockquote className="flex-1 leading-relaxed text-ink-700">

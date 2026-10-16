@@ -30,8 +30,8 @@ function picks(list: HeatPumpModel[]) {
     { label: "Lowest guide price", models: [byPrice[0]], why: `From ${formatAUD(byPrice[0].priceFrom)} installed, before rebates.` },
     { label: "Family-size value", models: list.filter((m) => m.slug === "istore-270"), why: "270 L for 3–4 people at a value price." },
     { label: "Largest all-in-one tank", models: [integrated[0]], why: `${integrated[0].capacityLitres} L in a single integrated unit.` },
-    { label: "Quietest", models: quietest, why: "37 dB(A), the lowest listed noise in our range." },
-    { label: "Longest cylinder warranty", models: list.filter((m) => m.slug === "sanden-eco-plus-315"), why: "15-year cylinder warranty (10 full + 5 pro-rata; confirm terms)." },
+    { label: "Quietest", models: quietest, why: "37 dB, the lowest noise rating in our range." },
+    { label: "Longest tank warranty", models: list.filter((m) => ["sanden-eco-plus-315", "reclaim-energy-co2-315"].includes(m.slug)), why: "Up to 15 years on the tank, per the manufacturers (pro rata or conditions apply)." },
   ];
 }
 
@@ -99,8 +99,8 @@ export default function ComparePage() {
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <h2 id="side-by-side" className="h-display text-2xl text-ink-900 sm:text-3xl">Side by side</h2>
           <p className="max-w-md text-xs text-ink-500">
-            Specs from manufacturer data sheets and CHOICE listings. COP test conditions differ between brands, so compare
-            them as a rough guide. &ldquo;Not listed&rdquo; means no source gave a figure.
+            Specs from manufacturer spec sheets. COP test conditions differ between brands, so compare
+            them as a rough guide. Items marked &ldquo;confirm&rdquo; weren&apos;t in the spec sheet.
           </p>
         </div>
 

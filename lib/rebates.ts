@@ -110,14 +110,57 @@ export const statePrograms: RebateProgram[] = [
     sourceUpdated: "2026-02-06",
     lastChecked: LAST_CHECKED,
   },
+  {
+    id: "act-home-energy-support",
+    name: "ACT Home Energy Support rebates (hot water heat pumps)",
+    administrator: "ACT Government",
+    scope: "ACT",
+    amount: "Not confirmed (official page couldn't be loaded when we checked)",
+    amountConfirmed: false,
+    howPaid: "Check the official page for how rebates are paid.",
+    summary:
+      "The ACT Government runs Home Energy Support rebates for eligible homeowners, with a hot water heat pump category. We couldn't load the official page to confirm the current amount or eligibility, so check it directly.",
+    eligibility: ["Eligibility rules apply: check the official page before you book"],
+    officialUrl: "https://www.climatechoices.act.gov.au/policy-programs/home-energy-support-rebates-for-homeowners/hot-water-heat-pumps",
+    officialLabel: "climatechoices.act.gov.au: Hot water heat pumps",
+    lastChecked: LAST_CHECKED,
+  },
 ];
 
 /** What we found (or didn't) for each state, shown when there's no state program. */
-export const stateNotes: Partial<Record<AusStateCode, { text: string; url?: string; label?: string }>> = {
+export type StateNote = { text: string; url: string; label: string; sourceUpdated?: string; lastChecked: string };
+
+export const stateNotes: Partial<Record<AusStateCode, StateNote>> = {
   QLD: {
-    text: "We couldn't find a current Queensland Government hot water rebate on the official energy page. Federal STCs still apply.",
+    text: "No current state program found. We couldn't find a Queensland Government hot water rebate on the official energy page.",
     url: "https://www.qld.gov.au/housing/buying-owning-home/energy-water-home",
     label: "qld.gov.au: Energy and water at home",
+    lastChecked: LAST_CHECKED,
+  },
+  WA: {
+    text: "No current state program found for heat pump hot water. The WA Government's Energy Ahead program helps households in financial hardship improve energy efficiency (for example by replacing appliances such as fridges); it isn't a general hot water rebate.",
+    url: "https://www.wa.gov.au/government/announcements/energy-ahead-formerly-the-household-energy-efficiency-scheme",
+    label: "wa.gov.au: Energy Ahead",
+    sourceUpdated: "2026-06-23",
+    lastChecked: LAST_CHECKED,
+  },
+  SA: {
+    text: "We couldn't confirm a current state program. The official South Australian energy pages couldn't be loaded when we checked, so we can't say whether a state hot water discount applies to you.",
+    url: "https://www.energymining.sa.gov.au/consumers/energy-efficiency/retailer-energy-productivity-scheme",
+    label: "energymining.sa.gov.au: Retailer Energy Productivity Scheme",
+    lastChecked: LAST_CHECKED,
+  },
+  TAS: {
+    text: "We couldn't confirm a current state program. The official Tasmanian energy pages couldn't be loaded when we checked.",
+    url: "https://recfit.tas.gov.au/",
+    label: "recfit.tas.gov.au: Renewables, Climate and Future Industries Tasmania",
+    lastChecked: LAST_CHECKED,
+  },
+  NT: {
+    text: "No current state program found. We couldn't find a Northern Territory Government rebate for heat pump hot water; the household energy support we found is bill relief and electricity concessions.",
+    url: "https://nt.gov.au/community/concessions-and-payments/nt-concession-scheme",
+    label: "nt.gov.au: NT Concession Scheme",
+    lastChecked: LAST_CHECKED,
   },
 };
 
@@ -132,8 +175,8 @@ export const stateNames: Record<AusStateCode, string> = {
   NT: "the Northern Territory",
 };
 
-/** States whose state programs we've checked. Others show STCs plus a "not checked" note. */
-export const rebateStates = ["QLD", "NSW", "VIC"] as const;
+/** States and territories we've checked (all eight). */
+export const rebateStates = ["QLD", "NSW", "VIC", "ACT", "SA", "WA", "TAS", "NT"] as const;
 
 export function programsFor(state: string) {
   return statePrograms.filter((p) => p.scope === state);

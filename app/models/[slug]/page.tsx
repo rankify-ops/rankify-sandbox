@@ -8,6 +8,7 @@ import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { QuoteForm } from "@/components/QuoteForm";
+import { ModelStc } from "@/components/ModelStc";
 import { Testimonials } from "@/components/Testimonials";
 import { Arrow, Check, Phone, Users } from "@/components/icons";
 import { GuidePriceBadge } from "@/components/ui";
@@ -63,11 +64,13 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
               </div>
               <p className="mt-2 text-xs text-ink-500">Guide price for standard installation, before eligible rebates. Your installer confirms your fixed price.</p>
               <Link href={`/quote?model=${model.slug}`} className="btn-primary mt-5 w-full py-3.5 text-base">
-                <span className="sm:hidden">Free quote on this model</span>
-                <span className="hidden sm:inline">Get a free quote on this model</span> <Arrow className="h-4 w-4" />
+                Get a quote for this model <Arrow className="h-4 w-4" />
               </Link>
-              <a href={site.phoneHref} className="btn-ghost mt-2.5 w-full py-3">
-                <Phone className="h-4 w-4" /> Call {site.phone}
+              <Link href="/quote#callback" className="btn-ghost mt-2.5 w-full py-3">
+                Request a callback
+              </Link>
+              <a href={site.phoneHref} className="tap mt-1 w-full justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900">
+                <Phone className="h-4 w-4 text-ember-600" /> or call {site.phone}
               </a>
             </div>
           </div>
@@ -80,8 +83,12 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
       <section className="container-x grid gap-10 py-16 lg:grid-cols-2">
         <div>
           <p className="mb-6 text-sm text-ink-600">
-            Specs from the manufacturer&apos;s data sheet and published listings. Items marked &ldquo;confirm&rdquo; vary between
-            sources, so your installer will confirm them against the current data sheet.
+            Specs from the manufacturer&apos;s{" "}
+            <a href={model.specSheet.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-ember-600 underline">
+              {model.specSheet.label}
+            </a>
+            . Items marked &ldquo;confirm&rdquo; weren&apos;t in the spec sheet or vary between sources, so your installer will confirm
+            them against the current data sheet.
           </p>
           <div className="flex flex-wrap items-end justify-between gap-2">
             <h2 className="h-display text-2xl text-ink-900">Specifications</h2>
@@ -95,6 +102,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
               </div>
             ))}
           </dl>
+          <ModelStc model={model} />
         </div>
         <div>
           <h2 className="h-display text-2xl text-ink-900">What&apos;s included in the price</h2>

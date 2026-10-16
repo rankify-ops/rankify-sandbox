@@ -15,6 +15,8 @@ import {
 import { FieldError, inputClass } from "./formFields";
 import { Arrow, Check, External, Info } from "./icons";
 import { QuoteForm } from "./QuoteForm";
+import { StcEstimate } from "./StcEstimate";
+import Link from "next/link";
 
 type Result = { postcode: string; state: keyof typeof stateNames };
 
@@ -105,26 +107,42 @@ export function RebateChecker({ initialPostcode, initialState }: { initialPostco
           </div>
 
           <ProgramCard program={federalSTC} />
+          {result.postcode && <StcEstimate postcode={result.postcode} />}
           {programs.map((p) => (
             <ProgramCard key={p.id} program={p} />
           ))}
-          {programs.length === 0 && (
-            <div className="flex gap-3 rounded-3xl border border-ink-200/70 bg-cream-100 p-5 text-sm text-ink-700">
-              <Info className="mt-0.5 h-5 w-5 shrink-0 text-ink-500" />
-              <p>
-                {note
-                  ? note.text
-                  : checkedState
-                    ? "No state program found. Federal STCs still apply."
-                    : `We haven't checked state programs for ${stateNames[result.state]} yet. Federal STCs still apply, and your installer can tell you about anything local.`}{" "}
-                {note?.url && (
-                  <a href={note.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-ember-600 underline">
-                    {note.label}
-                  </a>
-                )}
+          {note && (
+            <div className="rounded-3xl border border-ink-200/70 bg-cream-100 p-5 text-sm text-ink-700">
+              <p className="flex gap-3">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-ink-500" />
+                <span>
+                  <strong className="text-ink-900">{stateNames[result.state].replace(/^the /, "").replace(/^./, (c) => c.toUpperCase())}:</strong>{" "}
+                  {note.text} Federal STCs still apply.
+                </span>
               </p>
+              <div className="mt-3 flex flex-col gap-1 pl-8 sm:flex-row sm:items-center sm:justify-between">
+                <a href={note.url} target="_blank" rel="noopener noreferrer" className="tap gap-1.5 font-semibold text-ember-600 hover:text-ember-700">
+                  Source: {note.label} <External className="h-4 w-4 shrink-0" />
+                </a>
+                <span className="text-xs text-ink-500">
+                  {note.sourceUpdated ? `Page updated ${formatCheckedDate(note.sourceUpdated)} · ` : ""}Checked {formatCheckedDate(note.lastChecked)}
+                </span>
+              </div>
             </div>
           )}
+          {programs.length === 0 && !note && (
+            <div className="flex gap-3 rounded-3xl border border-ink-200/70 bg-cream-100 p-5 text-sm text-ink-700">
+              <Info className="mt-0.5 h-5 w-5 shrink-0 text-ink-500" />
+              <p>{checkedState ? "No state program found." : `We haven't checked state programs for ${stateNames[result.state]} yet.`} Federal STCs still apply.</p>
+            </div>
+          )}
+          <div className="flex flex-col gap-3 rounded-2xl border border-ember-500/25 bg-ember-500/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-medium text-ink-800">Want these applied to a real price? Your installer confirms eligibility.</p>
+            <div className="grid shrink-0 gap-2 sm:flex">
+              <a href="#rebate-quote" className="btn-primary px-5 py-2.5 whitespace-nowrap">Get a free quote</a>
+              <Link href="/quote#callback" className="btn-ghost px-5 py-2.5 whitespace-nowrap">Request a callback</Link>
+            </div>
+          </div>
           {result.state === "NSW" && (
             <p className="text-sm text-ink-600">
               The NSW amount depends on what you&apos;re replacing. Tell us your current system in the form below and your

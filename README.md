@@ -15,14 +15,15 @@ npm run lint && npm run typecheck
 
 | What | File |
 | --- | --- |
-| Models, specs, supply-and-install prices | `lib/models.ts`: six real models with specs from data sheets/CHOICE (sources per model). Prices are guide prices; set `priceConfirmed: true` once an installer confirms one, which removes the "Guide price" badge. Old placeholder URLs redirect (`legacyModelSlugs`). |
-| Testimonials | `lib/testimonials.ts`: **samples only**, labelled "Sample review" on the site. Replace with real reviews (with permission) and set `sample: false`. |
+| Models, specs, supply-and-install prices | `lib/models.ts`: six real models with specs (capacity, COP, refrigerant, noise, warranty, operating range) from manufacturer spec sheets, linked per model as `specSheet`; `stc` holds the CER register entry and its certificate counts for zones 1–5. Prices are guide prices; set `priceConfirmed: true` once an installer confirms one, which removes the "Guide price" badge. Old placeholder URLs redirect (`legacyModelSlugs`). |
+| Testimonials | `lib/testimonials.ts`: **placeholders only**: names show as "[Placeholder name]" and each card is badged "Placeholder testimonial". Shown on the home page, model pages and `/quote`. Replace with real reviews (with permission) and set `sample: false`. |
 | Installer network line, rebate-help note | `installerNetwork` / `rebateHelpNote` in `lib/site.ts` |
-| Rebate programs, amounts, official links | `lib/rebates.ts`: **official figures only**, each with `officialUrl`, the page's own `sourceUpdated` date and our `lastChecked` date (`LAST_CHECKED`). If a page gives no figure, `amountConfirmed: false` shows "Not confirmed". Re-check the pages and bump `LAST_CHECKED` whenever you update a figure. |
+| Rebate programs, amounts, official links | `lib/rebates.ts`: **official figures only**, each with `officialUrl`, the page's own `sourceUpdated` date and our `lastChecked` date (`LAST_CHECKED`). If a page gives no figure, `amountConfirmed: false` shows "Not confirmed". Re-check the pages and bump `LAST_CHECKED` whenever you update a figure. All eight states/territories are covered: states without a program we could confirm have a `stateNotes` entry (what we found, official link, dates). |
+| Federal STC estimate | `lib/stc.ts`: CER heat pump postcode zones (Table 1, v3), the year multiplication factor and the $40 Clearing House cap (shown as an upper estimate). Sources in `STC_SOURCES`. Update the register counts in `lib/models.ts` if the CER register changes. |
 | Referral disclosure & consent | `referralDisclosure` / `privacyNote` in `lib/site.ts`, consent text in `components/QuoteForm.tsx` and `components/CallbackForm.tsx`, `/how-it-works`, `/about`, `/privacy`. All describe: free service, one licensed partner installer at a time (offered to the next if they pass), referral fee. Keep them in sync. |
 | Trust badges | `components/TrustBadges.tsx`: **placeholders**, visibly labelled, until licence, insurer and network details are confirmed |
 | Brand, phone, email, ABN, referral disclosure | `lib/site.ts` |
-| Blog posts | `content/blog/*.mdx` (frontmatter: `title`, `description`, `date`, `tags`). `<Callout>` and `<QuoteCta>` are available in MDX |
+| Blog posts | `content/blog/*.mdx` (frontmatter: `title`, `description`, `date`, `tags`, optional `faqs` for FAQPage schema). `<Callout>` and `<QuoteCta>` are available in MDX |
 | Privacy policy (draft) | `app/privacy/page.tsx` |
 | FAQ copy (home, model pages, rebates), with FAQPage schema | `lib/faqs.ts` |
 | Page titles & descriptions | `export const metadata = pageMeta(...)` in each page; helper in `lib/seo.ts` |

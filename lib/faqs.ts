@@ -92,8 +92,8 @@ export const rebateFaqs: FaqItem[] = [
     a: "Only from the official government pages linked on each program, and we show the date we last checked them. If a page doesn't give a figure, we mark the amount 'Not confirmed' rather than guess. Programs change, so always confirm on the official page.",
   },
   {
-    q: "Why is there no fixed dollar amount for STCs?",
-    a: "The Clean Energy Regulator doesn't publish a fixed amount. The number of certificates depends on the heat pump and where it's installed, and their value depends on the certificate market. Your installer works out the figure for your system and usually takes it off your quote.",
+    q: "How is the STC estimate worked out?",
+    a: "There's no fixed amount, but you can estimate it from official CER data: take the model's certificate count for your postcode zone from the CER register and multiply by 0.5 for a 2026 install, rounding down. For the six models in our range that's about 12–18 STCs, worth up to $480–$720 at the $40 Clearing House cap (excluding GST). Installers usually sell at the lower open-market price.",
   },
 ];
 
