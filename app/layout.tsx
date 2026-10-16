@@ -3,6 +3,7 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ExitIntent } from "@/components/ExitIntent";
+import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { StickyMobileBar } from "@/components/StickyMobileBar";
 import { site } from "@/lib/site";
 import { siteUrl } from "@/lib/seo";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-AU" className={`${jakarta.variable} ${fraunces.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
+        <SiteJsonLd />
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
           Skip to content
         </a>

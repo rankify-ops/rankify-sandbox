@@ -33,6 +33,8 @@ const phoneField = z
   .pipe(z.string().regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number"));
 const postcodeField = z.string().regex(/^\d{4}$/, "Enter a 4-digit Australian postcode");
 const nameField = z.string().trim().min(2, "Enter your name").max(100);
+/** Name of the hidden anti-spam field on every lead form. */
+export const HONEYPOT_FIELD = "company";
 const honeypot = z.string().max(0).optional();
 const source = z.string().max(300).optional();
 

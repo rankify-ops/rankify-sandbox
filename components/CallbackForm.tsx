@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { bestTimes, callbackSchema, fieldErrors, submitLead } from "@/lib/lead";
 import { THANKS_KEY } from "@/lib/site";
-import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, inputClass } from "./formFields";
+import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
 import { Arrow } from "./icons";
 
 type Data = { name: string; phone: string; postcode: string; bestTime: string; consent: boolean; company: string };
@@ -60,9 +60,7 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="space-y-4" aria-label="Request a callback">
-      <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <input tabIndex={-1} autoComplete="off" value={data.company} onChange={(e) => set("company", e.target.value)} />
-      </div>
+      <Honeypot value={data.company} onChange={(v) => set("company", v)} />
       <Field id={id("name")} label="Name" error={errors.name} tone={tone}>
         <input
           {...fieldA11y(id("name"), errors.name)}

@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { HONEYPOT_FIELD } from "@/lib/lead";
 
 /**
  * Accessible props for an input: id, aria-invalid, and aria-describedby pointing at its
@@ -73,4 +74,19 @@ export function focusFirstError(root: HTMLElement | null, order: readonly string
   if (!first || !root) return;
   const el = root.querySelector<HTMLElement>(`[data-field="${first}"]`);
   el?.focus();
+}
+
+/**
+ * Anti-spam honeypot. Positioned off-screen, skipped by Tab and hidden from screen
+ * readers, so only bots fill it; the API discards any submission where it has a value.
+ */
+export function Honeypot({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute -left-[10000px] top-auto h-px w-px overflow-hidden opacity-0">
+      <label>
+        Company (leave this blank)
+        <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" value={value} onChange={(e) => onChange(e.target.value)} />
+      </label>
+    </div>
+  );
 }

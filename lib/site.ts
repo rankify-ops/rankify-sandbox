@@ -8,6 +8,10 @@ export const site = {
   phoneHref: "tel:1300000000",
   email: "hello@example.com.au",
   abn: "ABN TBC",
+  // Business address: TBC. Leave fields empty until confirmed; empty fields are left
+  // out of the structured data rather than published as made-up values.
+  address: { street: "", locality: "", region: "", postcode: "", country: "AU" },
+  areaServed: ["Queensland", "New South Wales", "Victoria"],
 };
 
 export const nav = [

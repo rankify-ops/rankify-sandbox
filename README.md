@@ -53,6 +53,18 @@ Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`), wh
 
 Replace with a CRM, database or email hook before going live.
 
+A filled honeypot field (`company`, hidden from real visitors) gets a fake success response and is never stored or forwarded.
+
+### Forwarding leads with `LEAD_WEBHOOK_URL`
+
+Set `LEAD_WEBHOOK_URL` to forward each saved lead to another service, such as a Zapier/Make webhook or a CRM endpoint (see `.env.example`):
+
+- After a lead is validated and saved, it's `POST`ed to that URL as JSON. That's the same object that gets logged, including `id`, `receivedAt`, `type` (`quote` or `callback`) and the form fields.
+- It runs after the response is sent (`after()` in `app/api/leads/route.ts`), with a 5-second timeout, so a slow or failing webhook never delays or breaks the visitor's submission. Failures are logged as `[lead] webhook ...`.
+- If the variable is unset, nothing is sent. The code lives in `lib/leadWebhook.ts`.
+
+On Vercel, add it under Project → Settings → Environment Variables for the Preview environment.
+
 ## Deploying (preview only)
 
 Two guards keep this preview-only:
@@ -71,7 +83,7 @@ Remove all three at launch.
 
 - [ ] Verified models + prices in `lib/models.ts`
 - [ ] Verified rebate amounts/eligibility in `lib/rebates.ts`
-- [ ] Real phone, email, ABN in `lib/site.ts`
+- [ ] Real phone, email, ABN and business address in `lib/site.ts` (these also feed the Organization/LocalBusiness JSON-LD in `components/SiteJsonLd.tsx`)
 - [ ] Privacy policy reviewed against the Australian Privacy Principles
 - [ ] Real lead storage / CRM delivery
 - [ ] Remove noindex (`next.config.ts`, `app/layout.tsx`, `app/robots.ts`) and the `vercel.json` main-branch block

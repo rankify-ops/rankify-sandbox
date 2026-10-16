@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, stateForPostcode, submitLead } from "@/lib/lead";
 import { formatAUD, models } from "@/lib/models";
 import { privacyNote, states, THANKS_KEY } from "@/lib/site";
-import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, inputClass } from "./formFields";
+import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
 import { FormTrust } from "./FormTrust";
 import { ArrowLeft, Arrow, Check, Lock } from "./icons";
 import { TbcBadge } from "./ui";
@@ -180,10 +180,7 @@ export function QuoteForm({
             </p>
           )}
 
-          {/* Honeypot */}
-          <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-            <label>Company<input tabIndex={-1} autoComplete="off" value={data.company} onChange={(e) => set("company", e.target.value)} /></label>
-          </div>
+          <Honeypot value={data.company} onChange={(v) => set("company", v)} />
 
           {step === 0 && (
             <div className="mt-6 grid gap-5 sm:grid-cols-2">

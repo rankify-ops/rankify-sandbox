@@ -17,10 +17,21 @@ const trust = [
 ];
 
 const steps = [
-  { n: "01", title: "Tell us about your home", text: "Postcode, current system and household size. It takes about two minutes." },
-  { n: "02", title: "Get matched locally", text: "We pass your request to a licensed partner installer who services your area." },
-  { n: "03", title: "Confirm your fixed price", text: "They check your site, confirm rebates and lock in your supply-and-install price." },
-  { n: "04", title: "Installed, old unit removed", text: "Most standard swaps are done in a day, and your old system is taken away." },
+  {
+    n: "1",
+    title: "Get a free quote",
+    text: "Answer five quick questions, or ask for a callback. About 2 minutes, with no obligation.",
+  },
+  {
+    n: "2",
+    title: "We match a local installer",
+    text: "Your request goes to one licensed partner installer (TBC) who services your postcode. They confirm your site and fixed price.",
+  },
+  {
+    n: "3",
+    title: "Install & claim rebates",
+    text: "They fit your new system, take the old one away, and apply eligible rebates like STCs straight off your quote.",
+  },
 ];
 
 export default function Home() {
@@ -99,22 +110,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="container-x py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="How it works"
-          title="From old tank to heat pump, without the run-around"
-          lead="One short form instead of ringing around for quotes. Your installer confirms everything before any work begins."
-        />
-        <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {/* How it works: 3-step band */}
+      <section className="container-x py-20 sm:py-24" aria-labelledby="how-it-works">
+        <div className="text-center">
+          <p className="eyebrow">How it works</p>
+          <h2 id="how-it-works" className="h-display mx-auto mt-3 max-w-2xl text-3xl text-ink-900 sm:text-4xl">
+            Three steps from old tank to heat pump
+          </h2>
+        </div>
+        <ol className="relative mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
+          <span aria-hidden className="absolute left-[16.6%] right-[16.6%] top-7 hidden h-px bg-gradient-to-r from-ember-300 via-ember-500 to-gum-500 md:block" />
           {steps.map((s) => (
-            <li key={s.n} className="relative rounded-3xl bg-cream-100 p-6">
-              <span className="font-display text-4xl font-medium text-ember-600">{s.n}</span>
-              <h3 className="mt-4 font-semibold text-ink-900">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-600">{s.text}</p>
+            <li key={s.n} className="relative flex gap-4 rounded-3xl bg-cream-100 p-6 md:flex-col md:items-center md:bg-transparent md:p-2 md:text-center">
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-ink-900 font-display text-2xl font-semibold text-white ring-8 ring-cream-50">
+                {s.n}
+              </span>
+              <div>
+                <h3 className="font-semibold text-ink-900 md:mt-3 md:text-lg">{s.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-600 md:mx-auto md:max-w-xs">{s.text}</p>
+              </div>
             </li>
           ))}
         </ol>
+        <div className="mt-10 flex flex-col items-center gap-3 text-center">
+          <Link href="/quote" className="btn-primary px-8 py-4 text-base">
+            Get a free quote <Arrow className="h-4 w-4" />
+          </Link>
+          <p className="text-sm text-ink-600">Takes about 2 minutes · Free &amp; no obligation</p>
+        </div>
       </section>
 
       {/* Models */}
