@@ -52,6 +52,8 @@ export function QuoteForm({
   initialModel,
   initialState,
   initialPostcode,
+  initialCurrentSystem,
+  initialHouseholdSize,
   rebatesViewed,
   tone = "light",
   variant = "card",
@@ -62,6 +64,9 @@ export function QuoteForm({
   initialModel?: string;
   initialState?: string;
   initialPostcode?: string;
+  /** Prefills from the quiz, so those steps are skipped. */
+  initialCurrentSystem?: string;
+  initialHouseholdSize?: string;
   /** Rebate programs shown in the checker, sent with the lead so the installer knows what to apply. */
   rebatesViewed?: string[];
   /** Colour of the trust signals under the form, to suit the section it sits in. */
@@ -81,15 +86,11 @@ export function QuoteForm({
   const stepRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(false);
   const startedAt = useRef<number | null>(null);
-  const prefilled = /^\d{4}$/.test(initialPostcode ?? "") && (states as readonly string[]).includes(initialState ?? "");
-  // With postcode and state already known (e.g. from the rebate checker), start on step 2.
-  const startStep = prefilled ? 1 : 0;
-  const [step, setStep] = useState(startStep);
   const [hp, setHp] = useState("");
-  const [data, setData] = useState<Data>({
+  const [data, setData] = useState<Data>(() => ({
     need: mode === "urgent" ? "failed" : "",
-    currentSystem: "",
-    householdSize: "",
+    currentSystem: currentSystems.some((o) => o.value === initialCurrentSystem) ? initialCurrentSystem! : "",
+    householdSize: householdSizes.some((o) => o.value === initialHouseholdSize) ? initialHouseholdSize! : "",
     postcode: /^\d{4}$/.test(initialPostcode ?? "") ? initialPostcode! : "",
     state: (states as readonly string[]).includes(initialState ?? "") ? initialState! : "",
     // Resolve legacy slugs (old preview links) to the current model, or no preference.
@@ -98,7 +99,13 @@ export function QuoteForm({
     phone: "",
     email: "",
     consent: false,
+  }));
+  // Skip steps already answered elsewhere (rebate checker, quiz): start on the first open step.
+  const [startStep] = useState(() => {
+    const i = STEPS.findIndex((st) => st.fields.some((f) => f !== "email" && !data[f as keyof Data]));
+    return i < 0 ? STEPS.length - 1 : i;
   });
+  const [step, setStep] = useState(startStep);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const id = (f: string) => `${uid}-${f}`;
@@ -149,8 +156,16 @@ export function QuoteForm({
     return Object.keys(stepErrors).length === 0;
   }
 
+  /** The next step after `from` that still has an unanswered question (prefilled steps are skipped). */
+  function nextOpen(from: number, d: Data) {
+    for (let i = from + 1; i < STEPS.length; i++) {
+      if (STEPS[i].fields.some((f) => f !== "email" && !d[f as keyof Data])) return i;
+    }
+    return STEPS.length - 1;
+  }
+
   function next() {
-    if (validateStep(step)) setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    if (validateStep(step)) setStep((s) => nextOpen(s, data));
   }
 
   function choose(k: "need" | "currentSystem" | "householdSize", v: string) {
@@ -158,7 +173,7 @@ export function QuoteForm({
     // One-tap steps advance on their own (once every question on the step is answered).
     const answered = { ...data, [k]: v };
     if (STEPS[step].fields.every((f) => answered[f as keyof Data])) {
-      window.setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 150);
+      window.setTimeout(() => setStep((s) => nextOpen(s, answered)), 150);
     }
   }
 
@@ -461,7 +476,7 @@ export function QuoteForm({
 type TileOption = { value: string; label: string; hint?: string };
 
 /** Single-choice tiles with radiogroup keyboard support (arrow keys move, Enter/Space chooses). */
-function Tiles({
+export function Tiles({
   name,
   labelledBy,
   options,

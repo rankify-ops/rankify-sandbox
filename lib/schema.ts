@@ -37,7 +37,7 @@ export function productSchema(m: HeatPumpModel) {
     category: "Heat pump hot water system",
     description: `${m.summary} ${m.capacityLitres} L ${m.type.toLowerCase()} heat pump (${m.refrigerant}) for ${m.households}.`,
     url: abs(`/models/${m.slug}`),
-    image: abs("/opengraph-image"),
+    image: abs(`/models/${m.slug}/opengraph-image`),
     additionalProperty: [
       prop("Tank capacity", m.capacityLitres, { unitCode: "LTR", unitText: "L" }),
       prop("Configuration", m.type === "Split" ? "Split system" : "Integrated (all-in-one)"),

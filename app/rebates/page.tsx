@@ -5,7 +5,7 @@ import { RebateChecker } from "@/components/RebateChecker";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { rebateFaqs } from "@/lib/faqs";
 import { stateForPostcode } from "@/lib/lead";
-import { formatCheckedDate, LAST_CHECKED, stateNames } from "@/lib/rebates";
+import { formatCheckedDate, LAST_CHECKED, rebateStates, stateNames, stateRebatePath } from "@/lib/rebates";
 import { pageMeta } from "@/lib/seo";
 
 type Params = Promise<{ state?: string; postcode?: string }>;
@@ -47,7 +47,20 @@ export default async function RebatesPage({ searchParams }: { searchParams: Para
         </div>
       </PageHero>
 
-      <section className="container-x max-w-4xl py-12 sm:py-14">
+      <nav className="container-x max-w-4xl pt-10" aria-label="Rebates by state">
+        <h2 className="text-sm font-semibold text-ink-900">Rebates by state and territory</h2>
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {rebateStates.map((st) => (
+            <li key={st}>
+              <Link href={stateRebatePath(st)} className="tap rounded-full border border-ink-200 bg-white px-4 text-sm font-semibold text-ink-800 hover:border-ink-500">
+                {stateNames[st].replace(/^the /, "").replace(/^./, (c) => c.toUpperCase())}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <section className="container-x max-w-4xl py-10 sm:py-12">
         <RebateChecker key={`${params.postcode ?? ""}-${params.state ?? ""}`} initialPostcode={params.postcode} initialState={stateFrom(params)} />
       </section>
 

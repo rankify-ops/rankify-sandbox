@@ -4,8 +4,9 @@ import Link from "next/link";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
+import { QUIZ_PATH } from "@/lib/quiz";
 import { formatAUD, models } from "@/lib/models";
-import { comparePath } from "@/lib/site";
+import { comparePagePath, comparePath } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
   title: "Heat pump models & fixed supply-and-install prices",
@@ -25,6 +26,11 @@ export default function ModelsPage() {
           <PlaceholderNotice>
             <strong>Guide prices:</strong> supply and standard install, before rebates. Your installer confirms the fixed price after checking your site.
           </PlaceholderNotice>
+          <p className="mt-4 text-sm text-ink-700">
+            Not sure which one?{" "}
+            <Link href={QUIZ_PATH} className="font-semibold text-ember-600 underline">Take the 60-second quiz</Link> or{" "}
+            <Link href={comparePagePath} className="font-semibold text-ember-600 underline">compare all six side by side</Link>.
+          </p>
         </div>
       </PageHero>
 

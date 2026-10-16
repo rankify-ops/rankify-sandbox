@@ -42,7 +42,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     mainEntityOfPage: `${siteUrl}/blog/${meta.slug}`,
     author: { "@type": "Organization", name: site.name, url: siteUrl },
     publisher: { "@type": "Organization", name: site.name, logo: { "@type": "ImageObject", url: `${siteUrl}/icon.svg` } },
-    image: `${siteUrl}/opengraph-image`,
+    image: `${siteUrl}/blog/${meta.slug}/opengraph-image`,
   };
 
   return (

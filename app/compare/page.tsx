@@ -8,6 +8,7 @@ import { Arrow, Phone } from "@/components/icons";
 import { formatAUD, models } from "@/lib/models";
 import { breadcrumbs, productList } from "@/lib/schema";
 import { pageMeta } from "@/lib/seo";
+import { QUIZ_PATH } from "@/lib/quiz";
 import { comparePath, comparePagePath, site } from "@/lib/site";
 import { STC_PRICE_CAP, STC_SOURCES } from "@/lib/stc";
 
@@ -51,7 +52,8 @@ export default function ComparePage() {
           <h1 className="h-display mt-3 max-w-3xl text-4xl text-ink-900 sm:text-5xl">Compare heat pump hot water systems side by side</h1>
           <p className="mt-4 max-w-2xl text-lg text-ink-600">
             Tank size, climate fit, guide installed price, STCs for your postcode and noise, for all six systems in our range.
-            Found one you like? Get a fixed-price quote on it in 60 seconds.
+            Found one you like? Get a fixed-price quote on it in 60 seconds. Not sure?{" "}
+            <Link href={QUIZ_PATH} className="font-semibold text-ember-600 underline">Take the 60-second quiz</Link>.
           </p>
           <div className="mt-6 grid gap-2.5 sm:flex md:hidden">
             <Link href="/quote" className="btn-primary py-3.5">Get a free quote <Arrow className="h-4 w-4" /></Link>

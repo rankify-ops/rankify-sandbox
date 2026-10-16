@@ -2,6 +2,7 @@ import Link from "next/link";
 import { referralDisclosure, site } from "@/lib/site";
 import { models } from "@/lib/models";
 import { cities, cityPath } from "@/lib/cities";
+import { QUIZ_PATH } from "@/lib/quiz";
 import { Logo } from "./Header";
 import { FooterQuote } from "./FooterQuote";
 import { Phone } from "./icons";
@@ -31,6 +32,7 @@ export function Footer() {
         </FooterCol>
         <FooterCol title="Company">
           <FooterLink href="/best-heat-pump-hot-water-systems">Compare systems</FooterLink>
+          <FooterLink href={QUIZ_PATH}>Which heat pump? Quiz</FooterLink>
           <FooterLink href="/how-it-works">How it works</FooterLink>
           <FooterLink href="/about">About &amp; disclosure</FooterLink>
           <FooterLink href="/blog">Guides</FooterLink>

@@ -10,6 +10,7 @@ import {
   rebateStates,
   stateNames,
   stateNotes,
+  stateRebatePath,
   type RebateProgram,
 } from "@/lib/rebates";
 import { FieldError, inputClass } from "./formFields";
@@ -106,7 +107,12 @@ export function RebateChecker({ initialPostcode, initialState }: { initialPostco
               {result.postcode ? `Rebates for ${result.postcode}, ` : "Rebates in "}
               {stateNames[result.state]}
             </h2>
-            <p className="text-xs text-ink-500">Last checked {formatCheckedDate(LAST_CHECKED)}</p>
+            <p className="flex flex-wrap items-center gap-x-3 text-xs text-ink-500">
+              Last checked {formatCheckedDate(LAST_CHECKED)}
+              <Link href={stateRebatePath(result.state)} className="tap font-semibold text-ember-600 underline">
+                Full {result.state} rebate guide
+              </Link>
+            </p>
           </div>
 
           <ProgramCard program={federalSTC} />

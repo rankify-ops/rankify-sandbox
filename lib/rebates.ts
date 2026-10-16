@@ -1,5 +1,5 @@
 /**
- * Rebate data, taken only from official government pages (checked 16 October 2026).
+ * Rebate data, taken only from official government pages (checked 17 October 2026).
  *
  * Rules:
  * - `amount` only ever contains a figure stated on the official page. If the page gives no
@@ -26,7 +26,7 @@ export type RebateProgram = {
 
 type AusStateCode = "QLD" | "NSW" | "VIC" | "ACT" | "SA" | "WA" | "TAS" | "NT";
 
-export const LAST_CHECKED = "2026-10-16";
+export const LAST_CHECKED = "2026-10-17";
 
 export const federalSTC: RebateProgram = {
   id: "federal-stc",
@@ -47,7 +47,7 @@ export const federalSTC: RebateProgram = {
   officialUrl:
     "https://cer.gov.au/schemes/renewable-energy-target/small-scale-renewable-energy-scheme/small-scale-renewable-energy-systems/solar-water-heaters-and-air-source-heat-pumps",
   officialLabel: "cer.gov.au: Solar water heaters and air source heat pumps",
-  sourceUpdated: "2026-09-18",
+  sourceUpdated: "2025-05-29",
   lastChecked: LAST_CHECKED,
 };
 
@@ -61,18 +61,18 @@ export const statePrograms: RebateProgram[] = [
     amountConfirmed: true,
     howPaid: "Paid directly to your authorised retailer and deducted from your invoice.",
     summary:
-      "A rebate on eligible heat pump and solar hot water products: 50% of the purchase price, capped at $1,000, or $1,400 for products on the locally made list.",
+      "A rebate on eligible heat pump and solar hot water products: 50% of the purchase price, capped at $1,000, or $1,400 for locally made products (at least 50% locally made or assembled parts). It's worked out after other discounts, including STCs and Victorian Energy Efficiency Certificates.",
     eligibility: [
-      "You own and live in the home where the system is installed",
+      "You're the owner-occupier of an existing property",
       "Combined taxable income of all owners is below $150,000 a year",
       "The property is valued under $3 million",
-      "The system being replaced is at least 3 years old",
+      "The system being replaced is at least 3 years old from the date of purchase",
       "The address hasn't already had a Solar Homes hot water or battery rebate",
       "You use an authorised retailer and an eligible product",
     ],
     officialUrl: "https://www.solar.vic.gov.au/hot-water-rebate",
     officialLabel: "solar.vic.gov.au: Hot water rebate",
-    sourceUpdated: "2026-07-01",
+    sourceUpdated: "2026-10-12",
     lastChecked: LAST_CHECKED,
   },
   {
@@ -80,10 +80,11 @@ export const statePrograms: RebateProgram[] = [
     name: "Victorian Energy Upgrades (VEU)",
     administrator: "Victorian Government",
     scope: "VIC",
-    amount: "Not confirmed (official page could not be checked)",
+    amount: "Not confirmed on the VEU page (it couldn't be loaded when we checked)",
     amountConfirmed: false,
     howPaid: "Offered as a discount by accredited providers (confirm on the official page).",
-    summary: "An energy efficiency program where accredited providers can discount eligible hot water upgrades.",
+    summary:
+      "An energy efficiency program where accredited providers can discount eligible hot water upgrades. Solar Victoria's hot water rebate page says that combined with its rebate, upfront costs can be reduced by up to $2,030 for an eligible locally made system, or up to $1,630 for other eligible systems.",
     eligibility: ["Check the official page for current eligibility and discount amounts"],
     officialUrl: "https://www.energy.vic.gov.au/households/victorian-energy-upgrades-for-households",
     officialLabel: "energy.vic.gov.au: Victorian Energy Upgrades",
@@ -103,6 +104,7 @@ export const statePrograms: RebateProgram[] = [
       "All NSW households and small businesses may be eligible",
       "Depends on an installer in your area offering the incentive",
       "You may not be eligible if you already have an energy efficient system",
+      "A nomination form must be completed before installation begins",
     ],
     officialUrl:
       "https://www.energy.nsw.gov.au/households/grants-rebates/household-energy-saving-upgrades/hot-water-upgrade-incentive",
@@ -125,6 +127,21 @@ export const statePrograms: RebateProgram[] = [
     officialLabel: "climatechoices.act.gov.au: Hot water heat pumps",
     lastChecked: LAST_CHECKED,
   },
+  {
+    id: "sa-reps-water-heating",
+    name: "SA Retailer Energy Productivity Scheme (REPS): water heating",
+    administrator: "Essential Services Commission of SA (ESCOSA)",
+    scope: "SA",
+    amount: "No fixed amount published (set by approved activity providers)",
+    amountConfirmed: false,
+    howPaid: "Through an approved activity provider. ESCOSA says to speak directly with a provider about eligibility and any costs involved.",
+    summary:
+      "Under REPS, energy retailers fund household energy activities. ESCOSA lists residential water heating activities including replacing or upgrading your hot water system (WH1), switching an electric hot water system to a suitable tariff (WH3) and connecting a heat pump water heater to an approved demand response aggregator (WH4). Each activity can generally be completed once per property.",
+    eligibility: ["Speak to an approved activity provider about eligibility and costs", "Each activity can generally be completed once per property"],
+    officialUrl: "https://www.escosa.sa.gov.au/industry/reps/residential-activities/activity-water-heating-residential",
+    officialLabel: "escosa.sa.gov.au: REPS water heating activity",
+    lastChecked: LAST_CHECKED,
+  },
 ];
 
 /** What we found (or didn't) for each state, shown when there's no state program. */
@@ -132,9 +149,9 @@ export type StateNote = { text: string; url: string; label: string; sourceUpdate
 
 export const stateNotes: Partial<Record<AusStateCode, StateNote>> = {
   QLD: {
-    text: "No current state program found. We couldn't find a Queensland Government hot water rebate on the official energy page.",
-    url: "https://www.qld.gov.au/housing/buying-owning-home/energy-water-home",
-    label: "qld.gov.au: Energy and water at home",
+    text: "No current state program found for heat pump hot water. The Queensland Government's home energy savings page lists programs such as Supercharged Solar for Renters, the Solar Bonus Scheme and concessions, but no household hot water rebate.",
+    url: "https://www.qld.gov.au/housing/home-energy-savings",
+    label: "qld.gov.au: Home energy savings",
     lastChecked: LAST_CHECKED,
   },
   WA: {
@@ -144,14 +161,8 @@ export const stateNotes: Partial<Record<AusStateCode, StateNote>> = {
     sourceUpdated: "2026-06-23",
     lastChecked: LAST_CHECKED,
   },
-  SA: {
-    text: "We couldn't confirm a current state program. The official South Australian energy pages couldn't be loaded when we checked, so we can't say whether a state hot water discount applies to you.",
-    url: "https://www.energymining.sa.gov.au/consumers/energy-efficiency/retailer-energy-productivity-scheme",
-    label: "energymining.sa.gov.au: Retailer Energy Productivity Scheme",
-    lastChecked: LAST_CHECKED,
-  },
   TAS: {
-    text: "We couldn't confirm a current state program. The official Tasmanian energy pages couldn't be loaded when we checked.",
+    text: "We couldn't confirm a current state program. The official Tasmanian energy pages couldn't be loaded when we checked, so we can't say whether a state hot water program or loan applies.",
     url: "https://recfit.tas.gov.au/",
     label: "recfit.tas.gov.au: Renewables, Climate and Future Industries Tasmania",
     lastChecked: LAST_CHECKED,
@@ -185,3 +196,6 @@ export function programsFor(state: string) {
 export function formatCheckedDate(iso: string) {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
 }
+
+/** State rebate page path, e.g. /rebates/qld. */
+export const stateRebatePath = (state: string) => `/rebates/${state.toLowerCase()}`;

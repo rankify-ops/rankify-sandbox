@@ -11,6 +11,7 @@ import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/c
 import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
 import { formatCheckedDate, LAST_CHECKED } from "@/lib/rebates";
+import { QUIZ_PATH } from "@/lib/quiz";
 import { brokenPath, comparePath, howItWorksPath, referralDisclosure, site } from "@/lib/site";
 
 const trust = [
@@ -78,7 +79,13 @@ export default function Home() {
                 Request a callback
               </Link>
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200" aria-label="Why homeowners use us">
+            <p className="mt-5 text-sm text-ink-200">
+              Not sure which system?{" "}
+              <Link href={QUIZ_PATH} className="tap font-semibold text-white underline hover:text-ember-300">
+                Take the 60-second quiz
+              </Link>
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200" aria-label="Why homeowners use us">
               {["Free & no obligation", "Old system removed", "Rebates handled for you*"].map((t) => (
                 <li key={t} className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-ember-400" /> {t}

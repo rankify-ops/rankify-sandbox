@@ -12,7 +12,7 @@ import { Arrow, External, Phone } from "@/components/icons";
 import { GuidePriceBadge } from "@/components/ui";
 import { ABCB_CLIMATE_MAP, bomUrl, cities, cityDetails, cityFaqs, cityPath, CITY_DATA_CHECKED, getCity, NCC_CHECKED, NCC_TABLE3 } from "@/lib/cities";
 import { formatAUD } from "@/lib/models";
-import { federalSTC, formatCheckedDate } from "@/lib/rebates";
+import { federalSTC, formatCheckedDate, stateRebatePath } from "@/lib/rebates";
 import { breadcrumbs, cityServiceSchema } from "@/lib/schema";
 import { pageMeta } from "@/lib/seo";
 import { comparePath, site } from "@/lib/site";
@@ -162,7 +162,8 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           <h2 id="city-rebates" className="h-display mt-3 text-3xl text-ink-900">Rebates in {city.name}</h2>
           <p className="mt-3 max-w-2xl text-ink-600">
             Figures come only from official government pages. Postcode {city.postcode} shown; your exact postcode may be in a different zone.{" "}
-            <Link href={`/rebates?postcode=${city.postcode}`} className="font-semibold text-ember-600 underline">Check your postcode</Link>.
+            <Link href={`/rebates?postcode=${city.postcode}`} className="font-semibold text-ember-600 underline">Check your postcode</Link> or see{" "}
+            <Link href={stateRebatePath(city.state)} className="font-semibold text-ember-600 underline">all {city.state} rebates</Link>.
           </p>
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <div className="space-y-5">
