@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --color-ink-950: #07121d;
+  --color-ink-900: #0b1b2b;
+  --color-ink-800: #13283d;
+  --color-ink-700: #1f3a54;
+  --color-ink-600: #3a556f;
+  --color-ink-400: #7f93a7;
+  --color-ink-200: #d3dce5;
+
+  --color-cream-50: #fdfbf7;
+  --color-cream-100: #f7f2e9;
+  --color-cream-200: #eee5d5;
+
+  --color-ember-300: #fdba74;
+  --color-ember-400: #fb923c;
+  --color-ember-500: #f26b1d;
+  --color-ember-600: #d9530b;
+  --color-ember-700: #b4420a;
+
+  --color-gum-500: #2f8f6b;
+  --color-gum-600: #237256;
+  --color-gum-50: #ecf7f2;
+
+  --shadow-card: 0 1px 2px rgb(11 27 43 / 0.04), 0 8px 24px -8px rgb(11 27 43 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(11 27 43 / 0.06), 0 24px 48px -16px rgb(11 27 43 / 0.25);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream-50 text-ink-900 antialiased;
+  }
+  ::selection {
+    @apply bg-ember-300 text-ink-900;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ember-500;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility btn-primary {
+  @apply btn bg-ember-500 text-white shadow-[0_8px_24px_-8px_rgb(242_107_29/0.7)] hover:-translate-y-0.5 hover:bg-ember-600;
+}
+
+@utility btn-dark {
+  @apply btn bg-ink-900 text-white hover:bg-ink-800;
+}
+
+@utility btn-ghost {
+  @apply btn border border-ink-200 bg-white text-ink-900 hover:border-ink-400;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.18em] text-ember-600 uppercase;
+}
+
+@utility h-display {
+  @apply font-display font-medium tracking-tight text-balance;
+}
+
+@utility card {
+  @apply rounded-3xl border border-ink-200/70 bg-white shadow-card;
+}

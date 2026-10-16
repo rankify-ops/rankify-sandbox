@@ -1,0 +1,230 @@
+import Link from "next/link";
+import { HeatPumpArt } from "@/components/HeatPumpArt";
+import { ModelCard } from "@/components/ModelCard";
+import { Faq, FaqJsonLd, type FaqItem } from "@/components/Faq";
+import { CtaBand, SectionHeading, TbcBadge } from "@/components/ui";
+import { Arrow, Bolt, Check, Clock, Leaf, Shield, Tag, Wrench } from "@/components/icons";
+import { formatAUD, models } from "@/lib/models";
+import { referralDisclosure } from "@/lib/site";
+
+const trust = [
+  { icon: Tag, title: "Set, upfront pricing", text: "Supply and install prices are published per model. No surprise call-out quotes." },
+  { icon: Shield, title: "Licensed installers", text: "Partner installers hold the plumbing and electrical licences your state requires." },
+  { icon: Leaf, title: "Rebates applied for you", text: "Eligible STCs are typically taken off your quote upfront by the installer." },
+  { icon: Clock, title: "Quote in 2 minutes", text: "A few quick questions, then a local installer contacts you to confirm." },
+];
+
+const steps = [
+  { n: "01", title: "Tell us about your home", text: "Postcode, current system and household size. It takes about two minutes." },
+  { n: "02", title: "Get matched locally", text: "We pass your request to a licensed partner installer who services your area." },
+  { n: "03", title: "Confirm your fixed price", text: "They check your site, confirm rebates and lock in your supply-and-install price." },
+  { n: "04", title: "Installed, old unit removed", text: "Most standard swaps are done in a day, and your old system is taken away." },
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: "How much can a heat pump save on my hot water bill?",
+    a: "Heat pumps move heat from the air into your water instead of generating it directly, so they typically use far less electricity than a conventional electric storage tank. Your actual saving depends on your current system, tariff, climate and usage. Your installer can give you an estimate for your home.",
+  },
+  {
+    q: "Are the prices on this site final?",
+    a: "Our published prices cover standard supply and installation for each model. They are currently placeholders marked TBC. Non-standard sites, like relocating the unit, extra plumbing or switchboard upgrades, may cost more, and your installer will confirm this before any work starts.",
+  },
+  {
+    q: "What rebates can I get?",
+    a: "Most Australian homes can access federal Small-scale Technology Certificates (STCs), and some states offer extra programs. Use our rebate checker for a summary by state, then confirm eligibility on the official government page linked for each program.",
+  },
+  {
+    q: "Who actually does the installation?",
+    a: "We're a referral service. Your job is completed by an independent, licensed partner installer in your area. See our About page for exactly how this works and how we're paid.",
+  },
+  {
+    q: "Will a heat pump work in a cold climate?",
+    a: "Modern heat pumps are designed to work across most Australian climates. For frosty areas we recommend a cold-climate rated model. Check the operating range on each model page.",
+  },
+];
+
+export default function Home() {
+  const featured = models.filter((m) => ["everyday-220", "family-270", "split-250"].includes(m.slug));
+  return (
+    <>
+      <FaqJsonLd items={faqs} />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-ink-900 text-white">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-40 top-10 h-[34rem] w-[34rem] rounded-full bg-ember-500/25 blur-3xl" />
+          <div className="absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-gum-500/15 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [background-size:22px_22px]" />
+        </div>
+        <div className="container-x relative grid items-center gap-12 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:pb-28">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes in QLD, NSW &amp; VIC
+            </p>
+            <h1 className="h-display mt-6 text-4xl leading-[1.05] sm:text-6xl">
+              Hot water that costs <span className="italic text-ember-400">less</span> to heat, at a price you know upfront.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-200">
+              Compare heat pump systems with set supply-and-install prices, see the rebates you may be eligible for,
+              and get matched with a licensed local installer.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/quote" className="btn-primary px-8 py-4 text-base">
+                Get my fixed-price quote <Arrow className="h-4 w-4" />
+              </Link>
+              <Link href="/rebates" className="btn border border-white/20 px-8 py-4 text-base text-white hover:bg-white/10">
+                Check my rebates
+              </Link>
+            </div>
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200">
+              {["No-obligation quote", "Old system removed", "Rebates applied upfront*"].map((t) => (
+                <li key={t} className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-ember-400" /> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-sm">
+            <HeatPumpArt className="relative z-10 mx-auto w-64 drop-shadow-2xl sm:w-72" />
+            <div className="absolute -left-4 top-16 z-20 rounded-2xl bg-white p-4 text-ink-900 shadow-lift sm:-left-10">
+              <p className="text-xs text-ink-400">Installed from</p>
+              <p className="flex items-center gap-2 font-display text-2xl font-semibold">
+                {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <TbcBadge />
+              </p>
+            </div>
+            <div className="absolute -right-2 bottom-20 z-20 flex items-center gap-3 rounded-2xl bg-white p-4 text-ink-900 shadow-lift sm:-right-8">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gum-50 text-gum-600">
+                <Bolt className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold">Up to ~70% less energy</p>
+                <p className="text-xs text-ink-400">vs electric storage (TBC)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust bar */}
+      <section className="relative z-10 -mt-10">
+        <div className="container-x">
+          <div className="card grid gap-px overflow-hidden bg-ink-200/70 sm:grid-cols-2 lg:grid-cols-4">
+            {trust.map(({ icon: Icon, title, text }) => (
+              <div key={title} className="bg-white p-6">
+                <Icon className="h-6 w-6 text-ember-500" />
+                <h3 className="mt-3 font-semibold text-ink-900">{title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-600">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="container-x py-20 sm:py-28">
+        <SectionHeading
+          eyebrow="How it works"
+          title="From old tank to heat pump, without the run-around"
+          lead="One short form instead of ringing around for quotes. Your installer confirms everything before any work begins."
+        />
+        <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s) => (
+            <li key={s.n} className="relative rounded-3xl bg-cream-100 p-6">
+              <span className="font-display text-4xl font-medium text-ember-500/80">{s.n}</span>
+              <h3 className="mt-4 font-semibold text-ink-900">{s.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-600">{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Models */}
+      <section className="bg-cream-100 py-20 sm:py-28">
+        <div className="container-x">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <SectionHeading
+              eyebrow="Models & prices"
+              title="Set supply-and-install prices"
+              lead="Each price includes the unit, standard installation by licensed trades, and removal of your old system."
+            />
+            <Link href="/models" className="btn-ghost shrink-0">
+              Compare all 6 models <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {featured.map((m) => (
+              <ModelCard key={m.slug} model={m} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Rebates teaser */}
+      <section className="container-x py-20 sm:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <SectionHeading
+              eyebrow="Rebates"
+              title="See what you could save before you commit"
+              lead="Federal STCs apply in every state, and QLD, NSW and VIC homes may access extra state programs. Our checker lists them, with links to every official government page."
+            />
+            <Link href="/rebates" className="btn-dark mt-8">
+              Open the rebate checker <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              { s: "Federal", t: "Small-scale Technology Certificates" },
+              { s: "VIC", t: "Solar Victoria + VEU" },
+              { s: "NSW", t: "Hot Water Upgrade Incentive" },
+              { s: "QLD", t: "State programs (TBC)" },
+            ].map((r) => (
+              <Link
+                key={r.s}
+                href={r.s === "Federal" ? "/rebates#stc" : `/rebates?state=${r.s}`}
+                className="card group p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift"
+              >
+                <span className="text-xs font-bold tracking-wider text-ember-600 uppercase">{r.s}</span>
+                <p className="mt-2 font-semibold text-ink-900">{r.t}</p>
+                <p className="mt-4 flex items-center gap-2 text-sm text-ink-600">
+                  Amount <TbcBadge />
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Transparency */}
+      <section className="container-x">
+        <div className="grid gap-8 rounded-[2rem] border border-ink-200/70 bg-white p-8 sm:p-12 lg:grid-cols-[auto_1fr] lg:items-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gum-50 text-gum-600">
+            <Wrench className="h-7 w-7" />
+          </span>
+          <div>
+            <h2 className="h-display text-2xl text-ink-900">Straight up about how we work</h2>
+            <p className="mt-3 max-w-3xl leading-relaxed text-ink-600">{referralDisclosure}</p>
+            <Link href="/about" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+              Read how referrals work <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="container-x py-20 sm:py-28">
+        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <SectionHeading eyebrow="FAQ" title="Questions we hear every day" />
+          <Faq items={faqs} />
+        </div>
+        <p className="mt-6 text-xs text-ink-400">
+          *Where eligible. Rebates and STC values vary by program, product, location and date.
+        </p>
+      </section>
+
+      <CtaBand />
+    </>
+  );
+}
