@@ -18,26 +18,49 @@ export function breadcrumbs(items: { name: string; path: string }[]) {
 }
 
 export function productSchema(m: HeatPumpModel) {
+  const prop = (name: string, value: string | number, unit?: { unitCode?: string; unitText?: string }) => ({
+    "@type": "PropertyValue",
+    name,
+    value,
+    ...unit,
+  });
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     "@id": abs(`/models/${m.slug}#product`),
     name: m.name,
     brand: { "@type": "Brand", name: m.brand },
+    manufacturer: { "@type": "Organization", name: m.brand },
+    // The model code as listed on the Clean Energy Regulator's register of heat pumps.
+    model: m.stc.registerModel,
+    mpn: m.stc.registerModel,
     category: "Heat pump hot water system",
     description: `${m.summary} ${m.capacityLitres} L ${m.type.toLowerCase()} heat pump (${m.refrigerant}) for ${m.households}.`,
     url: abs(`/models/${m.slug}`),
     image: abs("/opengraph-image"),
-    additionalProperty: m.specs.map((s) => ({ "@type": "PropertyValue", name: s.label, value: s.value })),
+    additionalProperty: [
+      prop("Tank capacity", m.capacityLitres, { unitCode: "LTR", unitText: "L" }),
+      prop("Configuration", m.type === "Split" ? "Split system" : "Integrated (all-in-one)"),
+      prop("Refrigerant", m.refrigerant),
+      prop("Rated noise", m.noiseDb, { unitText: "dB at 1 m (manufacturer)" }),
+      prop("Minimum rated operating temperature", m.minOperatingC, { unitCode: "CEL", unitText: "°C" }),
+      prop("Suits", m.households),
+      ...m.specs.map((sp) => prop(sp.label, sp.value)),
+    ],
+    subjectOf: { "@type": "DigitalDocument", name: m.specSheet.label, url: m.specSheet.url },
     offers: {
       "@type": "Offer",
       url: abs(`/models/${m.slug}`),
       price: m.priceFrom.toFixed(2),
       priceCurrency: "AUD",
+      itemCondition: "https://schema.org/NewCondition",
       description: `${m.priceConfirmed ? "Supply and standard installation" : "Guide price for supply and standard installation"}, from ${formatAUD(m.priceFrom)} before rebates. Fixed price confirmed by a licensed partner installer.`,
+      eligibleRegion: { "@type": "Country", name: "Australia" },
       areaServed: { "@type": "Country", name: "Australia" },
-      offeredBy: { "@type": "Organization", name: site.name, url: siteUrl },
+      offeredBy: { "@id": `${siteUrl}/#organization` },
+      seller: { "@id": `${siteUrl}/#organization` },
     },
+    // No review or aggregateRating: the testimonials on the site are placeholders, not real reviews.
   };
 }
 

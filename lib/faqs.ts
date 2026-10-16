@@ -1,5 +1,6 @@
 import type { FaqItem } from "@/components/Faq";
 import { formatAUD, type HeatPumpModel } from "./models";
+import { STC_PRICE_CAP, stcCount } from "./stc";
 import { responseTime } from "./site";
 
 /*
@@ -38,8 +39,24 @@ export const homeFaqs: FaqItem[] = [
   },
 ];
 
-export function modelFaqs(m: HeatPumpModel): FaqItem[] {
+export function modelFaqs(m: HeatPumpModel, year = new Date().getFullYear()): FaqItem[] {
+  const byZone = [1, 2, 3, 4, 5].map((z) => stcCount(m.stc.counts, z, year));
+  const lo = Math.min(...byZone);
+  const hi = Math.max(...byZone);
+  const minC = String(m.minOperatingC).replace("-", "−");
   return [
+    {
+      q: `How many STCs does the ${m.name} get?`,
+      a: `For a ${year} install, the ${m.name} (CER register entry ${m.stc.registerModel}) earns ${lo}–${hi} STCs depending on your postcode's heat pump zone, worth up to ${formatAUD(lo * STC_PRICE_CAP)}–${formatAUD(hi * STC_PRICE_CAP)} at the $${STC_PRICE_CAP} Clearing House cap (excluding GST). Installers usually sell at the lower open-market price and take the value off your quote.`,
+    },
+    {
+      q: `Will the ${m.name} work in a cold climate?`,
+      a: `The manufacturer rates it to operate from ${minC} °C outside. ${m.minOperatingC <= -10 ? "That's the lowest rating in our range, so it suits frosty areas like Canberra, Ballarat and Launceston." : m.minOperatingC <= -7 ? "That covers light frosts. For very frosty areas, a CO2 split rated to −10 °C is the safer pick." : "That suits mild and warm climates. For frosty areas, look at a model rated to −7 °C or lower."}`,
+    },
+    {
+      q: `How loud is the ${m.name}?`,
+      a: `The manufacturer quotes ${m.compare.noise}. Placement matters as much as the rating: keep it away from bedrooms and neighbours' windows, and check your state's rules on when it can be heard next door.`,
+    },
     {
       q: `Is the ${m.name} the right size for my household?`,
       a: `The ${m.name} (${m.capacityLitres} L) generally suits ${m.households}. Usage habits matter too, like long showers or several bathrooms in use at once, so your installer will confirm the right size before you commit.`,

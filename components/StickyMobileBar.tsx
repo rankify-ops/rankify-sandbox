@@ -3,22 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Arrow } from "./icons";
+import { brokenPath, site } from "@/lib/site";
+import { Arrow, Phone } from "./icons";
 
 // Every labelled form on the site: lead forms plus lookups like the postcode rebate checker.
 const LEAD_FORMS = "form[aria-label]";
 
 /**
- * Mobile-only sticky bar: "Get my free quote" (opens the 60-second form) and
- * "Request a callback". It slides away while a lead form is on screen or any field
- * has focus, so it never covers inputs, consent text or submit buttons.
+ * Mobile-only sticky bar: call, "Get my free quote" (opens the 60-second form) and
+ * "Request a callback". On the urgent page and the thank-you page it leads with a full
+ * "Call" button instead of the quote button. It slides away while a lead form is on
+ * screen or any field has focus, so it never covers inputs, consent text or submit buttons.
  */
 export function StickyMobileBar() {
   const pathname = usePathname();
   const [formInView, setFormInView] = useState(false);
   const [typing, setTyping] = useState(false);
   const onQuote = pathname.startsWith("/quote");
-  const hiddenRoute = pathname.startsWith("/thank-you");
+  const callFirst = pathname.startsWith(brokenPath) || pathname.startsWith("/thank-you");
 
   useEffect(() => {
     const visible = new Set<Element>();
@@ -54,7 +56,6 @@ export function StickyMobileBar() {
     };
   }, [pathname]);
 
-  if (hiddenRoute) return null;
   const hidden = formInView || typing;
 
   return (
@@ -67,11 +68,26 @@ export function StickyMobileBar() {
       }`}
     >
       <div className="flex gap-2">
-        <Link href="/quote" className="btn-primary min-h-12 flex-1 gap-1.5 px-2 text-[15px] whitespace-nowrap">
-          Get my free quote <Arrow className="h-4 w-4" />
-        </Link>
+        {callFirst ? (
+          <a href={site.phoneHref} className="btn-primary min-h-12 flex-1 gap-1.5 px-2 text-[15px] whitespace-nowrap">
+            <Phone className="h-4 w-4" /> Call {site.phone}
+          </a>
+        ) : (
+          <>
+            <a
+              href={site.phoneHref}
+              aria-label={`Call ${site.phone}`}
+              className="grid min-h-12 w-12 shrink-0 place-items-center rounded-full border border-ink-200 text-ink-800"
+            >
+              <Phone className="h-5 w-5" />
+            </a>
+            <Link href="/quote" className="btn-primary min-h-12 flex-1 gap-1 px-2 text-[15px] whitespace-nowrap">
+              Free quote <Arrow className="h-4 w-4" />
+            </Link>
+          </>
+        )}
         <Link href={onQuote ? "#callback" : "/quote#callback"} className="btn-ghost min-h-12 flex-1 px-2 text-[15px] whitespace-nowrap">
-          Request a callback
+          {callFirst ? "Request a callback" : "Request callback"}
         </Link>
       </div>
     </div>

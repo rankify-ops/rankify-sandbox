@@ -9,9 +9,11 @@ import { STC_PRICE_CAP, stcCount, stcFactor, stcZoneForPostcode } from "./stc";
  *
  * Climate figures come only from the Bureau of Meteorology climate statistics for the named
  * station ("All years" view, checked 16 October 2026; BOM showed a banner saying the product
- * had problems, so re-check before launch). NCC climate zones come from the ABCB's climate
- * zone descriptions and state climate zone tables (by council area; the ABCB notes the map
- * is the authority for an exact address). STC zones come from the CER postcode table via
+ * had problems, so re-check before launch). NCC climate zones come from NCC 2025 Volume One
+ * Table 3 (place names), or for places it doesn't list, a lookup against the ABCB climate zone
+ * map data (data.gov.au "Australian Climate zone map"). The ABCB says zones aren't set by
+ * council boundaries and the old LGA tables are no longer reliable; its Climate Map is the
+ * lookup for an exact address. STC zones come from the CER postcode table via
  * lib/stc.ts, and rebates from lib/rebates.ts, so every figure has one source of truth.
  */
 export type City = {
@@ -31,7 +33,11 @@ export type City = {
     /** Shown after the period, e.g. when the best long-record station has closed. */
     note?: string;
   };
-  ncc: { zone: number; name: string; sourceUrl: string; sourceLabel: string };
+  /**
+   * NCC climate zone. `listing` is the place name in NCC 2025 Table 3, or, for places the table
+   * doesn't list, the localities we checked against the ABCB's climate zone map data (`mapLookup`).
+   */
+  ncc: { zone: number; name: string; listing: string; mapLookup?: boolean };
   intro: string;
   climateNote: string;
   /** Recommended model slugs, best fit first, each with the local reason. */
@@ -43,8 +49,11 @@ export type City = {
   regional?: boolean;
 };
 
-const NCC_ZONES = "https://www.abcb.gov.au/ncc-navigator/understanding-ncc-climate-zones";
-const nccPdf = (s: string) => `https://www.abcb.gov.au/sites/default/files/resources/2022/Climate-zone-map-${s}.pdf`;
+/** NCC 2025 Volume One, Schedule 1, Table 3 "Climate zones for thermal design" (lists locations by name). */
+export const NCC_TABLE3 = "https://ncc.abcb.gov.au/editions/ncc-2025/adopted/volume-one/1-definitions/glossary";
+/** ABCB Climate Map: the ABCB's recommended lookup for an exact address. */
+export const ABCB_CLIMATE_MAP = "https://www.abcb.gov.au/abcb-climate-map";
+export const NCC_CHECKED = "2026-10-16";
 export const bomUrl = (id: string) => `https://www.bom.gov.au/climate/averages/tables/cw_${id}.shtml`;
 export const CITY_DATA_CHECKED = "2026-10-16";
 
@@ -55,7 +64,7 @@ export const cities: City[] = [
     state: "QLD",
     postcode: "4000",
     bom: { station: "Brisbane", stationId: "040913", julyMeanMin: 10.6, janMeanMax: 30.4, frostDaysYear: 0, period: "1999–2026" },
-    ncc: { zone: 2, name: "warm humid summer, mild winter", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 2, name: "warm humid summer, mild winter", listing: "Brisbane" },
     intro:
       "Brisbane's mild winters are easy work for a heat pump, so you can choose on price, size and noise rather than cold-weather performance.",
     climateNote:
@@ -78,7 +87,7 @@ export const cities: City[] = [
     state: "QLD",
     postcode: "4217",
     bom: { station: "Gold Coast Seaway", stationId: "040764", julyMeanMin: 12.1, janMeanMax: 28.9, frostDaysYear: 0, period: "1992–2026" },
-    ncc: { zone: 2, name: "warm humid summer, mild winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    ncc: { zone: 2, name: "warm humid summer, mild winter", listing: "Southport" },
     intro:
       "The Gold Coast has one of the mildest climates in the country for a heat pump. The things to get right here are placement, coastal conditions and size.",
     climateNote:
@@ -101,11 +110,11 @@ export const cities: City[] = [
     state: "NSW",
     postcode: "2000",
     bom: { station: "Sydney (Observatory Hill)", stationId: "066062", julyMeanMin: 8.1, janMeanMax: 26.0, frostDaysYear: 0, period: "1859–2020" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Sydney East" },
     intro:
       "Sydney homes can stack federal STCs with the NSW Hot Water Upgrade Incentive, which makes replacing an old electric tank one of the better-value upgrades around.",
     climateNote:
-      "Observatory Hill averages an 8.1 °C minimum in July with no frost days. Western Sydney is cooler on winter mornings than the harbour, but still well within the range of every model we list.",
+      "Observatory Hill averages an 8.1 °C minimum in July with no frost days. Western Sydney is cooler on winter mornings than the harbour (NCC 2025 lists Sydney West as zone 6, mild temperate, and Sydney East as zone 5), but still well within the range of every model we list.",
     picks: [
       { slug: "istore-270", why: "Good value for families, and a common choice for electric tank replacements." },
       { slug: "rheem-ambiheat-270", why: "Big-brand, Australian made, with local service support." },
@@ -124,7 +133,7 @@ export const cities: City[] = [
     state: "VIC",
     postcode: "3000",
     bom: { station: "Melbourne (Olympic Park)", stationId: "086338", julyMeanMin: 7.6, janMeanMax: 26.8, frostDaysYear: 0, period: "2013–2026" },
-    ncc: { zone: 6, name: "mild temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 6, name: "mild temperate", listing: "Melbourne" },
     intro:
       "Melbourne has the most generous state rebate in our checker. Eligible households can get up to $1,000 from Solar Victoria on top of federal STCs.",
     climateNote:
@@ -147,7 +156,7 @@ export const cities: City[] = [
     state: "SA",
     postcode: "5000",
     bom: { station: "Adelaide (West Terrace / ngayirdapira)", stationId: "023000", julyMeanMin: 7.6, janMeanMax: 28.7, frostDaysYear: 0, period: "1887–2026" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Adelaide" },
     intro:
       "Adelaide's hot summers and cool, frost-free city winters suit a heat pump well. The main things to plan for are the summer heat and choosing the right size.",
     climateNote:
@@ -170,7 +179,7 @@ export const cities: City[] = [
     state: "WA",
     postcode: "6000",
     bom: { station: "Perth Metro", stationId: "009225", julyMeanMin: 8.1, janMeanMax: 31.4, frostDaysYear: 0.1, period: "1994–2026" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Perth" },
     intro:
       "Perth has lots of sun and mild winters, which makes a heat pump a natural fit, especially paired with rooftop solar.",
     climateNote:
@@ -193,7 +202,7 @@ export const cities: City[] = [
     state: "ACT",
     postcode: "2600",
     bom: { station: "Canberra Airport", stationId: "070351", julyMeanMin: 0.1, janMeanMax: 30.0, frostDaysYear: 58.8, period: "2008–2026" },
-    ncc: { zone: 7, name: "cool temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 7, name: "cool temperate", listing: "Canberra" },
     intro:
       "Canberra is where model choice matters most. Frosty winter mornings are routine, so pick a system rated for the cold. The upside: Canberra's STC zone 5 earns more certificates than most mainland capitals.",
     climateNote:
@@ -216,7 +225,7 @@ export const cities: City[] = [
     state: "TAS",
     postcode: "7000",
     bom: { station: "Hobart (Ellerslie Road)", stationId: "094029", julyMeanMin: 4.7, janMeanMax: 21.8, frostDaysYear: 1.3, period: "1882–2026" },
-    ncc: { zone: 7, name: "cool temperate", sourceUrl: NCC_ZONES, sourceLabel: "ABCB: Understanding NCC climate zones" },
+    ncc: { zone: 7, name: "cool temperate", listing: "Hobart" },
     intro:
       "Hobart's cool climate means your hot water works harder for more of the year, which is exactly where an efficient heat pump earns its keep.",
     climateNote:
@@ -240,7 +249,7 @@ export const cities: City[] = [
     state: "NT",
     postcode: "0800",
     bom: { station: "Darwin Airport", stationId: "014015", julyMeanMin: 19.3, janMeanMax: 31.8, frostDaysYear: 0, period: "1941–2026" },
-    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("nt"), sourceLabel: "ABCB: Northern Territory climate zone table" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", listing: "Darwin" },
     intro:
       "Darwin's warm air all year means a heat pump barely has to work for its heat. The things to plan for are heat, humidity, cyclone season and placement.",
     climateNote:
@@ -265,7 +274,7 @@ export const cities: City[] = [
     postcode: "4558",
     regional: true,
     bom: { station: "Sunshine Coast Airport", stationId: "040861", julyMeanMin: 9.7, janMeanMax: 29.1, frostDaysYear: 0, period: "1994–2026" },
-    ncc: { zone: 2, name: "warm humid summer, mild winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    ncc: { zone: 2, name: "warm humid summer, mild winter", listing: "Maroochydore and Nambour", mapLookup: true },
     intro:
       "The Sunshine Coast's mild, frost-free climate suits any heat pump in our range, so you can choose on price, size, noise and coastal placement.",
     climateNote:
@@ -289,7 +298,7 @@ export const cities: City[] = [
     postcode: "4350",
     regional: true,
     bom: { station: "Toowoomba Airport", stationId: "041529", julyMeanMin: 6.7, janMeanMax: 28.4, frostDaysYear: 0.9, period: "1996–2026" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Toowoomba" },
     intro:
       "Toowoomba is noticeably cooler than the coast, with crisp winter mornings, so it's worth choosing a heat pump with a bit of cold-weather headroom.",
     climateNote:
@@ -313,7 +322,7 @@ export const cities: City[] = [
     postcode: "4810",
     regional: true,
     bom: { station: "Townsville Aero", stationId: "032040", julyMeanMin: 13.9, janMeanMax: 31.5, frostDaysYear: 0, period: "1940–2026" },
-    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", listing: "Townsville" },
     intro:
       "Townsville's warm climate makes heat pumps very efficient. Plan for summer heat, humidity, cyclone season and where the unit sits.",
     climateNote:
@@ -337,7 +346,7 @@ export const cities: City[] = [
     postcode: "4870",
     regional: true,
     bom: { station: "Cairns Aero", stationId: "031011", julyMeanMin: 17.2, janMeanMax: 31.5, frostDaysYear: 0, period: "1942–2026" },
-    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", listing: "Cairns" },
     intro:
       "Cairns is warm and humid all year, so a heat pump has plenty of heat to draw on. Placement, humidity and cyclone season matter more than cold.",
     climateNote:
@@ -361,7 +370,7 @@ export const cities: City[] = [
     postcode: "2300",
     regional: true,
     bom: { station: "Newcastle Nobbys Signal Station", stationId: "061055", julyMeanMin: 8.5, janMeanMax: 25.6, frostDaysYear: 0, period: "1862–2026" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Newcastle" },
     intro:
       "Newcastle homes can combine federal STCs with the NSW Hot Water Upgrade Incentive, which makes swapping out an old electric tank good value.",
     climateNote:
@@ -385,7 +394,7 @@ export const cities: City[] = [
     postcode: "2250",
     regional: true,
     bom: { station: "Gosford (Narara Research Station)", stationId: "061087", julyMeanMin: 4.7, janMeanMax: 27.6, frostDaysYear: 2.6, period: "1954–2013", note: "station closed 2013" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Gosford and Wyong", mapLookup: true },
     intro:
       "The Central Coast's valleys get colder winter mornings than you might expect, while the beaches stay mild. Choose a model that suits where you are.",
     climateNote:
@@ -409,7 +418,7 @@ export const cities: City[] = [
     postcode: "2500",
     regional: true,
     bom: { station: "Bellambi", stationId: "068228", julyMeanMin: 10.3, janMeanMax: 25.0, frostDaysYear: 0, period: "1997–2026" },
-    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    ncc: { zone: 5, name: "warm temperate", listing: "Wollongong" },
     intro:
       "Wollongong's mild coastal climate is easy on heat pumps. Coastal placement and the NSW incentive are the main things to get right.",
     climateNote:
@@ -433,7 +442,7 @@ export const cities: City[] = [
     postcode: "3220",
     regional: true,
     bom: { station: "Breakwater (Geelong Racecourse)", stationId: "087184", julyMeanMin: 6.4, janMeanMax: 26.0, frostDaysYear: 0.6, period: "2011–2026" },
-    ncc: { zone: 6, name: "mild temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    ncc: { zone: 6, name: "mild temperate", listing: "Geelong" },
     intro:
       "Geelong households can get up to $1,000 from Solar Victoria on top of federal STCs, which makes this one of the best-value places to switch.",
     climateNote:
@@ -457,7 +466,7 @@ export const cities: City[] = [
     postcode: "3350",
     regional: true,
     bom: { station: "Ballarat Aerodrome", stationId: "089002", julyMeanMin: 3.2, janMeanMax: 25.3, frostDaysYear: 15.7, period: "1908–2026" },
-    ncc: { zone: 7, name: "cool temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    ncc: { zone: 7, name: "cool temperate", listing: "Ballarat" },
     intro:
       "Ballarat's cold winters make model choice important. Pick a system rated well below zero, and you can still stack federal STCs with Solar Victoria's rebate.",
     climateNote:
@@ -481,7 +490,7 @@ export const cities: City[] = [
     postcode: "3550",
     regional: true,
     bom: { station: "Bendigo Airport", stationId: "081123", julyMeanMin: 2.7, janMeanMax: 30.4, frostDaysYear: 23.8, period: "1991–2026" },
-    ncc: { zone: 6, name: "mild temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    ncc: { zone: 6, name: "mild temperate", listing: "Bendigo" },
     intro:
       "Bendigo has hot summers and frosty winters, so a heat pump here needs a wide operating range at both ends.",
     climateNote:
@@ -505,7 +514,7 @@ export const cities: City[] = [
     postcode: "7250",
     regional: true,
     bom: { station: "Launceston (Ti Tree Bend)", stationId: "091237", julyMeanMin: 2.4, janMeanMax: 24.7, frostDaysYear: 25.0, period: "1980–2026" },
-    ncc: { zone: 7, name: "cool temperate", sourceUrl: nccPdf("tas"), sourceLabel: "ABCB: Tasmania climate zone table" },
+    ncc: { zone: 7, name: "cool temperate", listing: "Launceston" },
     intro:
       "Launceston's frosty Tamar Valley winters are about as tough as it gets for a heat pump in a city. A cold-rated CO2 system is the safe choice.",
     climateNote:

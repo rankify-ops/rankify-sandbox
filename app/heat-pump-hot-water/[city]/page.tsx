@@ -10,7 +10,7 @@ import { ProgramCard, StateNoteCard } from "@/components/RebateCards";
 import { StcEstimate } from "@/components/StcEstimate";
 import { Arrow, External, Phone } from "@/components/icons";
 import { GuidePriceBadge } from "@/components/ui";
-import { bomUrl, cities, cityDetails, cityFaqs, cityPath, CITY_DATA_CHECKED, getCity } from "@/lib/cities";
+import { ABCB_CLIMATE_MAP, bomUrl, cities, cityDetails, cityFaqs, cityPath, CITY_DATA_CHECKED, getCity, NCC_CHECKED, NCC_TABLE3 } from "@/lib/cities";
 import { formatAUD } from "@/lib/models";
 import { federalSTC, formatCheckedDate } from "@/lib/rebates";
 import { breadcrumbs, cityServiceSchema } from "@/lib/schema";
@@ -122,10 +122,19 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           <div className="mt-6 rounded-2xl bg-cream-100 p-5">
             <h3 className="font-semibold text-ink-900">NCC climate zone {city.ncc.zone}: {city.ncc.name}</h3>
             <p className="mt-1 text-sm leading-relaxed text-ink-600">
-              The National Construction Code splits Australia into 8 climate zones for building design. {city.name} is in zone {city.ncc.zone}{" "}
-              by council area. For an exact address, use the ABCB climate zone map.{" "}
-              <a href={city.ncc.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-ember-600 underline">
-                {city.ncc.sourceLabel} <External className="h-3 w-3" />
+              The National Construction Code splits Australia into 8 climate zones for building design.{" "}
+              {city.ncc.mapLookup
+                ? `${city.ncc.listing} are in zone ${city.ncc.zone} on the ABCB's climate zone map (the NCC table doesn't list ${city.name} by name).`
+                : `NCC 2025 Table 3 lists ${city.ncc.listing} as zone ${city.ncc.zone}.`}{" "}
+              Zones follow climate, not council boundaries, so check your exact address on the ABCB Climate Map. Checked{" "}
+              {formatCheckedDate(NCC_CHECKED)}.
+            </p>
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              <a href={NCC_TABLE3} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-ember-600 underline">
+                NCC 2025 Table 3 <External className="h-3 w-3" />
+              </a>
+              <a href={ABCB_CLIMATE_MAP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-ember-600 underline">
+                ABCB Climate Map <External className="h-3 w-3" />
               </a>
             </p>
           </div>

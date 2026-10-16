@@ -9,7 +9,7 @@ import { compareFaqs } from "@/lib/faqs";
 import { formatAUD, models, type HeatPumpModel } from "@/lib/models";
 import { breadcrumbs, productList } from "@/lib/schema";
 import { pageMeta } from "@/lib/seo";
-import { comparePath } from "@/lib/site";
+import { comparePagePath, comparePath } from "@/lib/site";
 
 const TITLE = "Best heat pump hot water systems in Australia (2026)";
 
@@ -68,7 +68,13 @@ export default function ComparePage() {
       <PageHero
         eyebrow="Comparison · Updated October 2026"
         title={TITLE}
-        lead="Six systems sold in Australia, compared side by side on tank size, efficiency, noise, warranty and guide installed price. Pick a shortlist, then get a fixed price in 60 seconds."
+        lead={
+          <>
+            Six systems sold in Australia, compared side by side on tank size, efficiency, noise, warranty and guide installed price. Pick a
+            shortlist, then get a fixed price in 60 seconds. Want STCs for your postcode? Use the{" "}
+            <Link href={comparePagePath} className="font-semibold text-ember-600 underline">compare tool</Link>.
+          </>
+        }
       />
 
       {/* Quick picks */}

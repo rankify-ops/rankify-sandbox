@@ -26,6 +26,10 @@ export type HeatPumpModel = {
   specs: { label: string; value: string }[];
   included: string[];
   bestFor: string;
+  /** Lowest rated outdoor temperature for the heat pump (°C), from the spec sheet's operating range. */
+  minOperatingC: number;
+  /** Rated noise in dB at 1 m (lowest standard-mode figure from the spec sheet), for sorting and the compare page. */
+  noiseDb: number;
   /** Short values for the comparison table. "Not listed" where no source gave a figure. */
   compare: { efficiency: string; noise: string; warranty: string; bestFor: string };
   /** Manufacturer spec sheet the specs were taken from. */
@@ -70,6 +74,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Couples, small families and townhouses replacing an electric tank.",
+    minOperatingC: -7,
+    noiseDb: 49,
     compare: { efficiency: "COP 4.9 (@20 °C)", noise: "49 dB(A) at 1 m", warranty: "5 yrs parts, 2 yrs labour (confirm)", bestFor: "Smaller homes on a budget" },
     specSheet: { label: "Emerald All-in-One spec brochure (2025.06)", url: "https://www.emerald.com.au/wp-content/uploads/2025/07/Emerald-Heat-Pump-All-In-One-spec-brochure.pdf" },
     stc: { registerModel: "EE-HWS-A1-220", counts: [28, 27, 33, 36, 35] },
@@ -103,6 +109,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Families of 3–4 who want a proven, good-value system.",
+    minOperatingC: -5,
+    noiseDb: 47,
     compare: { efficiency: "COP 4.8 (@20 °C, to 60 °C)", noise: "47 dB(A) at 1 m", warranty: "3–5 yrs (sources differ; confirm)", bestFor: "Best value for families" },
     specSheet: { label: "iStore Product Specification Data Sheet R290 (October 2024)", url: "https://solarquotes.com.au/wp-content/uploads/2024/03/iStore-Product-Specification-Data-Sheet-270L-R290-Oct-2024.pdf" },
     stc: { registerModel: "PASHW015-270LD-FL02-R290", counts: [26, 25, 31, 33, 32] },
@@ -137,6 +145,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Families who want a big-brand system with local support.",
+    minOperatingC: -5,
+    noiseDb: 47,
     compare: { efficiency: "COP 4.5 (@19 °C)", noise: "47 dB(A) at 1 m", warranty: "7 yrs cylinder, 3 yrs sealed system", bestFor: "Big-brand, Australian made" },
     specSheet: { label: "Rheem AmbiHeat brochure (January 2023)", url: "https://admin.rheem.com.au/sites/default/files/2023-03/RHE474%20Ambiheat%204pp%20Brochure_Jan%202023_DIGITAL.pdf" },
     stc: { registerModel: "571D270", counts: [26, 25, 31, 33, 32] },
@@ -172,6 +182,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Larger families and homes with teenagers or two bathrooms.",
+    minOperatingC: -5,
+    noiseDb: 45,
     compare: { efficiency: "COP 3.58 (seasonal)", noise: "45 dB(A) at 1 m", warranty: "5 yrs cylinder & condenser (confirm)", bestFor: "Larger families, big usable volume" },
     specSheet: { label: "Stiebel Eltron Australia data sheet, WWK 222/302 (H)", url: "https://filesync.galvins.com.au/datasheets/FXHS0004.pdf" },
     stc: { registerModel: "WWK302H", counts: [24, 25, 28, 30, 30] },
@@ -209,6 +221,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Frosty areas like Canberra, Tasmania and inland Victoria, and noise-sensitive spots.",
+    minOperatingC: -10,
+    noiseDb: 37,
     compare: { efficiency: "COP 6.02 (@32 °C)", noise: "37 dB", warranty: "Up to 15 yrs (conditions apply)", bestFor: "Cold climates, quiet spots" },
     specSheet: { label: "Reclaim Energy residential brochure (Issue 05, July 2023)", url: "https://reclaimenergy.com.au/wp-content/uploads/2026/06/Residential-Consumer-Brochure.pdf" },
     stc: { registerModel: "REHP-CO2-315GL-V2", counts: [26, 27, 31, 34, 34] },
@@ -245,6 +259,8 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Homeowners who want a premium system for the long haul, in any climate.",
+    minOperatingC: -10,
+    noiseDb: 37,
     compare: { efficiency: "COP 5.96 (@32.45 °C)", noise: "37 dB at 1 m", warranty: "6 yrs heat pump, 15 yrs tank (pro rata)", bestFor: "Premium long-term pick" },
     specSheet: { label: "Sanden Eco Plus brochure (March 2023)", url: "https://www.solarquotes.com.au/wp-content/uploads/2024/03/Sanden_Brochure_2023.pdf" },
     stc: { registerModel: "GAUS-315FQTS", counts: [26, 27, 32, 34, 34] },
