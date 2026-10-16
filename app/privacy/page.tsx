@@ -32,8 +32,10 @@ export default function PrivacyPage() {
           </p>
           <h2>Who we share it with</h2>
           <p>
-            With your consent, we share your details with a partner installer. They may contact you by phone, SMS or
-            email. We don&apos;t sell your personal information.
+            With your consent, we send your details to one licensed partner installer who services your area. They may
+            contact you by phone, SMS or email. If that installer can&apos;t take the job, we may offer your enquiry to
+            another partner installer, one at a time. Partner installers may pay us a referral fee for enquiries. We
+            don&apos;t share your details with marketing lists or data brokers.
           </p>
           <h2>Your rights</h2>
           <p>

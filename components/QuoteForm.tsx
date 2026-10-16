@@ -33,7 +33,7 @@ const STEPS = [
   { key: "system", title: "What heats your water now?", why: "This helps check which rebates you may be eligible for.", fields: ["currentSystem"] },
   { key: "household", title: "How many people live there?", why: "This sets the right tank size for your home.", fields: ["householdSize"] },
   { key: "postcode", title: "What's your postcode?", why: "So we match you with an installer who covers your area.", fields: ["postcode", "state"] },
-  { key: "contact", title: "Where should we send your quote?", why: "Last step. Shared only with one licensed local installer.", fields: ["name", "phone", "email", "consent"] },
+  { key: "contact", title: "Where should we send your quote?", why: "Last step. Shared with one licensed local installer at a time.", fields: ["name", "phone", "email", "consent"] },
 ] as const;
 const SECONDS_LEFT = [60, 45, 35, 25, 15];
 
@@ -44,6 +44,7 @@ function track(event: string, extra: Record<string, unknown> = {}) {
 export function QuoteForm({
   initialModel,
   initialState,
+  initialPostcode,
   rebatesViewed,
   tone = "light",
   variant = "card",
@@ -51,6 +52,7 @@ export function QuoteForm({
 }: {
   initialModel?: string;
   initialState?: string;
+  initialPostcode?: string;
   /** Rebate programs shown in the checker, sent with the lead so the installer knows what to apply. */
   rebatesViewed?: string[];
   /** Colour of the trust signals under the form, to suit the section it sits in. */
@@ -70,7 +72,7 @@ export function QuoteForm({
     need: "",
     currentSystem: "",
     householdSize: "",
-    postcode: "",
+    postcode: /^\d{4}$/.test(initialPostcode ?? "") ? initialPostcode! : "",
     state: (states as readonly string[]).includes(initialState ?? "") ? initialState! : "",
     // Resolve legacy slugs (old preview links) to the current model, or no preference.
     preferredModel: getModel(initialModel ?? "")?.slug ?? NO_PREFERENCE,
@@ -337,10 +339,11 @@ export function QuoteForm({
                     className="mt-0.5 h-5 w-5 shrink-0 accent-ember-600"
                   />
                   <span className="text-ink-700">
-                    I agree that Aussie Heat Pumps can share my details with a licensed partner installer in my area, who may
-                    contact me by phone, SMS or email about this quote. I&apos;ve read the{" "}
-                    <Link href="/privacy" target="_blank" className="font-semibold underline">Privacy Policy</Link> and understand
-                    Aussie Heat Pumps may receive a referral fee (<Link href="/about" target="_blank" className="underline">how our referrals work</Link>).
+                    I agree that Aussie Heat Pumps can send my details to one licensed partner installer in my area, who may
+                    contact me by phone, SMS or email about this quote. If they can&apos;t take the job, my details may be offered
+                    to another partner installer, one at a time. I understand Aussie Heat Pumps may receive a referral fee (
+                    <Link href="/how-it-works" target="_blank" className="underline">how it works</Link>) and I&apos;ve read the{" "}
+                    <Link href="/privacy" target="_blank" className="font-semibold underline">Privacy Policy</Link>.
                   </span>
                 </label>
                 <FieldError id={id("consent")} error={errors.consent} />
@@ -379,7 +382,7 @@ export function QuoteForm({
               Continue <Arrow className="h-4 w-4" />
             </button>
           ) : (
-            <span className="ml-auto text-xs text-ink-500">Tap an option to continue</span>
+            <span className="ml-auto text-xs whitespace-nowrap text-ink-500">Tap to continue</span>
           )}
         </div>
       </form>

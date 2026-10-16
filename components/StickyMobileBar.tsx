@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Arrow } from "./icons";
 
-const LEAD_FORMS = 'form[aria-label="Quote request"], form[aria-label="Request a callback"]';
+// Every labelled form on the site: lead forms plus lookups like the postcode rebate checker.
+const LEAD_FORMS = "form[aria-label]";
 
 /**
  * Mobile-only sticky bar: "Get my free quote" (opens the 60-second form) and

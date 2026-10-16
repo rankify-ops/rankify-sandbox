@@ -128,7 +128,9 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
             className="mt-0.5 h-5 w-5 shrink-0 accent-ember-600"
           />
           <span>
-            I agree to my details being shared with a licensed partner installer who may call me about a quote. See our{" "}
+            I agree that my details can go to one licensed partner installer, who may call me about a quote. If they
+            can&apos;t help, they may be offered to another partner installer, one at a time. We may receive a referral fee (
+            <Link href="/how-it-works" className="underline">how it works</Link>). See our{" "}
             <Link href="/privacy" className="underline">Privacy Policy</Link>.
           </span>
         </label>

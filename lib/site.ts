@@ -16,16 +16,18 @@ export const site = {
 
 export const comparePath = "/best-heat-pump-hot-water-systems";
 
+export const howItWorksPath = "/how-it-works";
+
 export const nav = [
   { href: "/models", label: "Models" },
   { href: comparePath, label: "Compare" },
   { href: "/rebates", label: "Rebates" },
-  { href: "/about", label: "How we work" },
+  { href: "/how-it-works", label: "How it works" },
   { href: "/blog", label: "Guides" },
 ];
 
 export const referralDisclosure =
-  "Aussie Heat Pumps is a referral service. We don't install systems ourselves. When you request a quote, we pass your details to an independent licensed partner installer who services your area, and they may pay us a referral fee. That fee never changes the price you're quoted.";
+  "Aussie Heat Pumps is a free referral service. We don't install systems ourselves. Your enquiry goes to one licensed partner installer who services your area. If they can't take the job, we offer it to the next one, one installer at a time. Partner installers may pay us a referral fee, which never changes the price you're quoted.";
 
 export const states = ["QLD", "NSW", "VIC", "ACT", "SA", "WA", "TAS", "NT"] as const;
 export type AusState = (typeof states)[number];
@@ -41,7 +43,7 @@ export const formTrustPoints = [
 ] as const;
 
 export const privacyNote =
-  "Your details are only shared with one licensed partner installer for your area. We never sell your information.";
+  "Your details go to one licensed partner installer at a time, never to marketing lists.";
 
 /** Remembered between the form and the thank-you page (session only, never sent anywhere). */
 export const THANKS_KEY = "ahp:thanks";

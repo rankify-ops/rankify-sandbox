@@ -45,6 +45,14 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ember-600;
   }
+  /* Wide tables scroll sideways on phones instead of squashing their columns. */
+  .prose table {
+    @apply block max-w-full overflow-x-auto whitespace-normal;
+  }
+  .prose table td,
+  .prose table th {
+    @apply min-w-28;
+  }
   .prose td a {
     @apply inline-flex min-h-11 items-center;
   }

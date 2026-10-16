@@ -25,7 +25,7 @@ export default async function ThankYouPage({
 
   const steps = callback
     ? [
-        { title: "We pass your request on", text: "Your details go to one licensed partner installer who services your postcode." },
+        { title: "We pass your request on", text: "Your details go to one licensed partner installer who services your postcode. If they can't take it, we offer it to the next one." },
         {
           title: "They give you a call",
           text: timeLabel && time !== "asap" ? `They'll aim to ring you in the ${timeLabel.toLowerCase()}.` : `${responseTime}.`,
@@ -33,7 +33,7 @@ export default async function ThankYouPage({
         { title: "Get your fixed price", text: "They'll ask a few questions about your home and confirm your price and rebates." },
       ]
     : [
-        { title: "We match you with a local installer", text: "Your request goes to one licensed partner installer who services your postcode." },
+        { title: "We match you with a local installer", text: "Your request goes to one licensed partner installer who services your postcode. If they can't take it, we offer it to the next one." },
         { title: "They confirm your site details", text: `${responseTime}. They may ask for a couple of photos.` },
         { title: "You get a fixed price, rebates applied", text: "Then you decide. There's no obligation to go ahead." },
       ];

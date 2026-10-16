@@ -11,6 +11,8 @@ export type PostMeta = {
   date: string;
   readingMinutes: number;
   tags: string[];
+  /** Optional `faqs:` frontmatter list of { q, a }; rendered visibly with FAQPage schema. */
+  faqs: { q: string; a: string }[];
 };
 
 function readPost(file: string) {
@@ -26,6 +28,9 @@ function readPost(file: string) {
     description: String(data.description ?? ""),
     date: String(data.date),
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+    faqs: Array.isArray(data.faqs)
+      ? data.faqs.filter((f: { q?: unknown; a?: unknown }) => f?.q && f?.a).map((f: { q: unknown; a: unknown }) => ({ q: String(f.q), a: String(f.a) }))
+      : [],
     readingMinutes: Math.max(1, Math.round(content.split(/\s+/).length / 220)),
   };
   return { meta, content };

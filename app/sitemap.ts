@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/models", priority: 0.9, changeFrequency: "weekly" },
     { path: "/rebates", priority: 0.8, changeFrequency: "weekly" },
     { path: "/best-heat-pump-hot-water-systems", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/how-it-works", priority: 0.6, changeFrequency: "monthly" },
     { path: "/about", priority: 0.5, changeFrequency: "monthly" },
     { path: "/blog", priority: 0.6, changeFrequency: "weekly" },
     { path: "/privacy", priority: 0.2, changeFrequency: "yearly" },

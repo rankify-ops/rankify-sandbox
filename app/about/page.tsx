@@ -64,8 +64,9 @@ export default function AboutPage() {
           <h2 className="font-display font-medium">What happens to your details</h2>
           <p>
             When you submit a quote request and tick the consent box, we share the details you entered (postcode, state,
-            current system, household size, preferred model, name, phone and email) with one partner installer who
-            services your area so they can contact you about your quote. We don&apos;t sell your details to marketing lists.
+            current system, household size, preferred model, name, phone and, if given, email) with one licensed partner
+            installer who services your area so they can contact you about your quote. If they can&apos;t take the job, we
+            may offer it to the next partner installer, one at a time. We don&apos;t share your details with marketing lists.
             You can ask us to access, correct or delete your information at any time by emailing{" "}
             <a href={`mailto:${site.email}`}>{site.email}</a>. See our <a href="/privacy">Privacy Policy</a> for more.
           </p>

@@ -30,7 +30,7 @@ export const homeFaqs: FaqItem[] = [
   },
   {
     q: "Who actually does the installation?",
-    a: "We're a referral service. Your job is completed by an independent, licensed partner installer in your area. Our About page explains exactly how this works and how we're paid.",
+    a: "We're a free referral service. Your enquiry goes to one independent, licensed partner installer in your area, and if they can't take it, we offer it to the next one. That installer quotes and does the work. Partner installers may pay us a referral fee, which never changes your price. Our How it works page explains the details.",
   },
   {
     q: "Will a heat pump work in a cold climate?",
@@ -81,15 +81,19 @@ export const rebateFaqs: FaqItem[] = [
   },
   {
     q: "Can I combine federal and state rebates?",
-    a: "Sometimes. It depends on each program's rules, which change from time to time. Check the official page for each program, and your installer will confirm what can be combined for your install (TBC).",
+    a: "Sometimes. It depends on each program's rules, which change from time to time, and the official pages don't always say. Your installer will confirm what can be combined for your install.",
   },
   {
     q: "Am I eligible?",
     a: "Eligibility is set by each government program and can depend on things like your property, your current system, the product and the installer's accreditation. The official pages linked above have the current criteria.",
   },
   {
-    q: "Are the amounts on this page final?",
-    a: "No. Amounts are placeholders marked TBC while we verify current program values. Always confirm on the official government page.",
+    q: "Where do these figures come from?",
+    a: "Only from the official government pages linked on each program, and we show the date we last checked them. If a page doesn't give a figure, we mark the amount 'Not confirmed' rather than guess. Programs change, so always confirm on the official page.",
+  },
+  {
+    q: "Why is there no fixed dollar amount for STCs?",
+    a: "The Clean Energy Regulator doesn't publish a fixed amount. The number of certificates depends on the heat pump and where it's installed, and their value depends on the certificate market. Your installer works out the figure for your system and usually takes it off your quote.",
   },
 ];
 

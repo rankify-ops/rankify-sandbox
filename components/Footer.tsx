@@ -27,11 +27,12 @@ export function Footer() {
           <FooterLink href="/rebates?state=QLD">Queensland</FooterLink>
           <FooterLink href="/rebates?state=NSW">New South Wales</FooterLink>
           <FooterLink href="/rebates?state=VIC">Victoria</FooterLink>
-          <FooterLink href="/rebates#stc">Federal STCs</FooterLink>
+          <FooterLink href="/blog/heat-pump-hot-water-rebates-by-state">Rebates by state</FooterLink>
         </FooterCol>
         <FooterCol title="Company">
           <FooterLink href="/best-heat-pump-hot-water-systems">Compare systems</FooterLink>
-          <FooterLink href="/about">How we work</FooterLink>
+          <FooterLink href="/how-it-works">How it works</FooterLink>
+          <FooterLink href="/about">About &amp; disclosure</FooterLink>
           <FooterLink href="/blog">Guides</FooterLink>
           <FooterLink href="/quote">Get a free quote</FooterLink>
           <FooterLink href="/privacy">Privacy</FooterLink>
@@ -41,7 +42,7 @@ export function Footer() {
         <div className="container-x space-y-3 py-6 text-xs leading-relaxed text-ink-400">
           <p>
             <strong className="text-ink-200">Disclosure:</strong> {referralDisclosure}{" "}
-            <Link href="/about" className="underline hover:text-white">How our referrals work</Link>.
+            <Link href="/how-it-works" className="underline hover:text-white">How it works</Link>.
           </p>
           <p>
             Model prices are guide prices for standard supply and installation before rebates, confirmed by your installer after a site check. Rebate amounts marked TBC are placeholders. Neither is an offer.

@@ -1,7 +1,8 @@
 import { testimonials } from "@/lib/testimonials";
+import { SectionCta } from "./SectionCta";
 
 /** Testimonial cards. While entries are samples, each card is visibly labelled as one. */
-export function Testimonials({ limit = 3, className = "" }: { limit?: number; className?: string }) {
+export function Testimonials({ limit = 3, className = "", cta = false }: { limit?: number; className?: string; cta?: boolean }) {
   const items = testimonials.slice(0, limit);
   const anySample = items.some((t) => t.sample);
   return (
@@ -36,6 +37,7 @@ export function Testimonials({ limit = 3, className = "" }: { limit?: number; cl
           </li>
         ))}
       </ul>
+      {cta && <SectionCta align="center" className="mt-10" />}
     </section>
   );
 }

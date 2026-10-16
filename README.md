@@ -18,7 +18,9 @@ npm run lint && npm run typecheck
 | Models, specs, supply-and-install prices | `lib/models.ts`: six real models with specs from data sheets/CHOICE (sources per model). Prices are guide prices; set `priceConfirmed: true` once an installer confirms one, which removes the "Guide price" badge. Old placeholder URLs redirect (`legacyModelSlugs`). |
 | Testimonials | `lib/testimonials.ts`: **samples only**, labelled "Sample review" on the site. Replace with real reviews (with permission) and set `sample: false`. |
 | Installer network line, rebate-help note | `installerNetwork` / `rebateHelpNote` in `lib/site.ts` |
-| Rebate programs, amounts, official links | `lib/rebates.ts`: set `verified: true` per program |
+| Rebate programs, amounts, official links | `lib/rebates.ts`: **official figures only**, each with `officialUrl`, the page's own `sourceUpdated` date and our `lastChecked` date (`LAST_CHECKED`). If a page gives no figure, `amountConfirmed: false` shows "Not confirmed". Re-check the pages and bump `LAST_CHECKED` whenever you update a figure. |
+| Referral disclosure & consent | `referralDisclosure` / `privacyNote` in `lib/site.ts`, consent text in `components/QuoteForm.tsx` and `components/CallbackForm.tsx`, `/how-it-works`, `/about`, `/privacy`. All describe: free service, one licensed partner installer at a time (offered to the next if they pass), referral fee. Keep them in sync. |
+| Trust badges | `components/TrustBadges.tsx`: **placeholders**, visibly labelled, until licence, insurer and network details are confirmed |
 | Brand, phone, email, ABN, referral disclosure | `lib/site.ts` |
 | Blog posts | `content/blog/*.mdx` (frontmatter: `title`, `description`, `date`, `tags`). `<Callout>` and `<QuoteCta>` are available in MDX |
 | Privacy policy (draft) | `app/privacy/page.tsx` |
@@ -32,6 +34,9 @@ npm run lint && npm run typecheck
 - **Where it appears**: as a popup from every link to `/quote` (`components/QuoteModal.tsx`; this covers the header "Free quote · 60s" button, sticky mobile bar, model cards and price cards); inline in the home hero, the footer of every page (`components/FooterQuote.tsx`), mid-post in every blog article (`<QuoteCta />`), at the end of the rebate checker (prefilled state + programs), on `/quote`, and in the lead capture blocks (`components/LeadCaptureBlock.tsx`, with a "Call me back" tab). Links stay real `/quote` links, so new tabs and no-JS visitors still get the full page.
 - **Callback form** (`components/CallbackForm.tsx`): name, phone, postcode, best time to call
 - **Sticky mobile bar** (`components/StickyMobileBar.tsx`, phones only): "Get my free quote" (opens the 60-second popup) and "Request a callback" (opens a callback popup via `/quote#callback`). It slides away while any lead form is on screen (starting 120px early) or a field has focus, so it never covers inputs, consent text or submit buttons.
+- **Postcode rebate checker** (`/rebates`, `components/RebateChecker.tsx`): postcode → state → federal STCs + state programs (official figures, page dates, last-checked date, official links) → 60-second form prefilled with postcode, state and programs. `?postcode=` and the older `?state=` links both work.
+- **Homepage**: every section ends in a 60-second quote + callback CTA (`components/SectionCta.tsx`).
+- **Blog FAQs**: add `faqs:` (list of `q`/`a`) to a post's frontmatter to render a visible FAQ section with FAQPage schema.
 - **Comparison page** `/best-heat-pump-hot-water-systems`: data-driven quick picks, side-by-side table (cards on mobile) with a quote CTA per model, and a mid-page 60-second form. Built from the `compare` fields in `lib/models.ts`.
 - **Exit-intent popup** (`components/ExitIntent.tsx`): desktop with a mouse only, once per session, never on `/quote` or `/thank-you`, closes on Esc or backdrop click
 - **Rebate checker → quote**: after picking a state, the checker ends in a quote form prefilled with that state; the programs shown are sent with the lead as `rebatesViewed`
@@ -90,7 +95,9 @@ Remove all three at launch.
 - [ ] Confirm guide prices and specs marked "confirm" with partner installers (`lib/models.ts`), then set `priceConfirmed: true`
 - [ ] Replace sample testimonials with real, permissioned reviews (`lib/testimonials.ts`)
 - [ ] Confirm the installer network size in `installerNetwork` (`lib/site.ts`)
-- [ ] If leads are sold to more than one buyer, update the consent text in the forms and the privacy policy
+- [ ] Replace the placeholder trust badges with real licence, insurance and network details (`components/TrustBadges.tsx`)
+- [ ] Re-check every rebate figure against its official page and update `LAST_CHECKED` (`lib/rebates.ts`)
+- [ ] Have the consent text and privacy policy reviewed (they describe one-installer-at-a-time referrals and a referral fee)
 - [ ] Verified rebate amounts/eligibility in `lib/rebates.ts`
 - [ ] Real phone, email, ABN and business address in `lib/site.ts` (these also feed the Organization/LocalBusiness JSON-LD in `components/SiteJsonLd.tsx`)
 - [ ] Privacy policy reviewed against the Australian Privacy Principles

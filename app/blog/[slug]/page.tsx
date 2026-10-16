@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
+import { FaqSection } from "@/components/Faq";
 import { mdxComponents } from "@/components/mdx";
 import { HeroCtas } from "@/components/ui";
 import { formatDate, getAllPosts, getPost } from "@/lib/blog";
@@ -66,6 +67,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </article>
+      {meta.faqs.length > 0 && <FaqSection items={meta.faqs} title="Common questions" className="pt-0 sm:pt-4" />}
     </>
   );
 }

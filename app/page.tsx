@@ -4,14 +4,17 @@ import { QuoteForm } from "@/components/QuoteForm";
 import { Testimonials } from "@/components/Testimonials";
 import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
-import { GuidePriceBadge, SectionHeading, TbcBadge } from "@/components/ui";
+import { SectionCta } from "@/components/SectionCta";
+import { TrustBadges } from "@/components/TrustBadges";
+import { GuidePriceBadge, SectionHeading } from "@/components/ui";
 import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/components/icons";
 import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
-import { referralDisclosure, site } from "@/lib/site";
+import { formatCheckedDate, LAST_CHECKED } from "@/lib/rebates";
+import { comparePath, howItWorksPath, referralDisclosure, site } from "@/lib/site";
 
 const trust = [
-  { icon: Tag, title: "Set, upfront pricing", text: "Supply and install prices are published per model. No surprise call-out quotes." },
+  { icon: Tag, title: "Clear guide prices", text: "Supply-and-install guide prices are published per model. Your installer locks in a fixed price." },
   { icon: Shield, title: "Licensed installers (TBC)", text: "Partner installers hold the plumbing and electrical licences your state requires." },
   { icon: Leaf, title: "Rebates applied for you", text: "Eligible STCs are typically taken off your quote upfront by the installer." },
   { icon: Clock, title: "Fast response", text: "60 seconds to request. A local installer usually replies within 1 business day (TBC)." },
@@ -21,17 +24,17 @@ const steps = [
   {
     n: "1",
     title: "Get a free quote",
-    text: "Answer four quick questions and leave your details. It takes about 60 seconds, with no obligation.",
+    text: "Answer four quick questions in about 60 seconds, or ask for a callback. Free, with no obligation.",
   },
   {
     n: "2",
-    title: "We match a local installer",
-    text: "Your request goes to one licensed partner installer (TBC) who services your postcode. They confirm your site and fixed price.",
+    title: "One local installer, at a time",
+    text: "We send your enquiry to one licensed partner installer who covers your postcode. If they can't take it, we offer it to the next.",
   },
   {
     n: "3",
     title: "Install & claim rebates",
-    text: "They fit your new system, take the old one away, and apply eligible rebates like STCs straight off your quote.",
+    text: "They confirm your fixed price, fit the new system, take the old one away and apply eligible rebates on your quote.",
   },
 ];
 
@@ -52,19 +55,20 @@ export default function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes in QLD, NSW &amp; VIC
             </p>
             <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[3.4rem]">
-              Hot water that costs <span className="italic text-ember-400">less</span> to run. Installed for a fixed price.
+              Cut your hot water power bill. <span className="italic text-ember-400">Let rebates</span> cover part of the switch.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-200">
-              Clear guide prices, rebates handled for you, and a licensed local installer who locks in your fixed price.{" "}
-              <strong className="font-semibold text-white">Get your free quote in 60 seconds.</strong>
+              A heat pump uses far less electricity than an electric storage tank. We match you with a licensed local installer
+              who applies your STCs and state rebates and locks in a fixed price.{" "}
+              <strong className="font-semibold text-white">Your free quote takes 60 seconds.</strong>
             </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center lg:hidden">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center lg:hidden">
               <a href="#hero-quote" className="btn-primary px-8 py-4 text-base">
-                Start my 60-second quote <Arrow className="h-5 w-5" />
+                Get my free 60-second quote <Arrow className="h-5 w-5" />
               </a>
-              <a href={site.phoneHref} className="tap justify-center gap-2 text-sm font-semibold text-ink-200 hover:text-white sm:justify-start">
-                <Phone className="h-4 w-4 text-ember-400" /> or call {site.phone}
-              </a>
+              <Link href="/quote#callback" className="btn border border-white/25 px-8 py-4 text-base text-white hover:bg-white/10">
+                Request a callback
+              </Link>
             </div>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200" aria-label="Why homeowners use us">
               {["Free & no obligation", "Old system removed", "Rebates handled for you*"].map((t) => (
@@ -73,7 +77,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <dl className="mt-8 hidden gap-4 sm:flex">
+            <dl className="mt-8 hidden flex-wrap gap-3 sm:flex">
               <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 <dt className="text-xs text-ink-200">Installed from</dt>
                 <dd className="mt-0.5 flex items-center gap-2 font-display text-2xl font-semibold">
@@ -87,10 +91,21 @@ export default function Home() {
                   <dd className="text-xs text-ink-200">vs electric storage (TBC)</dd>
                 </div>
               </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <Leaf className="h-5 w-5 text-gum-500" />
+                <div>
+                  <dt className="text-sm font-semibold">VIC rebate up to $1,000</dt>
+                  <dd className="text-xs text-ink-200">NSW up to $640 · where eligible</dd>
+                </div>
+              </div>
             </dl>
-            <a href={site.phoneHref} className="mt-6 hidden items-center gap-2 text-sm font-semibold text-ink-200 hover:text-white lg:inline-flex">
-              <Phone className="h-4 w-4 text-ember-400" /> Prefer to talk? Call {site.phone}
-            </a>
+            <p className="mt-6 hidden items-center gap-4 text-sm font-semibold text-ink-200 lg:flex">
+              <Link href="/quote#callback" className="tap gap-2 hover:text-white">
+                <Phone className="h-4 w-4 text-ember-400" /> Prefer to talk? Request a callback
+              </Link>
+              <span aria-hidden className="text-ink-400">·</span>
+              <a href={site.phoneHref} className="tap hover:text-white">{site.phone}</a>
+            </p>
           </div>
 
           <div id="hero-quote" className="relative w-full scroll-mt-20 text-ink-900">
@@ -114,6 +129,7 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <SectionCta align="center" className="mt-8" note="Free & no obligation · Shared with one installer at a time" />
         </div>
       </section>
 
@@ -124,6 +140,9 @@ export default function Home() {
           <h2 id="how-it-works" className="h-display mx-auto mt-3 max-w-2xl text-3xl text-ink-900 sm:text-4xl">
             Three steps from old tank to heat pump
           </h2>
+          <p className="mx-auto mt-3 max-w-xl text-ink-600">
+            We&apos;re a free referral service: you deal with one licensed partner installer at a time, never a call-centre ring-around.
+          </p>
         </div>
         <ol className="relative mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
           <span aria-hidden className="absolute left-[16.6%] right-[16.6%] top-7 hidden h-px bg-gradient-to-r from-ember-300 via-ember-500 to-gum-500 md:block" />
@@ -139,15 +158,16 @@ export default function Home() {
             </li>
           ))}
         </ol>
-        <div className="mt-10 flex flex-col items-center gap-3 text-center">
-          <Link href="/quote" className="btn-primary px-8 py-4 text-base">
-            Get a free quote <Arrow className="h-4 w-4" />
+        <TrustBadges className="mx-auto mt-10 max-w-4xl" />
+        <SectionCta align="center" className="mt-10" note="Takes about 60 seconds · Free & no obligation" />
+        <p className="mt-3 text-center">
+          <Link href={howItWorksPath} className="tap text-sm font-semibold text-ember-600 underline hover:text-ember-700">
+            How our referral service works
           </Link>
-          <p className="text-sm text-ink-600">Takes about 60 seconds · Free &amp; no obligation</p>
-        </div>
+        </p>
       </section>
 
-      <Testimonials className="pt-0 sm:pt-0" />
+      <Testimonials className="pt-0 sm:pt-0" cta />
 
       {/* Models */}
       <section className="bg-cream-100 py-20 sm:py-28">
@@ -159,13 +179,19 @@ export default function Home() {
               lead="Each price includes the unit, standard installation by licensed trades, and removal of your old system."
             />
             <Link href="/models" className="btn-ghost shrink-0">
-              Compare all 6 models <Arrow className="h-4 w-4" />
+              All 6 models <Arrow className="h-4 w-4" />
             </Link>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {featured.map((m) => (
               <ModelCard key={m.slug} model={m} />
             ))}
+          </div>
+          <div className="mt-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <SectionCta note="Not sure which one? Your installer will recommend the right size." />
+            <Link href={comparePath} className="tap gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+              See all six side by side <Arrow className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -176,42 +202,50 @@ export default function Home() {
       />
 
       {/* Rebates teaser */}
-      <section className="container-x pb-20 pt-6 sm:pb-28">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+      <section className="container-x pb-20 pt-6 sm:pb-28" aria-labelledby="rebates-teaser">
+        <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
           <div>
-            <SectionHeading
-              eyebrow="Rebates"
-              title="See what you could save before you commit"
-              lead="Federal STCs apply in every state, and QLD, NSW and VIC homes may access extra state programs. Our checker lists them, with links to every official government page."
-            />
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/quote" className="btn-primary">
-                Get a free quote <Arrow className="h-4 w-4" />
-              </Link>
-              <Link href="/rebates" className="btn-ghost">Check my rebates first</Link>
-            </div>
+            <p className="eyebrow">Rebates</p>
+            <h2 id="rebates-teaser" className="h-display mt-3 text-3xl text-ink-900 sm:text-4xl">See what you could get back</h2>
+            <p className="mt-4 text-lg leading-relaxed text-ink-600">
+              Enter your postcode to see federal STCs and any state program for your area, straight from the official
+              government pages.
+            </p>
+            <form action="/rebates" method="get" className="mt-6 flex max-w-md gap-2" aria-label="Check rebates by postcode">
+              <label htmlFor="home-rebate-pc" className="sr-only">Postcode</label>
+              <input
+                id="home-rebate-pc"
+                name="postcode"
+                inputMode="numeric"
+                pattern="[0-9]{4}"
+                maxLength={4}
+                required
+                placeholder="Postcode"
+                autoComplete="postal-code"
+                className="w-32 rounded-xl border border-ink-200 bg-white px-4 py-3 text-base tracking-widest outline-none focus:border-ember-600 focus:ring-4 focus:ring-ember-500/20"
+              />
+              <button type="submit" className="btn-dark min-h-12 flex-1">Check my rebates</button>
+            </form>
+            <p className="mt-2 text-xs text-ink-500">Official figures, last checked {formatCheckedDate(LAST_CHECKED)}. Where eligible.</p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-4 sm:grid-cols-2">
             {[
-              { s: "Federal", t: "Small-scale Technology Certificates" },
-              { s: "VIC", t: "Solar Victoria + VEU" },
-              { s: "NSW", t: "Hot Water Upgrade Incentive" },
-              { s: "QLD", t: "State programs (TBC)" },
+              { s: "Federal", t: "STCs", a: "Varies by model & location", href: "/rebates" },
+              { s: "VIC", t: "Solar Victoria rebate", a: "Up to $1,000", href: "/rebates?state=VIC" },
+              { s: "NSW", t: "Hot Water Upgrade Incentive", a: "Up to $640", href: "/rebates?state=NSW" },
+              { s: "QLD", t: "State program", a: "None found", href: "/rebates?state=QLD" },
             ].map((r) => (
-              <Link
-                key={r.s}
-                href={r.s === "Federal" ? "/rebates#stc" : `/rebates?state=${r.s}`}
-                className="card group p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift"
-              >
-                <span className="text-xs font-bold tracking-wider text-ember-600 uppercase">{r.s}</span>
-                <p className="mt-2 font-semibold text-ink-900">{r.t}</p>
-                <p className="mt-4 flex items-center gap-2 text-sm text-ink-600">
-                  Amount <TbcBadge />
-                </p>
-              </Link>
+              <li key={r.s}>
+                <Link href={r.href} className="card group flex h-full flex-col p-5 transition-all hover:-translate-y-0.5 hover:shadow-lift">
+                  <span className="text-xs font-bold tracking-wide text-ember-600 uppercase">{r.s}</span>
+                  <span className="mt-1 font-semibold text-ink-900">{r.t}</span>
+                  <span className="mt-3 font-display text-xl font-semibold text-ink-900">{r.a}</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
+        <SectionCta className="mt-10" note="Your installer checks what you're eligible for and takes it off your quote." />
       </section>
 
       {/* Transparency */}
@@ -223,9 +257,10 @@ export default function Home() {
           <div>
             <h2 className="h-display text-2xl text-ink-900">Straight up about how we work</h2>
             <p className="mt-3 max-w-3xl leading-relaxed text-ink-600">{referralDisclosure}</p>
-            <Link href="/about" className="tap mt-2 gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
-              How our referrals work <Arrow className="h-4 w-4" />
+            <Link href={howItWorksPath} className="tap mt-2 gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+              How our referral service works <Arrow className="h-4 w-4" />
             </Link>
+            <SectionCta className="mt-6" />
           </div>
         </div>
       </section>

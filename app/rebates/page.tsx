@@ -1,65 +1,54 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
-import { Arrow } from "@/components/icons";
 import { FaqSection } from "@/components/Faq";
-import { ProgramCard, RebateChecker } from "@/components/RebateChecker";
+import { RebateChecker } from "@/components/RebateChecker";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { rebateFaqs } from "@/lib/faqs";
-import { federalSTC } from "@/lib/rebates";
+import { stateForPostcode } from "@/lib/lead";
+import { formatCheckedDate, LAST_CHECKED, stateNames } from "@/lib/rebates";
+import { pageMeta } from "@/lib/seo";
 
-const stateNames: Record<string, string> = { QLD: "Queensland", NSW: "New South Wales", VIC: "Victoria" };
+type Params = Promise<{ state?: string; postcode?: string }>;
 
-export async function generateMetadata({ searchParams }: { searchParams: Promise<{ state?: string }> }): Promise<Metadata> {
-  const name = stateNames[(await searchParams).state ?? ""];
-  // Every state view shares one canonical URL: it's the same checker, pre-selected.
+function stateFrom({ state, postcode }: { state?: string; postcode?: string }) {
+  const s = stateForPostcode(postcode ?? "") ?? state ?? "";
+  return s in stateNames ? (s as keyof typeof stateNames) : undefined;
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: Params }): Promise<Metadata> {
+  const s = stateFrom(await searchParams);
+  const name = s ? stateNames[s] : undefined;
+  // Every postcode/state view shares one canonical URL: it's the same checker, pre-filled.
   return pageMeta({
-    title: name ? `Heat pump rebates in ${name} + federal STCs` : "Heat pump rebate checker: QLD, NSW, VIC & federal STCs",
+    title: name ? `Heat pump rebates in ${name.replace(/^the /, "")} + federal STCs` : "Heat pump rebate checker by postcode (2026)",
     description: name
-      ? `See the ${name} heat pump hot water programs and federal STCs you may be eligible for, with links to the official government pages.`
-      : "Check which heat pump hot water rebates may apply in QLD, NSW or VIC, plus federal STCs, with links to every official government page.",
+      ? `See the heat pump hot water rebates that may apply in ${name}, plus federal STCs, from official government pages.`
+      : "Enter your postcode to see federal STCs and any state heat pump hot water rebate, with official figures, dates and links. Then get a free quote.",
     path: "/rebates",
   });
 }
 
-export default async function RebatesPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
-  const { state } = await searchParams;
+export default async function RebatesPage({ searchParams }: { searchParams: Params }) {
+  const params = await searchParams;
   return (
     <>
       <PageHero
         eyebrow="Rebate checker"
-        title="Find the heat pump rebates you may be eligible for"
-        lead="Pick your state to see federal and state programs, then get a free quote with them applied. Every program links to its official government page."
+        title="Check your heat pump rebates by postcode"
+        lead="Enter your postcode to see the federal STC discount and any state program that applies, straight from the official government pages. Then get a free quote with them applied."
       >
         <div className="mt-8 max-w-2xl">
           <PlaceholderNotice>
-            <strong>Amounts are placeholders (TBC).</strong> This tool is general information, not financial advice or a
-            guarantee of eligibility. Always confirm on the official page.
+            <strong>General information only.</strong> Figures are taken from official pages (last checked{" "}
+            {formatCheckedDate(LAST_CHECKED)}) and can change. Anything we couldn&apos;t confirm is marked &ldquo;Not
+            confirmed&rdquo;. Your installer confirms what you&apos;re eligible for. See our{" "}
+            <Link href="/blog/heat-pump-hot-water-rebates-by-state" className="font-semibold underline">rebates by state guide</Link>.
           </PlaceholderNotice>
         </div>
       </PageHero>
 
-      <section className="container-x max-w-4xl py-14">
-        <RebateChecker key={state ?? "none"} initialState={state} />
-
-        <div id="stc" className="mt-16 scroll-mt-24">
-          <h2 className="h-display text-2xl text-ink-900">Federal: available Australia-wide</h2>
-          <p className="mt-2 text-ink-600">
-            STCs apply in every state and territory, including ACT, SA, WA, TAS and NT.
-          </p>
-          <div className="mt-6">
-            <ProgramCard program={federalSTC} />
-          </div>
-          <div className="mt-6 flex flex-col gap-4 rounded-3xl border border-ember-500/25 bg-ember-500/5 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-semibold text-ink-900">In ACT, SA, WA, TAS or NT?</p>
-              <p className="text-sm text-ink-600">Your installer applies eligible STCs straight off your quote.</p>
-            </div>
-            <Link href="/quote" className="btn-primary shrink-0">
-              Get a free quote <Arrow className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
+      <section className="container-x max-w-4xl py-12 sm:py-14">
+        <RebateChecker key={`${params.postcode ?? ""}-${params.state ?? ""}`} initialPostcode={params.postcode} initialState={stateFrom(params)} />
       </section>
 
       <FaqSection items={rebateFaqs} title="Rebate questions, answered" className="pt-4 sm:pt-6" />
