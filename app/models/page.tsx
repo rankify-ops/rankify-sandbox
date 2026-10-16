@@ -5,6 +5,7 @@ import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { formatAUD, models } from "@/lib/models";
+import { comparePath } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
   title: "Heat pump models & fixed supply-and-install prices",
@@ -28,7 +29,12 @@ export default function ModelsPage() {
       </PageHero>
 
       <section className="container-x py-16" aria-labelledby="all-models">
-        <h2 id="all-models" className="h-display text-2xl text-ink-900 sm:text-3xl">All six models</h2>
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <h2 id="all-models" className="h-display text-2xl text-ink-900 sm:text-3xl">All six models</h2>
+          <Link href={comparePath} className="tap gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+            Full comparison: efficiency, noise &amp; warranty <span aria-hidden>→</span>
+          </Link>
+        </div>
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {models.map((m) => (
             <ModelCard key={m.slug} model={m} />

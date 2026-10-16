@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod/mini";
 import { states } from "./site";
 import { models } from "./models";
 
@@ -33,51 +33,60 @@ export const bestTimes = [
 
 export const NO_PREFERENCE = "no-preference";
 
-const phoneField = z
-  .string()
-  .trim()
-  .transform((v) => v.replace(/[\s()-]/g, ""))
-  .pipe(z.string().regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number"));
-const postcodeField = z.string().regex(/^\d{4}$/, "Enter a 4-digit Australian postcode");
-const nameField = z.string().trim().min(2, "Enter your name").max(100);
+const phoneField = z.string({ error: "Enter your mobile number" }).check(
+  z.trim(),
+  z.overwrite((v) => v.replace(/[\s()-]/g, "")),
+  z.regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number"),
+);
+const postcodeField = z.string({ error: "Enter a 4-digit Australian postcode" }).check(z.regex(/^\d{4}$/, "Enter a 4-digit Australian postcode"));
+const nameField = z.string({ error: "Enter your name" }).check(z.trim(), z.minLength(2, "Enter your name"), z.maxLength(100));
 /** Name of the hidden anti-spam field on every lead form. */
 export const HONEYPOT_FIELD = "company";
-const honeypot = z.string().max(0).optional();
-const source = z.string().max(300).optional();
+const honeypot = z.optional(z.string().check(z.maxLength(0, "Leave this field blank")));
+const source = z.optional(z.string().check(z.maxLength(300)));
 
 const options = <T extends readonly { value: string }[]>(list: T) => list.map((o) => o.value) as [string, ...string[]];
 
+/*
+ * Schemas use zod/mini (same validation as classic zod, much smaller in the browser bundle,
+ * where the quote and callback forms validate each step).
+ */
+
 /** The 60-second quote form. Order matches the form: need → system → household → postcode → contact. */
 export const leadSchema = z.object({
-  type: z.literal("quote").default("quote"),
-  need: z.enum(options(needs), { message: "Choose what you need" }),
+  type: z._default(z.literal("quote", { error: "Invalid lead type" }), "quote"),
+  need: z.enum(options(needs), { error: "Choose what you need" }),
   postcode: postcodeField,
-  state: z.enum(states, { message: "Select your state or territory" }),
-  currentSystem: z.enum(options(currentSystems), { message: "Choose your current system" }),
-  householdSize: z.enum(options(householdSizes), { message: "Choose your household size" }),
+  state: z.enum(states, { error: "Select your state or territory" }),
+  currentSystem: z.enum(options(currentSystems), { error: "Choose your current system" }),
+  householdSize: z.enum(options(householdSizes), { error: "Choose your household size" }),
   // Set from context (e.g. the model page the visitor came from); not a form step.
-  preferredModel: z
-    .enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]])
-    .default(NO_PREFERENCE),
+  preferredModel: z._default(z.enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]], { error: "Unknown model" }), NO_PREFERENCE),
   name: nameField,
   phone: phoneField,
   // Optional to keep the form fast; phone is the primary contact.
-  email: z.union([z.literal(""), z.string().trim().email("Enter a valid email, or leave it blank").max(200)]).default(""),
-  consent: z.literal(true, { message: "Please agree so we can pass your details to an installer" }),
+  email: z._default(
+    z.union([
+      z.literal(""),
+      z.pipe(z.string().check(z.trim()), z.email({ error: "Enter a valid email, or leave it blank" }).check(z.maxLength(200))),
+    ]),
+    "",
+  ),
+  consent: z.literal(true, { error: "Please agree so we can pass your details to an installer" }),
   // Rebate programs the visitor was shown in the rebate checker, if they came from there.
-  rebatesViewed: z.array(z.string().max(120)).max(10).optional(),
+  rebatesViewed: z.optional(z.array(z.string().check(z.maxLength(120))).check(z.maxLength(10, "Too many rebate programs"))),
   // Honeypot — real users never see or fill this.
   company: honeypot,
   source,
 });
 
 export const callbackSchema = z.object({
-  type: z.literal("callback"),
+  type: z.literal("callback", { error: "Invalid lead type" }),
   name: nameField,
   phone: phoneField,
   postcode: postcodeField,
-  bestTime: z.enum(bestTimes.map((t) => t.value) as [string, ...string[]], { message: "Pick a time that suits" }),
-  consent: z.literal(true, { message: "Please agree so an installer can call you" }),
+  bestTime: z.enum(options(bestTimes), { error: "Pick a time that suits" }),
+  consent: z.literal(true, { error: "Please agree so an installer can call you" }),
   company: honeypot,
   source,
 });
@@ -87,7 +96,7 @@ export type Lead = z.output<typeof leadSchema>;
 export type CallbackInput = z.input<typeof callbackSchema>;
 
 /** Field → first error message, for showing inline errors. */
-export function fieldErrors(error: z.ZodError) {
+export function fieldErrors(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   const errors: Record<string, string> = {};
   for (const issue of error.issues) {
     const key = String(issue.path[0] ?? "form");

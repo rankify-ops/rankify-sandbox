@@ -72,7 +72,8 @@ export function QuoteForm({
     householdSize: "",
     postcode: "",
     state: (states as readonly string[]).includes(initialState ?? "") ? initialState! : "",
-    preferredModel: getModel(initialModel ?? "") ? initialModel! : NO_PREFERENCE,
+    // Resolve legacy slugs (old preview links) to the current model, or no preference.
+    preferredModel: getModel(initialModel ?? "")?.slug ?? NO_PREFERENCE,
     name: "",
     phone: "",
     email: "",
@@ -194,7 +195,7 @@ export function QuoteForm({
           {model && step === 0 && (
             <p className="mb-4 flex items-center justify-between gap-2 rounded-xl bg-cream-100 px-3 py-2 text-sm text-ink-700">
               <span>Quoting on the <strong>{model.name}</strong></span>
-              <button type="button" onClick={() => set("preferredModel", NO_PREFERENCE)} className="grid h-7 w-7 place-items-center rounded-full hover:bg-cream-200" aria-label="Remove model preference">
+              <button type="button" onClick={() => set("preferredModel", NO_PREFERENCE)} className="-my-2 -mr-2 grid h-11 w-11 place-items-center rounded-full hover:bg-cream-200" aria-label="Remove model preference">
                 <Close className="h-3.5 w-3.5" />
               </button>
             </p>

@@ -19,7 +19,7 @@ export function FooterQuote() {
             Answer four quick questions and a licensed local installer will come back with your fixed price and the rebates
             you may be eligible for.
           </p>
-          <a href={site.phoneHref} className="mt-6 inline-flex items-center gap-2 text-lg font-semibold text-white hover:text-ember-300">
+          <a href={site.phoneHref} className="tap mt-6 gap-2 text-lg font-semibold text-white hover:text-ember-300">
             <Phone className="h-5 w-5 text-ember-400" /> {site.phone}
           </a>
         </div>

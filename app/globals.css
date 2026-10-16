@@ -45,6 +45,9 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ember-600;
   }
+  .prose td a {
+    @apply inline-flex min-h-11 items-center;
+  }
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -56,6 +59,11 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Minimum 44px tap height for standalone text links and small controls. */
+@utility tap {
+  @apply inline-flex min-h-11 items-center;
 }
 
 @utility container-x {

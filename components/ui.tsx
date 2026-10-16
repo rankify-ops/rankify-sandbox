@@ -10,7 +10,7 @@ export function HeroCtas({ quoteHref = "/quote", className = "" }: { quoteHref?:
         <Link href={quoteHref} className="btn-primary px-7 py-3.5 text-base">
           Get a free quote <Arrow className="h-4 w-4" />
         </Link>
-        <a href={site.phoneHref} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900 sm:justify-start">
+        <a href={site.phoneHref} className="tap justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900 sm:justify-start">
           <Phone className="h-4 w-4 text-ember-600" /> or call {site.phone}
         </a>
       </div>
@@ -29,7 +29,7 @@ export function TbcBadge({ label = "TBC", className = "" }: { label?: string; cl
   return (
     <span
       title="Placeholder value, to be confirmed"
-      className={`inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-800 uppercase ${className}`}
+      className={`inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-bold tracking-wide text-amber-800 uppercase ${className}`}
     >
       {label}
     </span>
@@ -41,7 +41,7 @@ export function GuidePriceBadge({ className = "" }: { className?: string }) {
   return (
     <span
       title="Guide price: your installer confirms the fixed price after checking your site"
-      className={`inline-flex items-center rounded-full border border-ink-200 bg-cream-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-ink-700 uppercase ${className}`}
+      className={`inline-flex items-center rounded-full border border-ink-200 bg-cream-100 px-2 py-0.5 text-xs font-bold tracking-wide text-ink-700 uppercase ${className}`}
     >
       Guide price
     </span>

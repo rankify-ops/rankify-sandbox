@@ -42,10 +42,10 @@ export function ModelCard({ model }: { model: HeatPumpModel }) {
         <p className="mt-1 text-xs text-ink-500">Before any eligible rebates</p>
       </div>
       <div className="mt-6 flex gap-2">
-        <Link href={`/quote?model=${model.slug}`} className="btn-primary flex-1 py-2.5">
+        <Link href={`/quote?model=${model.slug}`} className="btn-primary min-h-11 flex-1 py-2.5">
           Free quote
         </Link>
-        <Link href={`/models/${model.slug}`} className="btn-ghost py-2.5" aria-label={`View details for ${model.name}`}>
+        <Link href={`/models/${model.slug}`} className="btn-ghost min-h-11 py-2.5" aria-label={`View details for ${model.name}`}>
           Details <Arrow className="h-4 w-4" />
         </Link>
       </div>

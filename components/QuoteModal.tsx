@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
 import { Close, Phone } from "./icons";
+import { CallbackForm } from "./CallbackForm";
+import { FormTrustInline } from "./FormTrust";
 import { QuoteForm } from "./QuoteForm";
 import { useDialog } from "./useDialog";
 
@@ -17,7 +19,7 @@ export const EXIT_SEEN_KEY = "ahp:exit-seen";
  */
 export function QuoteModal() {
   const pathname = usePathname();
-  const [open, setOpen] = useState<{ model?: string; n: number } | null>(null);
+  const [open, setOpen] = useState<{ mode: "quote" | "callback"; model?: string; n: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(null), []);
   useDialog(!!open, ref, close);
@@ -35,8 +37,10 @@ export function QuoteModal() {
       try {
         sessionStorage.setItem(EXIT_SEEN_KEY, "1");
       } catch {}
-      (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "quote_open", from: window.location.pathname });
-      setOpen((o) => ({ model: url.searchParams.get("model") ?? undefined, n: (o?.n ?? 0) + 1 }));
+      // /quote#callback opens the lighter callback form instead.
+      const mode = url.hash === "#callback" ? "callback" : "quote";
+      (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: `${mode}_open`, from: window.location.pathname });
+      setOpen((o) => ({ mode, model: url.searchParams.get("model") ?? undefined, n: (o?.n ?? 0) + 1 }));
     };
     // Capture phase: runs before next/link's own click handler, which then sees the
     // event is handled (defaultPrevented) and skips its client-side navigation.
@@ -59,7 +63,7 @@ export function QuoteModal() {
         ref={ref}
         role="dialog"
         aria-modal="true"
-        aria-label="Get a free quote in 60 seconds"
+        aria-label={open.mode === "callback" ? "Request a callback" : "Get a free quote in 60 seconds"}
         className="relative max-h-[94dvh] w-full overflow-y-auto rounded-t-[1.75rem] bg-cream-50 p-3 pt-12 shadow-lift sm:max-w-lg sm:rounded-[1.75rem] sm:p-4 sm:pt-12"
       >
         <button
@@ -71,9 +75,18 @@ export function QuoteModal() {
           <Close className="h-4 w-4" />
         </button>
         <p className="absolute left-5 top-4 text-xs font-semibold tracking-[0.18em] text-ember-600 uppercase">Free · No obligation</p>
-        <QuoteForm key={open.n} variant="compact" initialModel={open.model} />
+        {open.mode === "callback" ? (
+          <div key={open.n} className="card p-5">
+            <p className="font-display text-xl font-semibold text-ink-900">Request a free callback</p>
+            <p className="mt-1 mb-5 text-sm text-ink-600">Four quick fields. A licensed local installer will ring at a time that suits.</p>
+            <CallbackForm autoFocus />
+            <FormTrustInline />
+          </div>
+        ) : (
+          <QuoteForm key={open.n} variant="compact" initialModel={open.model} />
+        )}
         <div className="mt-2 px-2 pb-2">
-          <a href={site.phoneHref} className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900">
+          <a href={site.phoneHref} className="tap mt-1 w-full justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900">
             <Phone className="h-4 w-4 text-ember-600" /> Prefer to talk? Call {site.phone}
           </a>
         </div>

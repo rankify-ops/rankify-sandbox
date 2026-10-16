@@ -21,7 +21,7 @@ export function Testimonials({ limit = 3, className = "" }: { limit?: number; cl
         {items.map((t) => (
           <li key={t.name} className="card flex flex-col p-6">
             {t.sample && (
-              <span className="mb-4 self-start rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-800 uppercase">
+              <span className="mb-4 self-start rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-bold tracking-wide text-amber-800 uppercase">
                 Sample review
               </span>
             )}

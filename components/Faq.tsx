@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { JsonLd } from "./JsonLd";
 import { Arrow, Phone } from "./icons";
 
 export type FaqItem = { q: string; a: string };
@@ -32,7 +33,7 @@ export function FaqJsonLd({ items }: { items: FaqItem[] }) {
       acceptedAnswer: { "@type": "Answer", text: i.a },
     })),
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
+  return <JsonLd data={data} />;
 }
 
 /** FAQ block with FAQPage schema and a quote nudge beside it. */

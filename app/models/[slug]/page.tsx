@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
+import { breadcrumbs, productSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/JsonLd";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FaqSection } from "@/components/Faq";
@@ -11,7 +13,7 @@ import { Arrow, Check, Phone, Users } from "@/components/icons";
 import { GuidePriceBadge } from "@/components/ui";
 import { modelFaqs } from "@/lib/faqs";
 import { formatAUD, getModel, models } from "@/lib/models";
-import { site } from "@/lib/site";
+import { comparePath, site } from "@/lib/site";
 
 export function generateStaticParams() {
   return models.map((m) => ({ slug: m.slug }));
@@ -36,12 +38,14 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
+      <JsonLd data={breadcrumbs([{ name: "Home", path: "/" }, { name: "Models", path: "/models" }, { name: model.name, path: `/models/${model.slug}` }])} />
+      <JsonLd data={productSchema(model)} />
       <section className="relative overflow-hidden border-b border-ink-200/60 bg-cream-100">
         <div aria-hidden className="pointer-events-none absolute -right-20 top-0 h-96 w-96 rounded-full bg-ember-300/30 blur-3xl" />
         <div className="container-x relative grid items-start gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <nav className="text-sm text-ink-500" aria-label="Breadcrumb">
-              <Link href="/models" className="hover:text-ink-900">Models</Link> <span className="mx-1">/</span>{" "}
+              <Link href="/models" className="tap hover:text-ink-900">Models</Link> <span className="mx-1">/</span>{" "}
               <span className="text-ink-700">{model.name}</span>
             </nav>
             <p className="eyebrow mt-6">{model.brand} · {model.tier} · {model.type}</p>
@@ -79,7 +83,10 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
             Specs from the manufacturer&apos;s data sheet and published listings. Items marked &ldquo;confirm&rdquo; vary between
             sources, so your installer will confirm them against the current data sheet.
           </p>
-          <h2 className="h-display text-2xl text-ink-900">Specifications</h2>
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <h2 className="h-display text-2xl text-ink-900">Specifications</h2>
+            <Link href={comparePath} className="tap text-sm font-semibold text-ember-600 underline hover:text-ember-700">Compare with other models</Link>
+          </div>
           <dl className="card mt-5 divide-y divide-ink-200/60">
             {model.specs.map((s) => (
               <div key={s.label} className="flex justify-between gap-4 px-6 py-4 text-sm">
@@ -139,7 +146,12 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
 
       <section className="bg-cream-100 py-16">
         <div className="container-x">
-          <h2 className="h-display text-2xl text-ink-900">Compare other models</h2>
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <h2 className="h-display text-2xl text-ink-900">Compare other models</h2>
+            <Link href={comparePath} className="tap gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+              See all six side by side <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {others.map((m) => (
               <ModelCard key={m.slug} model={m} />

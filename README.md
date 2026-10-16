@@ -31,7 +31,8 @@ npm run lint && npm run typecheck
 - **60-second quote form** (`components/QuoteForm.tsx`): need → current system → household size (one tap each, auto-advance) → postcode (state auto-detected) → name, mobile, optional email, consent. Shows progress, "~Ns left" and a short reason for each question. Contact details come last. Pushes `quote_start`, `quote_step` and `lead_submitted` to `window.dataLayer`.
 - **Where it appears**: as a popup from every link to `/quote` (`components/QuoteModal.tsx`; this covers the header "Free quote · 60s" button, sticky mobile bar, model cards and price cards); inline in the home hero, the footer of every page (`components/FooterQuote.tsx`), mid-post in every blog article (`<QuoteCta />`), at the end of the rebate checker (prefilled state + programs), on `/quote`, and in the lead capture blocks (`components/LeadCaptureBlock.tsx`, with a "Call me back" tab). Links stay real `/quote` links, so new tabs and no-JS visitors still get the full page.
 - **Callback form** (`components/CallbackForm.tsx`): name, phone, postcode, best time to call
-- **Sticky mobile bar** with Call + Get a free quote (`components/StickyMobileBar.tsx`), hidden from tablet up
+- **Sticky mobile bar** (`components/StickyMobileBar.tsx`, phones only): "Get my free quote" (opens the 60-second popup) and "Request a callback" (opens a callback popup via `/quote#callback`). It slides away while any lead form is on screen (starting 120px early) or a field has focus, so it never covers inputs, consent text or submit buttons.
+- **Comparison page** `/best-heat-pump-hot-water-systems`: data-driven quick picks, side-by-side table (cards on mobile) with a quote CTA per model, and a mid-page 60-second form. Built from the `compare` fields in `lib/models.ts`.
 - **Exit-intent popup** (`components/ExitIntent.tsx`): desktop with a mouse only, once per session, never on `/quote` or `/thank-you`, closes on Esc or backdrop click
 - **Rebate checker → quote**: after picking a state, the checker ends in a quote form prefilled with that state; the programs shown are sent with the lead as `rebatesViewed`
 - **Trust signals** next to every form (`components/FormTrust.tsx`); copy lives in `lib/site.ts` (`formTrustPoints`, `responseTime`, `privacyNote`)
@@ -44,6 +45,8 @@ npm run lint && npm run typecheck
 - `sitemap.xml` lists every page except `/thank-you`. Set `SITE_URL` at launch so sitemap, robots and canonicals use the real domain.
 - Forms: labelled fields, errors shown on blur and on submit, announced to screen readers, and focus moves to the first invalid field. Choice tiles work with arrow keys.
 - Blog images must have alt text: the build fails if an MDX image is missing it.
+- Structured data (`lib/schema.ts`, `components/JsonLd.tsx`): Organization + LocalBusiness on every page, FAQPage wherever an FAQ section shows, BreadcrumbList on model, blog and comparison pages, Product + Offer (guide price, AUD) on model pages, Article on posts, ItemList on the comparison page. **No Review or AggregateRating** while testimonials are samples.
+- Performance: fonts use `display: "optional"` (no late repaint, which keeps LCP low on mobile); form validation uses `zod/mini` to keep the client bundle small. No raster images are used.
 - Lighthouse (mobile) on every page: performance 96–99, accessibility 100, best practices 100. SEO reads 66 only because of the deliberate noindex (`is-crawlable`); it's the sole failing SEO audit.
 
 ## Leads

@@ -62,7 +62,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
           </div>
           <div className="card p-6">
             <h2 className="font-semibold text-ink-900">Prefer to talk?</h2>
-            <a href={site.phoneHref} className="mt-3 flex items-center gap-2 text-lg font-semibold text-ember-600">
+            <a href={site.phoneHref} className="tap mt-1 gap-2 text-lg font-semibold text-ember-600">
               <Phone className="h-5 w-5" /> {site.phone}
             </a>
           </div>

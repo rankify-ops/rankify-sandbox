@@ -92,3 +92,26 @@ export const rebateFaqs: FaqItem[] = [
     a: "No. Amounts are placeholders marked TBC while we verify current program values. Always confirm on the official government page.",
   },
 ];
+
+export const compareFaqs: FaqItem[] = [
+  {
+    q: "What is the best heat pump hot water system in Australia?",
+    a: "There isn't one best system for every home. The right choice depends on your household size, climate, where the unit will sit and your budget. A 270 L all-in-one suits most families of 3–4, while CO2 split systems suit cold climates and noise-sensitive spots. Your installer will recommend one for your home.",
+  },
+  {
+    q: "CO2 or R290: which refrigerant is better?",
+    a: "Both are natural refrigerants with very low global warming potential. CO2 (R744) systems like the Sanden and Reclaim Energy units are known for performing well in cold weather and running quietly, but cost more. R290 (propane) all-in-ones like the iStore and Emerald units are compact and good value.",
+  },
+  {
+    q: "Can I compare the COP figures directly?",
+    a: "Only roughly. Manufacturers and testers measure COP under different conditions (air temperature, target water temperature, seasonal vs point ratings), so treat the figures as a guide and ask your installer how each model performs in your climate.",
+  },
+  {
+    q: "Are these prices fixed?",
+    a: "They're guide prices for supply and standard installation, before rebates. Your installer confirms the fixed price after checking your site, and eligible rebates such as STCs come off on top.",
+  },
+  {
+    q: "How did you choose these six?",
+    a: "They're the six systems in our range, compared on published specs from manufacturer data sheets and CHOICE listings. We're a referral service: partner installers may pay us a referral fee, which never changes the price you're quoted. See our About page for how this works.",
+  },
+];

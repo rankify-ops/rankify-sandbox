@@ -28,7 +28,7 @@ export function LeadCaptureBlock({
             <div className="mt-7 border-t border-white/10 pt-6">
               <FormTrust tone="dark" />
             </div>
-            <a href={site.phoneHref} className="mt-6 inline-flex items-center gap-2 font-semibold text-white hover:text-ember-300">
+            <a href={site.phoneHref} className="tap mt-4 gap-2 font-semibold text-white hover:text-ember-300">
               <Phone className="h-4 w-4 text-ember-400" /> Prefer to talk? {site.phone}
             </a>
           </div>

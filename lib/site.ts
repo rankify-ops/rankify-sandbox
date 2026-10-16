@@ -14,9 +14,12 @@ export const site = {
   areaServed: ["Queensland", "New South Wales", "Victoria"],
 };
 
+export const comparePath = "/best-heat-pump-hot-water-systems";
+
 export const nav = [
-  { href: "/models", label: "Models & prices" },
-  { href: "/rebates", label: "Rebate checker" },
+  { href: "/models", label: "Models" },
+  { href: comparePath, label: "Compare" },
+  { href: "/rebates", label: "Rebates" },
   { href: "/about", label: "How we work" },
   { href: "/blog", label: "Guides" },
 ];

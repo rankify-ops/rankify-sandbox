@@ -62,7 +62,7 @@ export default function Home() {
               <a href="#hero-quote" className="btn-primary px-8 py-4 text-base">
                 Start my 60-second quote <Arrow className="h-5 w-5" />
               </a>
-              <a href={site.phoneHref} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-ink-200 hover:text-white sm:justify-start">
+              <a href={site.phoneHref} className="tap justify-center gap-2 text-sm font-semibold text-ink-200 hover:text-white sm:justify-start">
                 <Phone className="h-4 w-4 text-ember-400" /> or call {site.phone}
               </a>
             </div>
@@ -223,7 +223,7 @@ export default function Home() {
           <div>
             <h2 className="h-display text-2xl text-ink-900">Straight up about how we work</h2>
             <p className="mt-3 max-w-3xl leading-relaxed text-ink-600">{referralDisclosure}</p>
-            <Link href="/about" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
+            <Link href="/about" className="tap mt-2 gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
               How our referrals work <Arrow className="h-4 w-4" />
             </Link>
           </div>

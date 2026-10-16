@@ -13,10 +13,10 @@ export function Footer() {
         <div>
           <Logo light />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-400">{site.tagline}</p>
-          <a href={site.phoneHref} className="mt-5 flex items-center gap-2 text-lg font-semibold text-white hover:text-ember-300">
+          <a href={site.phoneHref} className="tap mt-4 gap-2 text-lg font-semibold text-white hover:text-ember-300">
             <Phone className="h-5 w-5 text-ember-400" /> {site.phone}
           </a>
-          <a href={`mailto:${site.email}`} className="mt-1 block text-sm text-ink-400 hover:text-white">{site.email}</a>
+          <a href={`mailto:${site.email}`} className="tap block text-sm text-ink-400 hover:text-white">{site.email}</a>
         </div>
         <FooterCol title="Models">
           {models.map((m) => (
@@ -30,6 +30,7 @@ export function Footer() {
           <FooterLink href="/rebates#stc">Federal STCs</FooterLink>
         </FooterCol>
         <FooterCol title="Company">
+          <FooterLink href="/best-heat-pump-hot-water-systems">Compare systems</FooterLink>
           <FooterLink href="/about">How we work</FooterLink>
           <FooterLink href="/blog">Guides</FooterLink>
           <FooterLink href="/quote">Get a free quote</FooterLink>
@@ -57,7 +58,7 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
   return (
     <div>
       <h3 className="text-sm font-semibold text-white">{title}</h3>
-      <ul className="mt-4 space-y-2.5 text-sm">{children}</ul>
+      <ul className="mt-3 text-sm">{children}</ul>
     </div>
   );
 }
@@ -65,7 +66,7 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li>
-      <Link href={href} className="text-ink-400 transition-colors hover:text-white">{children}</Link>
+      <Link href={href} className="tap text-ink-400 transition-colors hover:text-white">{children}</Link>
     </li>
   );
 }

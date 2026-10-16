@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type * as z from "zod/mini";
 import { HONEYPOT_FIELD } from "@/lib/lead";
 
 /**
@@ -61,8 +61,8 @@ export function FieldError({ id, error, tone = "light" }: { id: string; error?: 
 }
 
 /** Validate one field against its schema, for showing an error as soon as the visitor leaves it. */
-export function fieldMessage(schema: z.ZodObject<z.ZodRawShape>, field: string, value: unknown) {
-  const shape = schema.shape[field] as z.ZodType | undefined;
+export function fieldMessage(schema: z.ZodMiniObject, field: string, value: unknown) {
+  const shape = (schema.shape as Record<string, z.ZodMiniType>)[field];
   if (!shape) return "";
   const r = shape.safeParse(value);
   return r.success ? "" : (r.error.issues[0]?.message ?? "");

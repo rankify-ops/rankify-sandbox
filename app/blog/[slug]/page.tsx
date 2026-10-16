@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, siteUrl } from "@/lib/seo";
+import { breadcrumbs } from "@/lib/schema";
+import { JsonLd } from "@/components/JsonLd";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -35,16 +37,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     headline: meta.title,
     description: meta.description,
     datePublished: meta.date,
-    publisher: { "@type": "Organization", name: site.name },
+    dateModified: meta.date,
+    mainEntityOfPage: `${siteUrl}/blog/${meta.slug}`,
+    author: { "@type": "Organization", name: site.name, url: siteUrl },
+    publisher: { "@type": "Organization", name: site.name, logo: { "@type": "ImageObject", url: `${siteUrl}/icon.svg` } },
+    image: `${siteUrl}/opengraph-image`,
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumbs([{ name: "Home", path: "/" }, { name: "Guides", path: "/blog" }, { name: meta.title, path: `/blog/${meta.slug}` }])} />
       <article>
         <header className="border-b border-ink-200/60 bg-cream-100">
           <div className="container-x max-w-3xl py-14 sm:py-20">
-            <Link href="/blog" className="text-sm font-semibold text-ember-600 hover:text-ember-700">← All guides</Link>
+            <Link href="/blog" className="tap text-sm font-semibold text-ember-600 hover:text-ember-700">← All guides</Link>
             <h1 className="h-display mt-5 text-4xl text-ink-900 sm:text-5xl">{meta.title}</h1>
             <p className="mt-4 text-lg text-ink-600">{meta.description}</p>
             <p className="mt-6 text-sm text-ink-500">

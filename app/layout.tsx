@@ -10,8 +10,10 @@ import { site } from "@/lib/site";
 import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
+// display "optional": text paints once with the size-adjusted fallback and never re-paints for
+// the web font, which keeps LCP low on slow mobile connections (the font is cached for later visits).
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "optional" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "optional" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

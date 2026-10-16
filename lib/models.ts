@@ -26,6 +26,8 @@ export type HeatPumpModel = {
   specs: { label: string; value: string }[];
   included: string[];
   bestFor: string;
+  /** Short values for the comparison table. "Not listed" where no source gave a figure. */
+  compare: { efficiency: string; noise: string; warranty: string; bestFor: string };
   /** Where the specs came from, so they can be re-checked. Not shown on the site. */
   sources: string[];
 };
@@ -63,6 +65,7 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Couples, small families and townhouses replacing an electric tank.",
+    compare: { efficiency: "COP 4.9 (seasonal, @20 °C)", noise: "Not listed", warranty: "5 yrs parts, 2 yrs labour", bestFor: "Smaller homes on a budget" },
     sources: [
       "https://www.emerald.com.au/wp-content/uploads/2025/07/Emerald-Heat-Pump-All-In-One-spec-brochure.pdf",
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/emerald-ee-hws-a1-220",
@@ -93,6 +96,7 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Families of 3–4 who want a proven, good-value system.",
+    compare: { efficiency: "COP 4.8 (@20 °C, to 60 °C)", noise: "47 dB(A) at 1 m", warranty: "5 yrs tank & heat pump", bestFor: "Best value for families" },
     sources: [
       "https://solarquotes.com.au/wp-content/uploads/2024/03/iStore-Product-Specification-Data-Sheet-270L-R290-Oct-2024.pdf",
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/istore-pashw015-270ld-fl02-r290",
@@ -116,16 +120,19 @@ export const models: HeatPumpModel[] = [
       { label: "Configuration", value: "Integrated (all-in-one)" },
       { label: "Refrigerant", value: "R513a" },
       { label: "Operating range", value: "−5 °C to 43 °C" },
+      { label: "Efficiency", value: "COP 4.5 (third-party listing, confirm)" },
       { label: "Noise", value: "47–48 dB(A) at 1 m" },
       { label: "Booster element", value: "2.4 kW" },
       { label: "Warranty", value: "Rheem advertises 10 years (check terms)" },
     ],
     included: standardInclusions,
     bestFor: "Families who want a big-brand system with local support.",
+    compare: { efficiency: "COP 4.5 (confirm)", noise: "47–48 dB(A) at 1 m", warranty: "Up to 10 yrs (check terms)", bestFor: "Big-brand, Australian made" },
     sources: [
       "https://www.rheem.com.au/rheem/products/Residential/Heat-Pumps/Ambiheat-/Rheem-Ambiheat-HDc270-Heat-Pump-(with-R513a-refrigerant)/p/571D270R5",
       "https://tradelink.com.au/ambiheat-hdc-270-r513a-heat-pump-2-4kw-299928",
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/rheem-ambiheat-hdc270-571d270",
+      "https://www.gridly.com.au/blog/rheem-ambiheat-review-australia",
     ],
   },
   {
@@ -152,6 +159,7 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Larger families and homes with teenagers or two bathrooms.",
+    compare: { efficiency: "COP 3.58 (seasonal)", noise: "45 dB(A)", warranty: "5 yrs cylinder & condenser", bestFor: "Larger families, big usable volume" },
     sources: [
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/stiebel-eltron-wwk-302-h",
       "https://www.winnings.com.au/p/stiebel-eltron-302l-hot-water-heat-pump-wwk302h",
@@ -177,12 +185,14 @@ export const models: HeatPumpModel[] = [
       { label: "Configuration", value: "Split (separate heat pump unit)" },
       { label: "Refrigerant", value: "R744 (CO2)" },
       { label: "Output temperature", value: "63 °C" },
+      { label: "Efficiency", value: "Seasonal COP 6.02 (@32.6 °C, glass-lined V2)" },
       { label: "Noise", value: "37 dB(A)" },
       { label: "Operating range", value: "Cold-climate rated (confirm minimum)" },
       { label: "Warranty", value: "Glass-lined: tank 10 yrs parts / 5 yrs labour, heat pump 10 yrs (confirm)" },
     ],
     included: standardInclusions,
     bestFor: "Frosty areas like Canberra, Tasmania and inland Victoria, and noise-sensitive spots.",
+    compare: { efficiency: "COP 6.02 (seasonal, @32.6 °C)", noise: "37 dB(A)", warranty: "Up to 10 yrs (confirm)", bestFor: "Cold climates, quiet spots" },
     sources: [
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/reclaim-energy-rehp-co2-315gl-v2",
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/reclaim-energy-rehp-co2-315ssew",
@@ -213,6 +223,7 @@ export const models: HeatPumpModel[] = [
     ],
     included: standardInclusions,
     bestFor: "Homeowners who want a premium system for the long haul, in any climate.",
+    compare: { efficiency: "Not listed", noise: "37 dB(A)", warranty: "15 yrs cylinder, 10 yrs compressor", bestFor: "Premium long-term pick" },
     sources: [
       "https://www.choice.com.au/products/home-improvement/water/hot-water-systems/sanden-gaus-315fqts",
       "https://australianhotwater.com.au/product/sanden-eco-plus-315-litre-heat-pump-price/",
