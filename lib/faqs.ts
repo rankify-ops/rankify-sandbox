@@ -22,7 +22,7 @@ export const homeFaqs: FaqItem[] = [
   },
   {
     q: "Are the prices on this site final?",
-    a: "Published prices cover standard supply and installation for each model, and are currently placeholders marked TBC. Non-standard sites, like relocating the unit, extra plumbing or switchboard upgrades, may cost more. Your installer confirms this before any work starts.",
+    a: "Our prices are guide prices for standard supply and installation of each model, before rebates. Your installer confirms the fixed price after checking your site. Non-standard work, like relocating the unit, extra plumbing or switchboard upgrades, may cost more, and you'll know before any work starts.",
   },
   {
     q: "What rebates can I get?",
@@ -45,8 +45,8 @@ export function modelFaqs(m: HeatPumpModel): FaqItem[] {
       a: `The ${m.name} (${m.capacityLitres} L) generally suits ${m.households}. Usage habits matter too, like long showers or several bathrooms in use at once, so your installer will confirm the right size before you commit.`,
     },
     {
-      q: `What does the ${formatAUD(m.priceFrom)} price include?`,
-      a: `It covers supply of the unit, removal and disposal of your old system, standard installation by a licensed plumber, electrical connection by a licensed electrician where required, and compliance certificates. The price is currently a placeholder (TBC).`,
+      q: `What does the ${formatAUD(m.priceFrom)} guide price include?`,
+      a: `It's a guide price covering supply of the unit, removal and disposal of your old system, standard installation by a licensed plumber, electrical connection by a licensed electrician where required, and compliance certificates. Your installer confirms the fixed price after checking your site.`,
     },
     {
       q: "What could cost extra?",
@@ -54,7 +54,7 @@ export function modelFaqs(m: HeatPumpModel): FaqItem[] {
     },
     {
       q: `Can I get rebates on the ${m.name}?`,
-      a: "Federal STCs may apply if the model is on the official register of eligible heat pumps (TBC for this model), and some states offer extra programs. Your installer confirms eligibility and applies what you qualify for on your quote.",
+      a: "Federal STCs may apply if the model is on the official register of eligible heat pumps (your installer checks this for your exact model), and some states offer extra programs. Your installer confirms eligibility and applies what you qualify for on your quote.",
     },
     {
       q: "How long does installation take?",

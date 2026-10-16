@@ -8,7 +8,7 @@ import { formatAUD, models } from "@/lib/models";
 
 export const metadata: Metadata = pageMeta({
   title: "Heat pump models & fixed supply-and-install prices",
-  description: "Compare six heat pump hot water systems from 180 L to 300 L, each with a set supply-and-install price. Get a free quote from a licensed local installer.",
+  description: "Compare six heat pump hot water systems from Emerald, iStore, Rheem, Stiebel Eltron, Reclaim Energy and Sanden, 220 L to 315 L, with supply-and-install guide prices. Get a free quote in 60 seconds.",
   path: "/models",
 });
 
@@ -17,12 +17,12 @@ export default function ModelsPage() {
     <>
       <PageHero
         eyebrow="Models & prices"
-        title="Six systems. One set price each, installed."
+        title="Six proven systems. Clear guide prices, installed."
         lead="Every price covers the unit, standard installation by licensed trades, and removal of your old system. Rebates you're eligible for come off on top."
       >
         <div className="mt-8 max-w-2xl">
           <PlaceholderNotice>
-            <strong>Preview data:</strong> model names, specs and prices are placeholders marked TBC while verified pricing is confirmed.
+            <strong>Guide prices:</strong> supply and standard install, before rebates. Your installer confirms the fixed price after checking your site.
           </PlaceholderNotice>
         </div>
       </PageHero>
@@ -39,7 +39,7 @@ export default function ModelsPage() {
 
       <LeadCaptureBlock
         title="Not sure which model suits your home?"
-        lead="Choose 'Help me choose' in the quote form, or request a callback. A licensed installer will recommend the right size and confirm your fixed price."
+        lead="Tell us your household size in the 60-second form, or request a callback. A licensed installer will recommend the right system and confirm your fixed price."
       />
 
       <section className="container-x pb-4">
@@ -65,7 +65,7 @@ export default function ModelsPage() {
                   <td className="px-6 py-4 text-ink-600">{m.capacityLitres} L</td>
                   <td className="px-6 py-4 text-ink-600">{m.households}</td>
                   <td className="px-6 py-4 font-semibold text-ink-900">
-                    {formatAUD(m.priceFrom)} {!m.verified && <span className="text-xs font-bold text-amber-700">TBC</span>}
+                    {formatAUD(m.priceFrom)} {!m.priceConfirmed && <span className="text-xs font-semibold text-ink-500">guide</span>}
                   </td>
                 </tr>
               ))}

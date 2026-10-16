@@ -2,7 +2,7 @@ export const site = {
   name: "Aussie Heat Pumps",
   tagline: "Heat pump hot water, fixed-price and fitted by licensed local installers.",
   description:
-    "Compare heat pump hot water systems with set supply-and-install prices, check the rebates you may be eligible for, and get matched with a licensed partner installer in your area.",
+    "Compare heat pump hot water systems with clear supply-and-install guide prices, check the rebates you may be eligible for, and get matched with a licensed partner installer in your area.",
   // Placeholder contact details — replace before launch.
   phone: "1300 000 000",
   phoneHref: "tel:1300000000",
@@ -42,3 +42,7 @@ export const privacyNote =
 
 /** Remembered between the form and the thank-you page (session only, never sent anywhere). */
 export const THANKS_KEY = "ahp:thanks";
+
+// Trust copy near forms. The network size is a placeholder until partner numbers are confirmed.
+export const installerNetwork = "Licensed partner installers across QLD, NSW & VIC (network size TBC)";
+export const rebateHelpNote = "Not sure what you're eligible for? Your installer checks STCs and state rebates and takes them off your quote.";

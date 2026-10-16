@@ -43,7 +43,7 @@ export function Footer() {
             <Link href="/about" className="underline hover:text-white">How our referrals work</Link>.
           </p>
           <p>
-            Prices and rebate amounts shown on this preview site are placeholders marked TBC and are not offers.
+            Model prices are guide prices for standard supply and installation before rebates, confirmed by your installer after a site check. Rebate amounts marked TBC are placeholders. Neither is an offer.
             Rebate eligibility is set by each government program, so always confirm it on the official page.
           </p>
           <p>© {new Date().getFullYear()} {site.name} · {site.abn}</p>

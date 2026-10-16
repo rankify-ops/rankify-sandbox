@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HeatPumpArt } from "@/components/HeatPumpArt";
 import { FaqSection } from "@/components/Faq";
-import { FormTrust } from "@/components/FormTrust";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
+import { QuoteForm } from "@/components/QuoteForm";
+import { Testimonials } from "@/components/Testimonials";
 import { Arrow, Check, Phone, Users } from "@/components/icons";
-import { PlaceholderNotice, TbcBadge } from "@/components/ui";
+import { GuidePriceBadge } from "@/components/ui";
 import { modelFaqs } from "@/lib/faqs";
 import { formatAUD, getModel, models } from "@/lib/models";
 import { site } from "@/lib/site";
@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const model = getModel((await params).slug);
   if (!model) return {};
   return pageMeta({
-    title: `${model.name} heat pump: supply & install from ${formatAUD(model.priceFrom)}`,
-    description: `${model.summary} ${model.capacityLitres} L ${model.type.toLowerCase()} system for ${model.households}. Set supply-and-install price (TBC), rebates handled. Get a free quote.`,
+    title: `${model.name} heat pump: supply & install guide price ${formatAUD(model.priceFrom)}`,
+    description: `${model.summary} ${model.capacityLitres} L ${model.type.toLowerCase()} system for ${model.households}. Guide supply-and-install price, rebates handled. Get a free quote in 60 seconds.`,
     path: `/models/${model.slug}`,
   });
 }
@@ -38,13 +38,13 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
     <>
       <section className="relative overflow-hidden border-b border-ink-200/60 bg-cream-100">
         <div aria-hidden className="pointer-events-none absolute -right-20 top-0 h-96 w-96 rounded-full bg-ember-300/30 blur-3xl" />
-        <div className="container-x relative grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.8fr]">
+        <div className="container-x relative grid items-start gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <nav className="text-sm text-ink-500" aria-label="Breadcrumb">
               <Link href="/models" className="hover:text-ink-900">Models</Link> <span className="mx-1">/</span>{" "}
               <span className="text-ink-700">{model.name}</span>
             </nav>
-            <p className="eyebrow mt-6">{model.tier} · {model.type}</p>
+            <p className="eyebrow mt-6">{model.brand} · {model.tier} · {model.type}</p>
             <h1 className="h-display mt-3 text-4xl text-ink-900 sm:text-5xl">{model.name}</h1>
             <p className="mt-4 max-w-xl text-lg text-ink-600">{model.summary}</p>
             <p className="mt-4 flex items-center gap-2 text-sm text-ink-700">
@@ -52,34 +52,33 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
             </p>
 
             <div className="card mt-8 max-w-md p-6">
-              <p className="text-sm text-ink-500">Supply &amp; install, set price</p>
+              <p className="text-sm text-ink-500">Supply &amp; install from</p>
               <div className="mt-1 flex items-center gap-3">
                 <span className="font-display text-5xl font-semibold text-ink-900">{formatAUD(model.priceFrom)}</span>
-                {!model.verified && <TbcBadge label="Price TBC" />}
+                {!model.priceConfirmed && <GuidePriceBadge />}
               </div>
-              <p className="mt-2 text-xs text-ink-500">Inc. GST (TBC), before eligible rebates. Standard installation only.</p>
+              <p className="mt-2 text-xs text-ink-500">Guide price for standard installation, before eligible rebates. Your installer confirms your fixed price.</p>
               <Link href={`/quote?model=${model.slug}`} className="btn-primary mt-5 w-full py-3.5 text-base">
-                Get a free quote <Arrow className="h-4 w-4" />
+                <span className="sm:hidden">Free quote on this model</span>
+                <span className="hidden sm:inline">Get a free quote on this model</span> <Arrow className="h-4 w-4" />
               </Link>
               <a href={site.phoneHref} className="btn-ghost mt-2.5 w-full py-3">
                 <Phone className="h-4 w-4" /> Call {site.phone}
               </a>
-              <div className="mt-5 border-t border-ink-200/70 pt-5">
-                <FormTrust compact />
-              </div>
             </div>
           </div>
-          <HeatPumpArt className="mx-auto hidden w-72 sm:block" />
+          <div id="model-quote" className="w-full scroll-mt-24 lg:self-start lg:pt-10">
+            <QuoteForm variant="compact" initialModel={model.slug} heading={`Quote the ${model.capacityLitres} L in 60s`} />
+          </div>
         </div>
       </section>
 
       <section className="container-x grid gap-10 py-16 lg:grid-cols-2">
         <div>
-          {!model.verified && (
-            <div className="mb-6">
-              <PlaceholderNotice>This is a placeholder model. Specifications and price are TBC.</PlaceholderNotice>
-            </div>
-          )}
+          <p className="mb-6 text-sm text-ink-600">
+            Specs from the manufacturer&apos;s data sheet and published listings. Items marked &ldquo;confirm&rdquo; vary between
+            sources, so your installer will confirm them against the current data sheet.
+          </p>
           <h2 className="h-display text-2xl text-ink-900">Specifications</h2>
           <dl className="card mt-5 divide-y divide-ink-200/60">
             {model.specs.map((s) => (
@@ -128,6 +127,8 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         lead="Four quick questions, or leave your number for a callback. A licensed partner installer will confirm your site, price and rebates."
         model={model.slug}
       />
+
+      <Testimonials className="pt-0 sm:pt-4" />
 
       <FaqSection
         items={modelFaqs(model)}

@@ -3,6 +3,7 @@ import { pageMeta } from "@/lib/seo";
 import { CallbackForm } from "@/components/CallbackForm";
 import { FormTrustInline } from "@/components/FormTrust";
 import { QuoteForm } from "@/components/QuoteForm";
+import { Testimonials } from "@/components/Testimonials";
 import { Check, Phone } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = pageMeta({
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ model?: string }> }) {
   const { model } = await searchParams;
   return (
+    <>
     <section className="relative overflow-hidden bg-cream-100">
       <div aria-hidden className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-ember-300/30 blur-3xl" />
       <div className="container-x relative grid gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.55fr]">
@@ -68,5 +70,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
         </aside>
       </div>
     </section>
+      <Testimonials />
+    </>
   );
 }

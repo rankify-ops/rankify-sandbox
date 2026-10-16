@@ -36,6 +36,18 @@ export function TbcBadge({ label = "TBC", className = "" }: { label?: string; cl
   );
 }
 
+/** Marks a provisional supply-and-install price. */
+export function GuidePriceBadge({ className = "" }: { className?: string }) {
+  return (
+    <span
+      title="Guide price: your installer confirms the fixed price after checking your site"
+      className={`inline-flex items-center rounded-full border border-ink-200 bg-cream-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-ink-700 uppercase ${className}`}
+    >
+      Guide price
+    </span>
+  );
+}
+
 export function PlaceholderNotice({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-900">

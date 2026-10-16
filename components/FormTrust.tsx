@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { formTrustPoints, privacyNote } from "@/lib/site";
-import { Check, Clock, Leaf, Lock, Shield } from "./icons";
+import { formTrustPoints, installerNetwork, privacyNote, rebateHelpNote } from "@/lib/site";
+import { Check, Clock, Leaf, Lock, Shield, Users } from "./icons";
 
 const icons = { free: Check, licensed: Shield, rebates: Leaf, response: Clock };
 
@@ -20,6 +20,14 @@ export function FormTrust({ tone = "light", compact = false }: { tone?: "light" 
           );
         })}
       </ul>
+      <p className={`flex gap-2 text-sm leading-relaxed ${dark ? "text-ink-200" : "text-ink-700"}`}>
+        <Leaf className={`mt-0.5 h-4 w-4 shrink-0 ${dark ? "text-ember-400" : "text-gum-500"}`} />
+        <span>{rebateHelpNote}</span>
+      </p>
+      <p className={`flex gap-2 text-xs leading-relaxed ${dark ? "text-ink-200/80" : "text-ink-500"}`}>
+        <Users className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <span>{installerNetwork}</span>
+      </p>
       <p className={`flex gap-2 text-xs leading-relaxed ${dark ? "text-ink-200/80" : "text-ink-500"}`}>
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
@@ -47,10 +55,11 @@ export function FormTrustInline({ tone = "light" }: { tone?: "light" | "dark" })
           );
         })}
       </ul>
+      <p className={`mt-1.5 text-center ${dark ? "text-ink-200" : "text-ink-600"}`}>{rebateHelpNote}</p>
       <p className={`mt-1.5 flex justify-center gap-1.5 text-center ${dark ? "text-ink-200/80" : "text-ink-500"}`}>
         <Lock className="mt-0.5 h-3 w-3 shrink-0" />
         <span>
-          {privacyNote}{" "}
+          {installerNetwork}. {privacyNote}{" "}
           <Link href="/privacy" className={`underline ${dark ? "hover:text-white" : "hover:text-ember-600"}`}>Privacy</Link>
         </span>
       </p>

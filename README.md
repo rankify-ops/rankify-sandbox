@@ -15,7 +15,9 @@ npm run lint && npm run typecheck
 
 | What | File |
 | --- | --- |
-| Models, specs, supply-and-install prices | `lib/models.ts`: set `verified: true` to remove the TBC badge |
+| Models, specs, supply-and-install prices | `lib/models.ts`: six real models with specs from data sheets/CHOICE (sources per model). Prices are guide prices; set `priceConfirmed: true` once an installer confirms one, which removes the "Guide price" badge. Old placeholder URLs redirect (`legacyModelSlugs`). |
+| Testimonials | `lib/testimonials.ts`: **samples only**, labelled "Sample review" on the site. Replace with real reviews (with permission) and set `sample: false`. |
+| Installer network line, rebate-help note | `installerNetwork` / `rebateHelpNote` in `lib/site.ts` |
 | Rebate programs, amounts, official links | `lib/rebates.ts`: set `verified: true` per program |
 | Brand, phone, email, ABN, referral disclosure | `lib/site.ts` |
 | Blog posts | `content/blog/*.mdx` (frontmatter: `title`, `description`, `date`, `tags`). `<Callout>` and `<QuoteCta>` are available in MDX |
@@ -82,7 +84,10 @@ Remove all three at launch.
 
 ## Before launch checklist
 
-- [ ] Verified models + prices in `lib/models.ts`
+- [ ] Confirm guide prices and specs marked "confirm" with partner installers (`lib/models.ts`), then set `priceConfirmed: true`
+- [ ] Replace sample testimonials with real, permissioned reviews (`lib/testimonials.ts`)
+- [ ] Confirm the installer network size in `installerNetwork` (`lib/site.ts`)
+- [ ] If leads are sold to more than one buyer, update the consent text in the forms and the privacy policy
 - [ ] Verified rebate amounts/eligibility in `lib/rebates.ts`
 - [ ] Real phone, email, ABN and business address in `lib/site.ts` (these also feed the Organization/LocalBusiness JSON-LD in `components/SiteJsonLd.tsx`)
 - [ ] Privacy policy reviewed against the Australian Privacy Principles

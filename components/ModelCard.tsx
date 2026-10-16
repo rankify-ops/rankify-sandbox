@@ -1,24 +1,24 @@
 import Link from "next/link";
 import { formatAUD, type HeatPumpModel } from "@/lib/models";
 import { Arrow, Check, Users } from "./icons";
-import { TbcBadge } from "./ui";
+import { GuidePriceBadge } from "./ui";
 
 export function ModelCard({ model }: { model: HeatPumpModel }) {
-  const popular = model.slug === "family-270";
+  const featured = !!model.badge;
   return (
     <article
       className={`card group relative flex flex-col p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift ${
-        popular ? "ring-2 ring-ember-500" : ""
+        featured ? "ring-2 ring-ember-500" : ""
       }`}
     >
-      {popular && (
+      {featured && (
         <span className="absolute -top-3 left-6 rounded-full bg-ember-600 px-3 py-1 text-xs font-semibold text-white">
-          Most requested
+          {model.badge}
         </span>
       )}
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold tracking-wider text-ink-500 uppercase">
-          {model.tier} · {model.type}
+          {model.brand} · {model.type}
         </span>
         <span className="flex items-center gap-1 text-xs text-ink-600">
           <Users className="h-3.5 w-3.5" /> {model.households}
@@ -37,7 +37,7 @@ export function ModelCard({ model }: { model: HeatPumpModel }) {
         <p className="text-xs text-ink-500">Supply &amp; install from</p>
         <div className="mt-1 flex items-center gap-2">
           <span className="font-display text-3xl font-semibold text-ink-900">{formatAUD(model.priceFrom)}</span>
-          {!model.verified && <TbcBadge label="Price TBC" />}
+          {!model.priceConfirmed && <GuidePriceBadge />}
         </div>
         <p className="mt-1 text-xs text-ink-500">Before any eligible rebates</p>
       </div>

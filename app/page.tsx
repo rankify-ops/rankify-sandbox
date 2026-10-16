@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ModelCard } from "@/components/ModelCard";
 import { QuoteForm } from "@/components/QuoteForm";
+import { Testimonials } from "@/components/Testimonials";
 import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
-import { SectionHeading, TbcBadge } from "@/components/ui";
+import { GuidePriceBadge, SectionHeading, TbcBadge } from "@/components/ui";
 import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/components/icons";
 import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
@@ -35,7 +36,7 @@ const steps = [
 ];
 
 export default function Home() {
-  const featured = models.filter((m) => ["everyday-220", "family-270", "split-250"].includes(m.slug));
+  const featured = models.filter((m) => ["istore-270", "rheem-ambiheat-270", "reclaim-energy-co2-315"].includes(m.slug));
   return (
     <>
       {/* Hero */}
@@ -54,7 +55,7 @@ export default function Home() {
               Hot water that costs <span className="italic text-ember-400">less</span> to run. Installed for a fixed price.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-200">
-              Set supply-and-install prices, rebates handled for you, and a licensed local installer.{" "}
+              Clear guide prices, rebates handled for you, and a licensed local installer who locks in your fixed price.{" "}
               <strong className="font-semibold text-white">Get your free quote in 60 seconds.</strong>
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center lg:hidden">
@@ -76,7 +77,7 @@ export default function Home() {
               <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 <dt className="text-xs text-ink-200">Installed from</dt>
                 <dd className="mt-0.5 flex items-center gap-2 font-display text-2xl font-semibold">
-                  {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <TbcBadge />
+                  {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <GuidePriceBadge />
                 </dd>
               </div>
               <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
@@ -146,13 +147,15 @@ export default function Home() {
         </div>
       </section>
 
+      <Testimonials className="pt-0 sm:pt-0" />
+
       {/* Models */}
       <section className="bg-cream-100 py-20 sm:py-28">
         <div className="container-x">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <SectionHeading
               eyebrow="Models & prices"
-              title="Set supply-and-install prices"
+              title="Six proven systems, clear guide prices"
               lead="Each price includes the unit, standard installation by licensed trades, and removal of your old system."
             />
             <Link href="/models" className="btn-ghost shrink-0">
