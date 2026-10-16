@@ -3,19 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, stateForPostcode, submitLead } from "@/lib/lead";
-import { formatAUD, models } from "@/lib/models";
+import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, needs, stateForPostcode, submitLead } from "@/lib/lead";
+import { getModel } from "@/lib/models";
 import { privacyNote, states, THANKS_KEY } from "@/lib/site";
 import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
-import { FormTrust } from "./FormTrust";
-import { ArrowLeft, Arrow, Check, Lock } from "./icons";
-import { TbcBadge } from "./ui";
+import { FormTrust, FormTrustInline } from "./FormTrust";
+import { ArrowLeft, Arrow, Check, Clock, Close, Lock } from "./icons";
 
 type Data = {
-  postcode: string;
-  state: string;
+  need: string;
   currentSystem: string;
   householdSize: string;
+  postcode: string;
+  state: string;
   preferredModel: string;
   name: string;
   phone: string;
@@ -24,25 +24,30 @@ type Data = {
   company: string;
 };
 
+/**
+ * The 60-second quote form. Three one-tap questions, a postcode, then contact details
+ * last. Every step is short, and progress plus time left are always visible.
+ */
 const STEPS = [
-  { key: "location", title: "Where's the install?", fields: ["postcode", "state"] },
-  { key: "system", title: "What heats your water now?", fields: ["currentSystem"] },
-  { key: "household", title: "How many people live there?", fields: ["householdSize"] },
-  { key: "model", title: "Got a model in mind?", fields: ["preferredModel"] },
-  { key: "contact", title: "Where should we send your quote?", fields: ["name", "phone", "email", "consent"] },
+  { key: "need", title: "What do you need?", why: "So we know how quickly to get an installer to you.", fields: ["need"] },
+  { key: "system", title: "What heats your water now?", why: "This helps check which rebates you may be eligible for.", fields: ["currentSystem"] },
+  { key: "household", title: "How many people live there?", why: "This sets the right tank size for your home.", fields: ["householdSize"] },
+  { key: "postcode", title: "What's your postcode?", why: "So we match you with an installer who covers your area.", fields: ["postcode", "state"] },
+  { key: "contact", title: "Where should we send your quote?", why: "Last step. Shared only with one licensed local installer.", fields: ["name", "phone", "email", "consent"] },
 ] as const;
+const SECONDS_LEFT = [60, 45, 35, 25, 15];
 
-const recommendFor: Record<string, string[]> = {
-  "1-2": ["compact-180", "everyday-220"],
-  "3-4": ["family-270", "split-250"],
-  "5+": ["family-plus-315", "cold-climate-300"],
-};
+function track(event: string, extra: Record<string, unknown> = {}) {
+  (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event, ...extra });
+}
 
 export function QuoteForm({
   initialModel,
   initialState,
   rebatesViewed,
   tone = "light",
+  variant = "card",
+  heading = "Free quote in 60 seconds",
 }: {
   initialModel?: string;
   initialState?: string;
@@ -50,21 +55,24 @@ export function QuoteForm({
   rebatesViewed?: string[];
   /** Colour of the trust signals under the form, to suit the section it sits in. */
   tone?: "light" | "dark";
+  /** `card` shows trust signals under the form; `compact` is for the hero, footer and popup. */
+  variant?: "card" | "compact";
+  heading?: string;
 }) {
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(false);
-  const validModel = models.some((m) => m.slug === initialModel) ? initialModel! : "";
-  const validState = (states as readonly string[]).includes(initialState ?? "") ? initialState! : "";
+  const started = useRef(false);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Data>({
-    postcode: "",
-    state: validState,
+    need: "",
     currentSystem: "",
     householdSize: "",
-    preferredModel: validModel,
+    postcode: "",
+    state: (states as readonly string[]).includes(initialState ?? "") ? initialState! : "",
+    preferredModel: getModel(initialModel ?? "") ? initialModel! : NO_PREFERENCE,
     name: "",
     phone: "",
     email: "",
@@ -74,6 +82,8 @@ export function QuoteForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const id = (f: string) => `${uid}-${f}`;
+  const compact = variant === "compact";
+  const model = getModel(data.preferredModel);
 
   // Move focus into each new step so keyboard and screen-reader users land in the right place.
   useEffect(() => {
@@ -81,13 +91,18 @@ export function QuoteForm({
       mounted.current = true;
       return;
     }
+    track("quote_step", { step: STEPS[step].key, step_number: step + 1 });
     stepRef.current
       ?.querySelector<HTMLElement>('input:not([tabindex="-1"]), select, [role="radio"][tabindex="0"]')
       ?.focus({ preventScroll: true });
-    stepRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    formRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [step]);
 
   const set = <K extends keyof Data>(k: K, v: Data[K]) => {
+    if (!started.current) {
+      started.current = true;
+      track("quote_start");
+    }
     setData((d) => ({ ...d, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
   };
@@ -117,10 +132,10 @@ export function QuoteForm({
     if (validateStep(step)) setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
-  function choose(k: "currentSystem" | "householdSize" | "preferredModel", v: string) {
+  function choose(k: "need" | "currentSystem" | "householdSize", v: string) {
     set(k, v);
-    // Single-choice steps advance on their own for a faster flow.
-    window.setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 160);
+    // One-tap steps advance on their own.
+    window.setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 150);
   }
 
   async function submit(e: React.FormEvent) {
@@ -142,108 +157,79 @@ export function QuoteForm({
     try {
       sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0] }));
     } catch {}
-    (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "lead_submitted", lead_type: "quote", state: data.state });
+    track("lead_submitted", { lead_type: "quote", state: data.state, need: data.need });
     router.push(`/thank-you?type=quote&state=${data.state}`);
   }
 
   const last = step === STEPS.length - 1;
   const progress = ((step + 1) / STEPS.length) * 100;
   const suggestedState = stateForPostcode(data.postcode);
-  const recommended = recommendFor[data.householdSize] ?? [];
   const headingId = id("step-title");
+  const pad = compact ? "px-5 sm:px-6" : "px-5 sm:px-8";
 
   return (
     <div>
-      <form ref={formRef} onSubmit={submit} noValidate className="card overflow-hidden" aria-label="Quote request">
-        <div className="border-b border-ink-200/70 px-5 py-4 sm:px-8 sm:py-5">
-          <div className="flex items-center justify-between text-xs font-medium text-ink-500">
-            <span aria-live="polite">Step {step + 1} of {STEPS.length}</span>
-            <span>About 2 minutes</span>
+      <form ref={formRef} onSubmit={submit} noValidate className="card relative scroll-mt-24 overflow-hidden text-left" aria-label="Quote request">
+        <div className={`border-b border-ink-200/70 py-4 ${pad}`}>
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-display text-lg font-semibold text-ink-900">{heading}</p>
+            <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-ink-500" aria-live="polite">
+              <Clock className="h-3.5 w-3.5" /> ~{SECONDS_LEFT[step]}s left
+            </span>
           </div>
           <div
             className="mt-3 h-1.5 overflow-hidden rounded-full bg-cream-200"
             role="progressbar"
-            aria-label="Quote form progress"
+            aria-label={`Quote form progress: step ${step + 1} of ${STEPS.length}`}
             aria-valuenow={step + 1}
             aria-valuemin={1}
             aria-valuemax={STEPS.length}
           >
             <div className="h-full rounded-full bg-gradient-to-r from-ember-400 to-ember-600 transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
+          <p className="mt-2 text-xs text-ink-500">Step {step + 1} of {STEPS.length}</p>
         </div>
 
-        <div ref={stepRef} className="scroll-mt-24 px-5 py-7 sm:px-8 sm:py-8">
-          <h2 id={headingId} className="h-display text-2xl text-ink-900 sm:text-3xl">{STEPS[step].title}</h2>
-          {rebatesViewed && rebatesViewed.length > 0 && step === 0 && (
-            <p className="mt-3 rounded-xl bg-gum-50 px-4 py-3 text-sm text-gum-600">
-              <strong>Included with your request:</strong> {rebatesViewed.join(" · ")}. Your installer will check what you&apos;re eligible for.
+        <div ref={stepRef} className={`py-6 ${pad}`}>
+          {model && step === 0 && (
+            <p className="mb-4 flex items-center justify-between gap-2 rounded-xl bg-cream-100 px-3 py-2 text-sm text-ink-700">
+              <span>Quoting on the <strong>{model.name}</strong></span>
+              <button type="button" onClick={() => set("preferredModel", NO_PREFERENCE)} className="grid h-7 w-7 place-items-center rounded-full hover:bg-cream-200" aria-label="Remove model preference">
+                <Close className="h-3.5 w-3.5" />
+              </button>
             </p>
           )}
+          {rebatesViewed && rebatesViewed.length > 0 && step === 0 && (
+            <p className="mb-4 rounded-xl bg-gum-50 px-3 py-2 text-sm text-gum-600">
+              <strong>Rebates included:</strong> {rebatesViewed.join(" · ")}
+            </p>
+          )}
+          <h2 id={headingId} className={`h-display text-ink-900 ${compact ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}>{STEPS[step].title}</h2>
+          <p className="mt-1 text-sm text-ink-600">{STEPS[step].why}</p>
 
           <Honeypot value={data.company} onChange={(v) => set("company", v)} />
 
           {step === 0 && (
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              <Field id={id("postcode")} label="Postcode" error={errors.postcode}>
-                <input
-                  {...fieldA11y(id("postcode"), errors.postcode)}
-                  data-field="postcode"
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                  enterKeyHint="next"
-                  maxLength={4}
-                  placeholder="e.g. 4000"
-                  value={data.postcode}
-                  onBlur={() => blur("postcode")}
-                  onChange={(e) => {
-                    const pc = e.target.value.replace(/\D/g, "");
-                    set("postcode", pc);
-                    const s = stateForPostcode(pc);
-                    if (pc.length === 4 && s && !data.state) set("state", s);
-                  }}
-                  className={inputClass(errors.postcode)}
-                />
-              </Field>
-              <Field id={id("state")} label="State or territory" error={errors.state}>
-                <select
-                  {...fieldA11y(id("state"), errors.state)}
-                  data-field="state"
-                  value={data.state}
-                  onChange={(e) => set("state", e.target.value)}
-                  className={inputClass(errors.state)}
-                >
-                  <option value="">Select…</option>
-                  {states.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </Field>
-              {data.postcode.length === 4 && suggestedState && data.state && suggestedState !== data.state && (
-                <p className="text-sm text-amber-800 sm:col-span-2" role="status">
-                  Postcode {data.postcode} is usually in {suggestedState}. Please double-check.
-                </p>
-              )}
-            </div>
+            <Tiles name="need" labelledBy={headingId} options={[...needs]} value={data.need} onChoose={(v) => choose("need", v)} error={errors.need} errorId={id("need")} />
           )}
-
           {step === 1 && (
             <Tiles
               name="currentSystem"
               labelledBy={headingId}
-              options={currentSystems.map((s) => ({ value: s.value, label: s.label }))}
+              cols={compact ? 2 : 3}
+              options={[...currentSystems]}
               value={data.currentSystem}
               onChoose={(v) => choose("currentSystem", v)}
               error={errors.currentSystem}
               errorId={id("currentSystem")}
             />
           )}
-
           {step === 2 && (
             <Tiles
               name="householdSize"
               labelledBy={headingId}
               cols={3}
-              options={householdSizes.map((s) => ({ value: s.value, label: s.label }))}
+              options={[...householdSizes]}
               value={data.householdSize}
               onChoose={(v) => choose("householdSize", v)}
               error={errors.householdSize}
@@ -252,29 +238,52 @@ export function QuoteForm({
           )}
 
           {step === 3 && (
-            <Tiles
-              name="preferredModel"
-              labelledBy={headingId}
-              options={[
-                { value: NO_PREFERENCE, label: "Help me choose", hint: "Your installer will recommend the right size" },
-                ...models.map((m) => ({
-                  value: m.slug,
-                  label: m.name,
-                  hint: `${m.households} · from ${formatAUD(m.priceFrom)}`,
-                  badge: recommended.includes(m.slug) ? "Good fit" : undefined,
-                  tbc: !m.verified,
-                })),
-              ]}
-              value={data.preferredModel}
-              onChoose={(v) => choose("preferredModel", v)}
-              error={errors.preferredModel}
-              errorId={id("preferredModel")}
-            />
+            <div className="mt-5 grid grid-cols-[1.3fr_1fr] gap-3">
+              <Field id={id("postcode")} label="Postcode" error={errors.postcode}>
+                <input
+                  {...fieldA11y(id("postcode"), errors.postcode)}
+                  data-field="postcode"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  enterKeyHint="next"
+                  maxLength={4}
+                  placeholder="e.g. 3220"
+                  value={data.postcode}
+                  onBlur={() => blur("postcode")}
+                  onChange={(e) => {
+                    const pc = e.target.value.replace(/\D/g, "");
+                    set("postcode", pc);
+                    const s = stateForPostcode(pc);
+                    if (pc.length === 4 && s) set("state", s);
+                  }}
+                  className={inputClass(errors.postcode)}
+                />
+              </Field>
+              <Field id={id("state")} label="State" error={errors.state}>
+                <select
+                  {...fieldA11y(id("state"), errors.state)}
+                  data-field="state"
+                  value={data.state}
+                  onChange={(e) => set("state", e.target.value)}
+                  className={inputClass(errors.state)}
+                >
+                  <option value="">Select</option>
+                  {states.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </Field>
+              {data.postcode.length === 4 && suggestedState && data.state && suggestedState !== data.state && (
+                <p className="col-span-2 text-sm text-amber-800" role="status">
+                  Postcode {data.postcode} is usually in {suggestedState}. Please double-check.
+                </p>
+              )}
+            </div>
           )}
 
           {step === 4 && (
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              <Field id={id("name")} label="Full name" error={errors.name} className="sm:col-span-2">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <Field id={id("name")} label="Name" error={errors.name} className="sm:col-span-2">
                 <input
                   {...fieldA11y(id("name"), errors.name)}
                   data-field="name"
@@ -286,9 +295,9 @@ export function QuoteForm({
                   className={inputClass(errors.name)}
                 />
               </Field>
-              <Field id={id("phone")} label="Mobile or phone" error={errors.phone} hint="So your installer can confirm details">
+              <Field id={id("phone")} label="Mobile" error={errors.phone}>
                 <input
-                  {...fieldA11y(id("phone"), errors.phone, true)}
+                  {...fieldA11y(id("phone"), errors.phone)}
                   data-field="phone"
                   type="tel"
                   autoComplete="tel"
@@ -300,9 +309,9 @@ export function QuoteForm({
                   className={inputClass(errors.phone)}
                 />
               </Field>
-              <Field id={id("email")} label="Email" error={errors.email} hint="We'll send your quote summary here">
+              <Field id={id("email")} label="Email (optional)" error={errors.email}>
                 <input
-                  {...fieldA11y(id("email"), errors.email, true)}
+                  {...fieldA11y(id("email"), errors.email)}
                   data-field="email"
                   type="email"
                   autoComplete="email"
@@ -316,7 +325,7 @@ export function QuoteForm({
               <div className="sm:col-span-2">
                 <label
                   htmlFor={id("consent")}
-                  className={`flex cursor-pointer gap-3 rounded-2xl border p-4 text-sm leading-relaxed ${errors.consent ? "border-red-500 bg-red-50/60" : "border-ink-200 bg-cream-50"}`}
+                  className={`flex cursor-pointer gap-3 rounded-2xl border p-3 text-xs leading-relaxed ${errors.consent ? "border-red-500 bg-red-50/60" : "border-ink-200 bg-cream-50"}`}
                 >
                   <input
                     {...fieldA11y(id("consent"), errors.consent)}
@@ -324,7 +333,7 @@ export function QuoteForm({
                     type="checkbox"
                     checked={data.consent}
                     onChange={(e) => set("consent", e.target.checked)}
-                    className="mt-1 h-5 w-5 shrink-0 accent-ember-600"
+                    className="mt-0.5 h-5 w-5 shrink-0 accent-ember-600"
                   />
                   <span className="text-ink-700">
                     I agree that Aussie Heat Pumps can share my details with a licensed partner installer in my area, who may
@@ -339,48 +348,54 @@ export function QuoteForm({
           )}
 
           {last && (
-            <p className="mt-5 flex gap-2 text-xs leading-relaxed text-ink-500">
+            <p className="mt-4 flex gap-2 text-xs leading-relaxed text-ink-500">
               <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {privacyNote}
             </p>
           )}
           {status === "error" && (
-            <p role="alert" className="mt-6 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            <p role="alert" className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">
               We couldn&apos;t send your request. Please check the highlighted fields and try again, or give us a call.
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-ink-200/70 bg-cream-50 px-5 py-4 sm:px-8 sm:py-5">
+        <div className={`flex items-center justify-between gap-3 border-t border-ink-200/70 bg-cream-50 py-4 ${pad}`}>
           {step > 0 ? (
-            <button type="button" onClick={() => setStep((s) => s - 1)} className="btn px-3 text-ink-600 hover:text-ink-900">
+            <button type="button" onClick={() => setStep((s) => s - 1)} className="btn px-2 text-ink-600 hover:text-ink-900">
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
           ) : (
-            <span className="hidden items-center gap-1.5 text-xs font-medium text-ink-600 sm:flex">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-ink-600">
               <Check className="h-4 w-4 text-gum-500" /> Free &amp; no obligation
             </span>
           )}
           {last ? (
-            <button type="submit" disabled={status === "submitting"} className="btn-primary ml-auto px-7">
+            <button type="submit" disabled={status === "submitting"} className="btn-primary ml-auto px-6">
               {status === "submitting" ? "Sending…" : "Get my free quote"} <Arrow className="h-4 w-4" />
             </button>
-          ) : (
+          ) : step >= 3 ? (
             <button type="submit" className="btn-primary ml-auto">
               Continue <Arrow className="h-4 w-4" />
             </button>
+          ) : (
+            <span className="ml-auto text-xs text-ink-500">Tap an option to continue</span>
           )}
         </div>
       </form>
-      <div className="mt-5 px-1">
-        <FormTrust tone={tone} />
-      </div>
+      {variant === "card" ? (
+        <div className="mt-5 px-1">
+          <FormTrust tone={tone} />
+        </div>
+      ) : (
+        <FormTrustInline tone={tone} />
+      )}
     </div>
   );
 }
 
-type TileOption = { value: string; label: string; hint?: string; badge?: string; tbc?: boolean };
+type TileOption = { value: string; label: string; hint?: string };
 
-/** Single-choice tiles with proper radiogroup keyboard support (arrow keys move, Enter/Space chooses). */
+/** Single-choice tiles with radiogroup keyboard support (arrow keys move, Enter/Space chooses). */
 function Tiles({
   name,
   labelledBy,
@@ -413,9 +428,9 @@ function Tiles({
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-5">
       <div
-        className={`grid gap-3 ${cols === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+        className={`grid gap-2.5 ${cols === 3 ? "grid-cols-3" : "grid-cols-1 min-[420px]:grid-cols-2"}`}
         role="radiogroup"
         aria-labelledby={labelledBy}
         aria-describedby={error ? `${errorId}-error` : undefined}
@@ -433,22 +448,15 @@ function Tiles({
               tabIndex={i === focusIndex ? 0 : -1}
               data-field={i === focusIndex ? name : undefined}
               onClick={() => onChoose(o.value)}
-              className={`group flex min-h-14 items-start justify-between gap-3 rounded-2xl border-2 p-4 text-left transition-all ${
+              className={`flex min-h-14 items-center justify-between gap-2 rounded-2xl border-2 px-3.5 py-3 text-left transition-all active:scale-[0.98] ${
                 active ? "border-ember-600 bg-ember-500/5" : error ? "border-red-300 bg-white" : "border-ink-200/80 bg-white hover:border-ink-500"
               }`}
             >
               <span>
-                <span className="flex flex-wrap items-center gap-2 font-semibold text-ink-900">
-                  {o.label}
-                  {o.badge && <span className="rounded-full bg-gum-50 px-2 py-0.5 text-[10px] font-bold tracking-wider text-gum-600 uppercase">{o.badge}</span>}
-                </span>
-                {o.hint && (
-                  <span className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-ink-600">
-                    {o.hint} {o.tbc && <TbcBadge />}
-                  </span>
-                )}
+                <span className="block font-semibold leading-snug text-ink-900">{o.label}</span>
+                {o.hint && <span className="mt-0.5 block text-xs text-ink-600">{o.hint}</span>}
               </span>
-              <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${active ? "border-ember-600 bg-ember-600 text-white" : "border-ink-200"}`}>
+              <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${active ? "border-ember-600 bg-ember-600 text-white" : "border-ink-200"}`}>
                 {active && <Check className="h-3 w-3" />}
               </span>
             </button>

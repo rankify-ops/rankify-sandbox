@@ -30,3 +30,30 @@ export function FormTrust({ tone = "light", compact = false }: { tone?: "light" 
     </div>
   );
 }
+
+/** One-line trust strip for the compact quote form (hero, footer, popup, blog posts). */
+export function FormTrustInline({ tone = "light" }: { tone?: "light" | "dark" }) {
+  const dark = tone === "dark";
+  return (
+    <div className={`mt-3 px-1 text-xs ${dark ? "text-ink-200" : "text-ink-600"}`}>
+      <ul className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+        {formTrustPoints.map((p) => {
+          const Icon = icons[p.key];
+          return (
+            <li key={p.key} className="flex items-center gap-1">
+              <Icon className={`h-3.5 w-3.5 shrink-0 ${dark ? "text-ember-400" : "text-gum-500"}`} />
+              {p.label}
+            </li>
+          );
+        })}
+      </ul>
+      <p className={`mt-1.5 flex justify-center gap-1.5 text-center ${dark ? "text-ink-200/80" : "text-ink-500"}`}>
+        <Lock className="mt-0.5 h-3 w-3 shrink-0" />
+        <span>
+          {privacyNote}{" "}
+          <Link href="/privacy" className={`underline ${dark ? "hover:text-white" : "hover:text-ember-600"}`}>Privacy</Link>
+        </span>
+      </p>
+    </div>
+  );
+}

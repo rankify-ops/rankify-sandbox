@@ -15,7 +15,7 @@ export function HeroCtas({ quoteHref = "/quote", className = "" }: { quoteHref?:
         </a>
       </div>
       <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-600">
-        {["Free & no obligation", "Licensed installers (TBC)", "Rebates handled"].map((t) => (
+        {["60-second form", "Free & no obligation", "Rebates handled"].map((t) => (
           <span key={t} className="flex items-center gap-1.5">
             <Check className="h-4 w-4 text-gum-500" /> {t}
           </span>
@@ -66,7 +66,7 @@ export function SectionHeading({
 }
 
 export function CtaBand({
-  title = "Get your free, fixed-price quote in 2 minutes",
+  title = "Get your free, fixed-price quote in 60 seconds",
   lead = "Tell us a little about your home and we'll match you with a licensed partner installer in your area. No obligation.",
   quoteHref = "/quote",
 }: {

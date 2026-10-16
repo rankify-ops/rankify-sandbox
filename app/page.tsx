@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { HeatPumpArt } from "@/components/HeatPumpArt";
 import { ModelCard } from "@/components/ModelCard";
+import { QuoteForm } from "@/components/QuoteForm";
 import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
-import { CtaBand, SectionHeading, TbcBadge } from "@/components/ui";
+import { SectionHeading, TbcBadge } from "@/components/ui";
 import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/components/icons";
 import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
@@ -13,14 +13,14 @@ const trust = [
   { icon: Tag, title: "Set, upfront pricing", text: "Supply and install prices are published per model. No surprise call-out quotes." },
   { icon: Shield, title: "Licensed installers (TBC)", text: "Partner installers hold the plumbing and electrical licences your state requires." },
   { icon: Leaf, title: "Rebates applied for you", text: "Eligible STCs are typically taken off your quote upfront by the installer." },
-  { icon: Clock, title: "Fast response", text: "Two minutes to request. A local installer usually replies within 1 business day (TBC)." },
+  { icon: Clock, title: "Fast response", text: "60 seconds to request. A local installer usually replies within 1 business day (TBC)." },
 ];
 
 const steps = [
   {
     n: "1",
     title: "Get a free quote",
-    text: "Answer five quick questions, or ask for a callback. About 2 minutes, with no obligation.",
+    text: "Answer four quick questions and leave your details. It takes about 60 seconds, with no obligation.",
   },
   {
     n: "2",
@@ -45,22 +45,22 @@ export default function Home() {
           <div className="absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-gum-500/15 blur-3xl" />
           <div className="absolute inset-0 bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [background-size:22px_22px]" />
         </div>
-        <div className="container-x relative grid items-center gap-12 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:pb-28">
+        <div className="container-x relative grid items-center gap-10 pb-20 pt-12 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-28">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200">
               <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes in QLD, NSW &amp; VIC
             </p>
-            <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl">
+            <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[3.4rem]">
               Hot water that costs <span className="italic text-ember-400">less</span> to run. Installed for a fixed price.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-200">
-              Set supply-and-install prices, rebates handled for you, and a licensed local installer. Your free quote takes
-              about 2 minutes.
+              Set supply-and-install prices, rebates handled for you, and a licensed local installer.{" "}
+              <strong className="font-semibold text-white">Get your free quote in 60 seconds.</strong>
             </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Link href="/quote" className="btn-primary px-8 py-4 text-base sm:text-lg">
-                Get my free quote <Arrow className="h-5 w-5" />
-              </Link>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center lg:hidden">
+              <a href="#hero-quote" className="btn-primary px-8 py-4 text-base">
+                Start my 60-second quote <Arrow className="h-5 w-5" />
+              </a>
               <a href={site.phoneHref} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-ink-200 hover:text-white sm:justify-start">
                 <Phone className="h-4 w-4 text-ember-400" /> or call {site.phone}
               </a>
@@ -72,24 +72,30 @@ export default function Home() {
                 </li>
               ))}
             </ul>
+            <dl className="mt-8 hidden gap-4 sm:flex">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <dt className="text-xs text-ink-200">Installed from</dt>
+                <dd className="mt-0.5 flex items-center gap-2 font-display text-2xl font-semibold">
+                  {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <TbcBadge />
+                </dd>
+              </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <Bolt className="h-5 w-5 text-gum-500" />
+                <div>
+                  <dt className="text-sm font-semibold">Up to ~70% less energy</dt>
+                  <dd className="text-xs text-ink-200">vs electric storage (TBC)</dd>
+                </div>
+              </div>
+            </dl>
+            <a href={site.phoneHref} className="mt-6 hidden items-center gap-2 text-sm font-semibold text-ink-200 hover:text-white lg:inline-flex">
+              <Phone className="h-4 w-4 text-ember-400" /> Prefer to talk? Call {site.phone}
+            </a>
           </div>
 
-          <div className="relative mx-auto w-full max-w-sm">
-            <HeatPumpArt className="relative z-10 mx-auto w-52 drop-shadow-2xl sm:w-72" />
-            <div className="absolute -left-4 top-16 z-20 rounded-2xl bg-white p-4 text-ink-900 shadow-lift sm:-left-10">
-              <p className="text-xs text-ink-500">Installed from</p>
-              <p className="flex items-center gap-2 font-display text-2xl font-semibold">
-                {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <TbcBadge />
-              </p>
-            </div>
-            <div className="absolute -right-2 bottom-20 z-20 flex items-center gap-3 rounded-2xl bg-white p-4 text-ink-900 shadow-lift sm:-right-8">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gum-50 text-gum-600">
-                <Bolt className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold">Up to ~70% less energy</p>
-                <p className="text-xs text-ink-500">vs electric storage (TBC)</p>
-              </div>
+          <div id="hero-quote" className="relative w-full scroll-mt-20 text-ink-900">
+            <div aria-hidden className="absolute -inset-3 rounded-[2.25rem] bg-gradient-to-br from-ember-500/40 to-gum-500/20 blur-2xl" />
+            <div className="relative">
+              <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" />
             </div>
           </div>
         </div>
@@ -136,7 +142,7 @@ export default function Home() {
           <Link href="/quote" className="btn-primary px-8 py-4 text-base">
             Get a free quote <Arrow className="h-4 w-4" />
           </Link>
-          <p className="text-sm text-ink-600">Takes about 2 minutes · Free &amp; no obligation</p>
+          <p className="text-sm text-ink-600">Takes about 60 seconds · Free &amp; no obligation</p>
         </div>
       </section>
 
@@ -163,7 +169,7 @@ export default function Home() {
 
       <LeadCaptureBlock
         title="Get your fixed price, rebates included"
-        lead="Tell us about your home in two minutes, or leave your number and a licensed partner installer will call you back."
+        lead="Four quick questions and you are done, or leave your number and a licensed partner installer will call you back."
       />
 
       {/* Rebates teaser */}
@@ -225,8 +231,6 @@ export default function Home() {
       <p className="container-x text-xs text-ink-500">
         *Where eligible. Rebates and STC values vary by program, product, location and date.
       </p>
-
-      <CtaBand />
     </>
   );
 }

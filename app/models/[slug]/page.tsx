@@ -8,7 +8,7 @@ import { FormTrust } from "@/components/FormTrust";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { Arrow, Check, Phone, Users } from "@/components/icons";
-import { CtaBand, PlaceholderNotice, TbcBadge } from "@/components/ui";
+import { PlaceholderNotice, TbcBadge } from "@/components/ui";
 import { modelFaqs } from "@/lib/faqs";
 import { formatAUD, getModel, models } from "@/lib/models";
 import { site } from "@/lib/site";
@@ -125,8 +125,8 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
 
       <LeadCaptureBlock
         title={`Get your fixed price on the ${model.name}`}
-        lead="Answer a few quick questions, or leave your number for a callback. A licensed partner installer will confirm your site, price and rebates."
-        quoteHref={`/quote?model=${model.slug}`}
+        lead="Four quick questions, or leave your number for a callback. A licensed partner installer will confirm your site, price and rebates."
+        model={model.slug}
       />
 
       <FaqSection
@@ -147,7 +147,6 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         </div>
       </section>
 
-      <CtaBand quoteHref={`/quote?model=${model.slug}`} title={`Ready to switch to the ${model.name}?`} />
     </>
   );
 }

@@ -3,7 +3,7 @@ import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
-import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
+import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { formatAUD, models } from "@/lib/models";
 
 export const metadata: Metadata = pageMeta({
@@ -73,8 +73,6 @@ export default function ModelsPage() {
           </table>
         </div>
       </section>
-
-      <CtaBand title="Found the one? Lock in your price." lead="Get a free, no-obligation quote from a licensed partner installer in your area." />
     </>
   );
 }

@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CallbackForm } from "./CallbackForm";
 import { FormTrust } from "./FormTrust";
 import { Close } from "./icons";
+import { EXIT_SEEN_KEY } from "./QuoteModal";
+import { useDialog } from "./useDialog";
 
-const SEEN_KEY = "ahp:exit-seen";
 const ARM_DELAY_MS = 5000;
 
 /**
@@ -25,7 +26,7 @@ export function ExitIntent() {
     if (excluded) return;
     if (!window.matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)").matches) return;
     try {
-      if (sessionStorage.getItem(SEEN_KEY)) return;
+      if (sessionStorage.getItem(EXIT_SEEN_KEY)) return;
     } catch {
       return;
     }
@@ -33,8 +34,12 @@ export function ExitIntent() {
     const timer = window.setTimeout(() => (armed = true), ARM_DELAY_MS);
     const onLeave = (e: MouseEvent) => {
       if (!armed || e.relatedTarget || e.clientY > 0) return;
+      if (document.querySelector('[role="dialog"]')) return;
       try {
-        sessionStorage.setItem(SEEN_KEY, "1");
+        if (sessionStorage.getItem(EXIT_SEEN_KEY)) return;
+      } catch {}
+      try {
+        sessionStorage.setItem(EXIT_SEEN_KEY, "1");
       } catch {}
       setOpen(true);
       document.removeEventListener("mouseout", onLeave);
@@ -46,34 +51,8 @@ export function ExitIntent() {
     };
   }, [excluded]);
 
-  // While open: Escape closes, Tab stays inside the dialog, and focus returns to where it was.
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.activeElement as HTMLElement | null;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") return setOpen(false);
-      if (e.key !== "Tab" || !dialogRef.current) return;
-      const focusable = [...dialogRef.current.querySelectorAll<HTMLElement>("a[href], button, input, select, textarea")].filter(
-        (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1,
-      );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last?.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first?.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-      previous?.focus?.();
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
+  useDialog(open, dialogRef, close);
 
   if (!open || excluded) return null;
 
@@ -112,7 +91,7 @@ export function ExitIntent() {
           <p className="mt-4 text-center text-sm text-ink-600">
             Prefer the full form?{" "}
             <Link href="/quote" onClick={() => setOpen(false)} className="font-semibold text-ember-600 hover:text-ember-700">
-              Get a detailed quote
+              Get a free quote in 60 seconds
             </Link>
           </p>
         </div>

@@ -2,27 +2,13 @@ import Link from "next/link";
 import { referralDisclosure, site } from "@/lib/site";
 import { models } from "@/lib/models";
 import { Logo } from "./Header";
-import { Arrow, Phone } from "./icons";
+import { FooterQuote } from "./FooterQuote";
+import { Phone } from "./icons";
 
 export function Footer() {
   return (
     <footer className="bg-ink-950 pb-24 text-ink-200 md:pb-0">
-      <div className="border-b border-white/10">
-        <div className="container-x flex flex-col items-start justify-between gap-5 py-8 sm:flex-row sm:items-center">
-          <div>
-            <p className="font-display text-2xl text-white">Ready for lower hot water bills?</p>
-            <p className="mt-1 text-sm text-ink-400">Free, no-obligation quotes from licensed local installers.</p>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <a href={site.phoneHref} className="btn border border-white/20 text-white hover:bg-white/10">
-              <Phone className="h-4 w-4" /> {site.phone}
-            </a>
-            <Link href="/quote" className="btn-primary">
-              Get a free quote <Arrow className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </div>
+      <FooterQuote />
       <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo light />

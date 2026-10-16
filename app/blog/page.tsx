@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
-import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { PageHero } from "@/components/ui";
 import { Arrow } from "@/components/icons";
 import { formatDate, getAllPosts } from "@/lib/blog";
@@ -46,10 +45,6 @@ export default function BlogIndex() {
           ))}
         </div>
       </section>
-      <LeadCaptureBlock
-        title="Skip the research. Get a free quote."
-        lead="A licensed partner installer will recommend the right system, confirm your fixed price and apply eligible rebates."
-      />
     </>
   );
 }

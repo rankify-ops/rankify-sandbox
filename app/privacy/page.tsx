@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
+import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
@@ -46,7 +46,6 @@ export default function PrivacyPage() {
           </p>
         </div>
       </section>
-      <CtaBand />
     </>
   );
 }

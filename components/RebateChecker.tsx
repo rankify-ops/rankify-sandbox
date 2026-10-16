@@ -69,6 +69,7 @@ export function RebateChecker({ initialState }: { initialState?: string }) {
               <QuoteForm
                 key={state}
                 tone="dark"
+                heading={`${state} rebate quote in 60 seconds`}
                 initialState={state}
                 rebatesViewed={[federalSTC.name, ...programsFor(state).map((p) => p.name)]}
               />

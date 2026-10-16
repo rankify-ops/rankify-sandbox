@@ -3,7 +3,6 @@ import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Arrow } from "@/components/icons";
 import { FaqSection } from "@/components/Faq";
-import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ProgramCard, RebateChecker } from "@/components/RebateChecker";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { rebateFaqs } from "@/lib/faqs";
@@ -64,11 +63,6 @@ export default async function RebatesPage({ searchParams }: { searchParams: Prom
       </section>
 
       <FaqSection items={rebateFaqs} title="Rebate questions, answered" className="pt-4 sm:pt-6" />
-
-      <LeadCaptureBlock
-        title="Let your installer handle the rebate paperwork"
-        lead="Partner installers typically apply eligible STCs as an upfront discount and can talk you through state programs. Get a quote or a quick callback."
-      />
     </>
   );
 }

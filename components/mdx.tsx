@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { MDXComponents } from "mdx/types";
 import { site } from "@/lib/site";
-import { Arrow, Info } from "./icons";
+import { Info } from "./icons";
+import { QuoteForm } from "./QuoteForm";
 
 function Callout({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
@@ -15,20 +16,20 @@ function Callout({ children, title }: { children: React.ReactNode; title?: strin
   );
 }
 
-function QuoteCta({ title = "Ready to compare fixed prices?" }: { title?: string }) {
+/** Mid-post lead capture: the 60-second quote form, inline in the article. */
+function QuoteCta({ title = "Get your free quote in 60 seconds" }: { title?: string }) {
   return (
-    <div className="not-prose my-10 flex flex-col items-start gap-4 rounded-3xl bg-ink-900 p-6 text-white sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p className="font-display text-xl">{title}</p>
-        <p className="mt-1 text-sm text-ink-200">
-          Free &amp; no obligation · or call{" "}
-          <a href={site.phoneHref} className="font-semibold text-white underline">{site.phone}</a>
-        </p>
+    <aside className="not-prose my-10 rounded-[1.75rem] bg-ink-900 p-4 text-white sm:p-6" aria-label="Free quote">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
+        <p className="font-display text-xl sm:text-2xl">{title}</p>
+        <a href={site.phoneHref} className="text-sm font-semibold text-ink-200 hover:text-white">
+          or call {site.phone}
+        </a>
       </div>
-      <Link href="/quote" className="btn-primary shrink-0">
-        Get a free quote <Arrow className="h-4 w-4" />
-      </Link>
-    </div>
+      <div className="text-ink-900">
+        <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" />
+      </div>
+    </aside>
   );
 }
 

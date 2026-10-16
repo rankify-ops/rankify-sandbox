@@ -2,12 +2,19 @@ import { z } from "zod";
 import { states } from "./site";
 import { models } from "./models";
 
+/** What the visitor needs. `failed` flags an urgent job for the installer. */
+export const needs = [
+  { value: "replace", label: "Replace my current system", hint: "It works, but I want lower bills" },
+  { value: "failed", label: "My hot water has stopped", hint: "Urgent: I need it sorted fast" },
+  { value: "new", label: "New build or renovation", hint: "No system there yet" },
+  { value: "prices", label: "Just comparing prices", hint: "No commitment" },
+] as const;
+
 export const currentSystems = [
-  { value: "electric", label: "Electric storage tank" },
-  { value: "gas-storage", label: "Gas storage tank" },
-  { value: "gas-instant", label: "Gas instantaneous" },
-  { value: "solar", label: "Solar hot water" },
-  { value: "heat-pump", label: "Existing heat pump" },
+  { value: "electric", label: "Electric tank" },
+  { value: "gas", label: "Gas" },
+  { value: "solar", label: "Solar" },
+  { value: "heat-pump", label: "Heat pump" },
   { value: "unsure", label: "Not sure" },
 ] as const;
 
@@ -38,22 +45,24 @@ export const HONEYPOT_FIELD = "company";
 const honeypot = z.string().max(0).optional();
 const source = z.string().max(300).optional();
 
+const options = <T extends readonly { value: string }[]>(list: T) => list.map((o) => o.value) as [string, ...string[]];
+
+/** The 60-second quote form. Order matches the form: need → system → household → postcode → contact. */
 export const leadSchema = z.object({
   type: z.literal("quote").default("quote"),
+  need: z.enum(options(needs), { message: "Choose what you need" }),
   postcode: postcodeField,
   state: z.enum(states, { message: "Select your state or territory" }),
-  currentSystem: z.enum(currentSystems.map((s) => s.value) as [string, ...string[]], {
-    message: "Select your current system",
-  }),
-  householdSize: z.enum(householdSizes.map((s) => s.value) as [string, ...string[]], {
-    message: "Select your household size",
-  }),
-  preferredModel: z.enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]], {
-    message: "Choose a model, or 'Help me choose'",
-  }),
+  currentSystem: z.enum(options(currentSystems), { message: "Choose your current system" }),
+  householdSize: z.enum(options(householdSizes), { message: "Choose your household size" }),
+  // Set from context (e.g. the model page the visitor came from); not a form step.
+  preferredModel: z
+    .enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]])
+    .default(NO_PREFERENCE),
   name: nameField,
   phone: phoneField,
-  email: z.string().trim().email("Enter a valid email address").max(200),
+  // Optional to keep the form fast; phone is the primary contact.
+  email: z.union([z.literal(""), z.string().trim().email("Enter a valid email, or leave it blank").max(200)]).default(""),
   consent: z.literal(true, { message: "Please agree so we can pass your details to an installer" }),
   // Rebate programs the visitor was shown in the rebate checker, if they came from there.
   rebatesViewed: z.array(z.string().max(120)).max(10).optional(),

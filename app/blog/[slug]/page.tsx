@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { mdxComponents } from "@/components/mdx";
-import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { HeroCtas } from "@/components/ui";
 import { formatDate, getAllPosts, getPost } from "@/lib/blog";
 import { site } from "@/lib/site";
@@ -60,10 +59,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </article>
-      <LeadCaptureBlock
-        title="Ready to stop paying to heat water the old way?"
-        lead="Get a free, fixed-price quote from a licensed partner installer, with the rebates you may be eligible for applied. Or leave your number for a quick callback."
-      />
     </>
   );
 }

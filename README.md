@@ -26,8 +26,9 @@ npm run lint && npm run typecheck
 ## Conversion features
 
 - **Quote CTAs everywhere**: every page has "Get a free quote" + click-to-call above the fold (`HeroCtas` in `components/ui.tsx`) and repeated down the page
-- **Two lead forms**: full 5-step quote (`components/QuoteForm.tsx`) and a 4-field callback form (`components/CallbackForm.tsx`)
-- **Inline lead capture** on long pages (`components/LeadCaptureBlock.tsx`): quote CTA + callback form + trust signals
+- **60-second quote form** (`components/QuoteForm.tsx`): need → current system → household size (one tap each, auto-advance) → postcode (state auto-detected) → name, mobile, optional email, consent. Shows progress, "~Ns left" and a short reason for each question. Contact details come last. Pushes `quote_start`, `quote_step` and `lead_submitted` to `window.dataLayer`.
+- **Where it appears**: as a popup from every link to `/quote` (`components/QuoteModal.tsx`; this covers the header "Free quote · 60s" button, sticky mobile bar, model cards and price cards); inline in the home hero, the footer of every page (`components/FooterQuote.tsx`), mid-post in every blog article (`<QuoteCta />`), at the end of the rebate checker (prefilled state + programs), on `/quote`, and in the lead capture blocks (`components/LeadCaptureBlock.tsx`, with a "Call me back" tab). Links stay real `/quote` links, so new tabs and no-JS visitors still get the full page.
+- **Callback form** (`components/CallbackForm.tsx`): name, phone, postcode, best time to call
 - **Sticky mobile bar** with Call + Get a free quote (`components/StickyMobileBar.tsx`), hidden from tablet up
 - **Exit-intent popup** (`components/ExitIntent.tsx`): desktop with a mouse only, once per session, never on `/quote` or `/thank-you`, closes on Esc or backdrop click
 - **Rebate checker → quote**: after picking a state, the checker ends in a quote form prefilled with that state; the programs shown are sent with the lead as `rebatesViewed`
@@ -45,7 +46,7 @@ npm run lint && npm run typecheck
 
 ## Leads
 
-Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`), which validates with zod
+Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`). Quote leads carry `need` (`replace`, `failed` = urgent, `new`, `prices`), `currentSystem`, `householdSize`, `postcode`, `state`, `preferredModel` (from the page they came from), `name`, `phone`, optional `email`, `consent`, and `rebatesViewed` when they came from the rebate checker. The API validates with zod
 (`lib/lead.ts`) and checks a honeypot field. Each lead is:
 
 - logged to the console as `[lead] {...}` (on Vercel, check the function logs), and

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { PageHero } from "@/components/ui";
 import { Shield, Tag, Users, Wrench } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
@@ -76,11 +75,6 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
-
-      <LeadCaptureBlock
-        title="Talk to a licensed installer about your home"
-        lead="Get a free, no-obligation quote, or leave your number and a partner installer will call you back."
-      />
     </>
   );
 }

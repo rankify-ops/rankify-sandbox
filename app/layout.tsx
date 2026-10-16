@@ -3,6 +3,7 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ExitIntent } from "@/components/ExitIntent";
+import { QuoteModal } from "@/components/QuoteModal";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { StickyMobileBar } from "@/components/StickyMobileBar";
 import { site } from "@/lib/site";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <StickyMobileBar />
         <ExitIntent />
+        <QuoteModal />
       </body>
     </html>
   );

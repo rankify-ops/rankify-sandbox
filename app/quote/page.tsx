@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { CallbackForm } from "@/components/CallbackForm";
+import { FormTrustInline } from "@/components/FormTrust";
 import { QuoteForm } from "@/components/QuoteForm";
 import { Check, Phone } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
-  title: "Get a free, fixed-price heat pump quote",
-  description: "Answer five quick questions, or request a callback, and get matched with a licensed heat pump installer in your area. Free and no obligation.",
+  title: "Free heat pump quote in 60 seconds",
+  description: "Four quick questions and your details: get a free, fixed-price heat pump hot water quote from a licensed installer in your area. No obligation.",
   path: "/quote",
 });
 
@@ -19,10 +20,10 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
       <div className="container-x relative grid gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.55fr]">
         <div>
           <p className="eyebrow">Free, no-obligation quote</p>
-          <h1 className="h-display mt-3 text-4xl text-ink-900 sm:text-5xl">Get your free, fixed-price quote</h1>
+          <h1 className="h-display mt-3 text-4xl text-ink-900 sm:text-5xl">Your free quote in 60 seconds</h1>
           <p className="mt-4 max-w-xl text-lg text-ink-600">
-            Five quick steps, about 2 minutes. A licensed installer in your area will confirm your price and take off any
-            rebates you&apos;re eligible for.
+            Four quick questions, then your details. A licensed installer in your area will confirm your fixed price and take
+            off any rebates you&apos;re eligible for.
           </p>
           <p className="mt-3 text-sm text-ink-600">
             In a hurry?{" "}
@@ -31,7 +32,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <a href={site.phoneHref} className="font-semibold whitespace-nowrap text-ember-600 underline">{site.phone}</a>.
           </p>
           <div className="mt-8">
-            <QuoteForm initialModel={model} />
+            <QuoteForm initialModel={model} heading="Free quote in 60 seconds" />
           </div>
         </div>
         <aside className="space-y-5 lg:pt-44">
@@ -40,6 +41,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <h2 className="mt-1.5 font-display text-2xl font-medium text-ink-900">Rather we call you?</h2>
             <p className="mt-1 mb-5 text-sm text-ink-600">Just four fields. A licensed installer will ring at a time that suits.</p>
             <CallbackForm />
+            <FormTrustInline />
           </div>
           <div className="card p-6">
             <h2 className="font-semibold text-ink-900">What happens next</h2>

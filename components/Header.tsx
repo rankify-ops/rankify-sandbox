@@ -14,7 +14,7 @@ export function Logo({ light = false }: { light?: boolean }) {
           <path d="M12 3c2 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.5 2 1.5 3 3 3-1-3 0-5.5 0-7.5Z" strokeLinejoin="round" />
         </svg>
       </span>
-      <span className={`font-display text-[1.05rem] font-semibold tracking-tight whitespace-nowrap sm:text-lg ${light ? "text-white" : "text-ink-900"}`}>
+      <span className={`font-display text-[1.05rem] font-semibold tracking-tight whitespace-nowrap max-[389px]:sr-only sm:text-lg ${light ? "text-white" : "text-ink-900"}`}>
         Aussie Heat Pumps
       </span>
     </Link>
@@ -55,17 +55,20 @@ export function Header() {
             <Phone className="h-4 w-4" /> {site.phone}
           </a>
           <Link href="/quote" className="btn-primary py-2.5">
-            Get a free quote
+            Free quote <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[11px] font-bold">60s</span>
           </Link>
         </div>
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1.5 md:hidden">
           <a
             href={site.phoneHref}
-            className="flex h-10 items-center gap-1.5 rounded-full bg-ember-600 px-3.5 text-sm font-semibold text-white"
+            className="grid h-10 w-10 place-items-center rounded-full border border-ink-200 text-ink-800"
             aria-label={`Call ${site.phone}`}
           >
-            <Phone className="h-4 w-4" /> Call
+            <Phone className="h-4 w-4" />
           </a>
+          <Link href="/quote" className="flex h-10 items-center rounded-full bg-ember-600 px-3.5 text-sm font-semibold whitespace-nowrap text-white">
+            Free quote
+          </Link>
           <button
             className="grid h-10 w-10 place-items-center rounded-full border border-ink-200"
             onClick={() => setOpen((o) => !o)}
@@ -86,7 +89,7 @@ export function Header() {
               </Link>
             ))}
             <Link href="/quote" className="btn-primary mt-3">
-              Get a free quote
+              Get a free quote in 60 seconds
             </Link>
             <a href={site.phoneHref} className="btn-ghost mt-2">
               <Phone className="h-4 w-4" /> Call {site.phone}
