@@ -54,7 +54,7 @@ export function Footer() {
         <div className="container-x space-y-3 py-6 text-xs leading-relaxed text-ink-400">
           <p>
             <strong className="text-ink-200">Disclosure:</strong> {referralDisclosure}{" "}
-            <Link href="/about" className="underline hover:text-white">Learn more</Link>.
+            <Link href="/about" className="underline hover:text-white">How our referrals work</Link>.
           </p>
           <p>
             Prices and rebate amounts shown on this preview site are placeholders marked TBC and are not offers.

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = pageMeta({
+  title: "Privacy Policy",
+  description: "How Aussie Heat Pumps collects, uses and shares your details when you request a heat pump quote or callback.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

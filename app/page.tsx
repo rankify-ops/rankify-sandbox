@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { HeatPumpArt } from "@/components/HeatPumpArt";
 import { ModelCard } from "@/components/ModelCard";
-import { Faq, FaqJsonLd, type FaqItem } from "@/components/Faq";
+import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { CtaBand, SectionHeading, TbcBadge } from "@/components/ui";
 import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/components/icons";
+import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
 import { referralDisclosure, site } from "@/lib/site";
 
@@ -22,35 +23,10 @@ const steps = [
   { n: "04", title: "Installed, old unit removed", text: "Most standard swaps are done in a day, and your old system is taken away." },
 ];
 
-const faqs: FaqItem[] = [
-  {
-    q: "How much can a heat pump save on my hot water bill?",
-    a: "Heat pumps move heat from the air into your water instead of generating it directly, so they typically use far less electricity than a conventional electric storage tank. Your actual saving depends on your current system, tariff, climate and usage. Your installer can give you an estimate for your home.",
-  },
-  {
-    q: "Are the prices on this site final?",
-    a: "Our published prices cover standard supply and installation for each model. They are currently placeholders marked TBC. Non-standard sites, like relocating the unit, extra plumbing or switchboard upgrades, may cost more, and your installer will confirm this before any work starts.",
-  },
-  {
-    q: "What rebates can I get?",
-    a: "Most Australian homes can access federal Small-scale Technology Certificates (STCs), and some states offer extra programs. Use our rebate checker for a summary by state, then confirm eligibility on the official government page linked for each program.",
-  },
-  {
-    q: "Who actually does the installation?",
-    a: "We're a referral service. Your job is completed by an independent, licensed partner installer in your area. See our About page for exactly how this works and how we're paid.",
-  },
-  {
-    q: "Will a heat pump work in a cold climate?",
-    a: "Modern heat pumps are designed to work across most Australian climates. For frosty areas we recommend a cold-climate rated model. Check the operating range on each model page.",
-  },
-];
-
 export default function Home() {
   const featured = models.filter((m) => ["everyday-220", "family-270", "split-250"].includes(m.slug));
   return (
     <>
-      <FaqJsonLd items={faqs} />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-ink-900 text-white">
         <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -63,22 +39,22 @@ export default function Home() {
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200">
               <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes in QLD, NSW &amp; VIC
             </p>
-            <h1 className="h-display mt-6 text-4xl leading-[1.05] sm:text-6xl">
-              Hot water that costs <span className="italic text-ember-400">less</span> to heat, at a price you know upfront.
+            <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl">
+              Hot water that costs <span className="italic text-ember-400">less</span> to run. Installed for a fixed price.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-200">
-              Compare heat pump systems with set supply-and-install prices, see the rebates you may be eligible for,
-              and get matched with a licensed local installer.
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-200">
+              Set supply-and-install prices, rebates handled for you, and a licensed local installer. Your free quote takes
+              about 2 minutes.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/quote" className="btn-primary px-8 py-4 text-base">
-                Get my free quote <Arrow className="h-4 w-4" />
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <Link href="/quote" className="btn-primary px-8 py-4 text-base sm:text-lg">
+                Get my free quote <Arrow className="h-5 w-5" />
               </Link>
-              <a href={site.phoneHref} className="btn border border-white/20 px-8 py-4 text-base text-white hover:bg-white/10">
-                <Phone className="h-4 w-4" /> Call {site.phone}
+              <a href={site.phoneHref} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-ink-200 hover:text-white sm:justify-start">
+                <Phone className="h-4 w-4 text-ember-400" /> or call {site.phone}
               </a>
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200">
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200" aria-label="Why homeowners use us">
               {["Free & no obligation", "Old system removed", "Rebates handled for you*"].map((t) => (
                 <li key={t} className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-ember-400" /> {t}
@@ -88,9 +64,9 @@ export default function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-sm">
-            <HeatPumpArt className="relative z-10 mx-auto w-64 drop-shadow-2xl sm:w-72" />
+            <HeatPumpArt className="relative z-10 mx-auto w-52 drop-shadow-2xl sm:w-72" />
             <div className="absolute -left-4 top-16 z-20 rounded-2xl bg-white p-4 text-ink-900 shadow-lift sm:-left-10">
-              <p className="text-xs text-ink-400">Installed from</p>
+              <p className="text-xs text-ink-500">Installed from</p>
               <p className="flex items-center gap-2 font-display text-2xl font-semibold">
                 {formatAUD(Math.min(...models.map((m) => m.priceFrom)))} <TbcBadge />
               </p>
@@ -101,7 +77,7 @@ export default function Home() {
               </span>
               <div>
                 <p className="text-sm font-semibold">Up to ~70% less energy</p>
-                <p className="text-xs text-ink-400">vs electric storage (TBC)</p>
+                <p className="text-xs text-ink-500">vs electric storage (TBC)</p>
               </div>
             </div>
           </div>
@@ -114,8 +90,8 @@ export default function Home() {
           <div className="card grid gap-px overflow-hidden bg-ink-200/70 sm:grid-cols-2 lg:grid-cols-4">
             {trust.map(({ icon: Icon, title, text }) => (
               <div key={title} className="bg-white p-6">
-                <Icon className="h-6 w-6 text-ember-500" />
-                <h3 className="mt-3 font-semibold text-ink-900">{title}</h3>
+                <Icon className="h-6 w-6 text-ember-600" />
+                <p className="mt-3 font-semibold text-ink-900">{title}</p>
                 <p className="mt-1.5 text-sm leading-relaxed text-ink-600">{text}</p>
               </div>
             ))}
@@ -133,7 +109,7 @@ export default function Home() {
         <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((s) => (
             <li key={s.n} className="relative rounded-3xl bg-cream-100 p-6">
-              <span className="font-display text-4xl font-medium text-ember-500/80">{s.n}</span>
+              <span className="font-display text-4xl font-medium text-ember-600">{s.n}</span>
               <h3 className="mt-4 font-semibold text-ink-900">{s.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-600">{s.text}</p>
             </li>
@@ -177,10 +153,10 @@ export default function Home() {
               lead="Federal STCs apply in every state, and QLD, NSW and VIC homes may access extra state programs. Our checker lists them, with links to every official government page."
             />
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/rebates" className="btn-dark">
-                Check my rebates <Arrow className="h-4 w-4" />
+              <Link href="/quote" className="btn-primary">
+                Get a free quote <Arrow className="h-4 w-4" />
               </Link>
-              <Link href="/quote" className="btn-ghost">Get a free quote</Link>
+              <Link href="/rebates" className="btn-ghost">Check my rebates first</Link>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -216,28 +192,16 @@ export default function Home() {
             <h2 className="h-display text-2xl text-ink-900">Straight up about how we work</h2>
             <p className="mt-3 max-w-3xl leading-relaxed text-ink-600">{referralDisclosure}</p>
             <Link href="/about" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ember-600 hover:text-ember-700">
-              Read how referrals work <Arrow className="h-4 w-4" />
+              How our referrals work <Arrow className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="container-x py-20 sm:py-28">
-        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <SectionHeading eyebrow="FAQ" title="Questions we hear every day" />
-            <p className="mt-4 text-ink-600">Still unsure? Talk to us.</p>
-            <a href={site.phoneHref} className="mt-2 inline-flex items-center gap-2 text-lg font-semibold text-ember-600">
-              <Phone className="h-5 w-5" /> {site.phone}
-            </a>
-          </div>
-          <Faq items={faqs} />
-        </div>
-        <p className="mt-6 text-xs text-ink-400">
-          *Where eligible. Rebates and STC values vary by program, product, location and date.
-        </p>
-      </section>
+      <FaqSection items={homeFaqs} className="pb-6 sm:pb-10" />
+      <p className="container-x text-xs text-ink-500">
+        *Where eligible. Rebates and STC values vary by program, product, location and date.
+      </p>
 
       <CtaBand />
     </>

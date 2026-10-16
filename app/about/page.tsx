@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { PageHero } from "@/components/ui";
 import { Shield, Tag, Users, Wrench } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About us & how referrals work",
-  description: "Aussie Heat Pumps is a referral service. Here's how we match you with licensed partner installers and how we're paid.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "About us: how our installer referrals work",
+  description: "Aussie Heat Pumps is a referral service. See how we match you with licensed partner installers, how we are paid, and what happens to your details.",
+  path: "/about",
+});
 
 const points = [
   {

@@ -46,11 +46,33 @@ export function ExitIntent() {
     };
   }, [excluded]);
 
+  // While open: Escape closes, Tab stays inside the dialog, and focus returns to where it was.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const previous = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return setOpen(false);
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = [...dialogRef.current.querySelectorAll<HTMLElement>("a[href], button, input, select, textarea")].filter(
+        (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1,
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+      previous?.focus?.();
+    };
   }, [open]);
 
   if (!open || excluded) return null;

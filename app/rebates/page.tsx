@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Arrow } from "@/components/icons";
+import { FaqSection } from "@/components/Faq";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ProgramCard, RebateChecker } from "@/components/RebateChecker";
 import { PageHero, PlaceholderNotice } from "@/components/ui";
+import { rebateFaqs } from "@/lib/faqs";
 import { federalSTC } from "@/lib/rebates";
 
-export const metadata: Metadata = {
-  title: "Heat pump rebate checker: QLD, NSW, VIC & federal STCs",
-  description: "See which heat pump hot water rebates may apply in your state, with links to every official government page.",
-};
+const stateNames: Record<string, string> = { QLD: "Queensland", NSW: "New South Wales", VIC: "Victoria" };
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ state?: string }> }): Promise<Metadata> {
+  const name = stateNames[(await searchParams).state ?? ""];
+  // Every state view shares one canonical URL: it's the same checker, pre-selected.
+  return pageMeta({
+    title: name ? `Heat pump rebates in ${name} + federal STCs` : "Heat pump rebate checker: QLD, NSW, VIC & federal STCs",
+    description: name
+      ? `See the ${name} heat pump hot water programs and federal STCs you may be eligible for, with links to the official government pages.`
+      : "Check which heat pump hot water rebates may apply in QLD, NSW or VIC, plus federal STCs, with links to every official government page.",
+    path: "/rebates",
+  });
+}
 
 export default async function RebatesPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
   const { state } = await searchParams;
@@ -50,6 +62,8 @@ export default async function RebatesPage({ searchParams }: { searchParams: Prom
           </div>
         </div>
       </section>
+
+      <FaqSection items={rebateFaqs} title="Rebate questions, answered" className="pt-4 sm:pt-6" />
 
       <LeadCaptureBlock
         title="Let your installer handle the rebate paperwork"

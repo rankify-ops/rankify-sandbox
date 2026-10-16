@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Arrow, Check, Phone } from "@/components/icons";
 import { bestTimes } from "@/lib/lead";
@@ -6,7 +7,11 @@ import { rebateStates } from "@/lib/rebates";
 import { responseTime, site } from "@/lib/site";
 import { ThanksGreeting } from "./ThanksGreeting";
 
-export const metadata: Metadata = { title: "Thanks, we've got your request" };
+export const metadata: Metadata = pageMeta({
+  title: "Thanks, we've got your request",
+  description: "Your heat pump quote or callback request has been received. Here is what happens next.",
+  path: "/thank-you",
+});
 
 export default async function ThankYouPage({
   searchParams,
@@ -54,7 +59,7 @@ export default async function ThankYouPage({
         <ol className="card mt-10 divide-y divide-ink-200/60">
           {steps.map((s, i) => (
             <li key={s.title} className="flex gap-4 p-6">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ember-500 font-semibold text-white">{i + 1}</span>
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ember-600 font-semibold text-white">{i + 1}</span>
               <div>
                 <h2 className="font-semibold text-ink-900">{s.title}</h2>
                 <p className="mt-1 text-ink-600">{s.text}</p>

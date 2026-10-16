@@ -20,6 +20,8 @@ npm run lint && npm run typecheck
 | Brand, phone, email, ABN, referral disclosure | `lib/site.ts` |
 | Blog posts | `content/blog/*.mdx` (frontmatter: `title`, `description`, `date`, `tags`). `<Callout>` and `<QuoteCta>` are available in MDX |
 | Privacy policy (draft) | `app/privacy/page.tsx` |
+| FAQ copy (home, model pages, rebates), with FAQPage schema | `lib/faqs.ts` |
+| Page titles & descriptions | `export const metadata = pageMeta(...)` in each page; helper in `lib/seo.ts` |
 
 ## Conversion features
 
@@ -32,6 +34,14 @@ npm run lint && npm run typecheck
 - **Trust signals** next to every form (`components/FormTrust.tsx`); copy lives in `lib/site.ts` (`formTrustPoints`, `responseTime`, `privacyNote`)
 - **Thank-you page** (`/thank-you`) with next steps for quote vs callback
 - Each successful submit pushes `{ event: "lead_submitted", lead_type }` to `window.dataLayer` if GTM is added later
+
+## SEO & accessibility
+
+- Each page has its own title, description, canonical URL and Open Graph/Twitter tags (`lib/seo.ts`). A share image is generated at `/opengraph-image`, and the favicon is `app/icon.svg`.
+- `sitemap.xml` lists every page except `/thank-you`. Set `SITE_URL` at launch so sitemap, robots and canonicals use the real domain.
+- Forms: labelled fields, errors shown on blur and on submit, announced to screen readers, and focus moves to the first invalid field. Choice tiles work with arrow keys.
+- Blog images must have alt text: the build fails if an MDX image is missing it.
+- Lighthouse (mobile) on every page: performance 96–99, accessibility 100, best practices 100. SEO reads 66 only because of the deliberate noindex (`is-crawlable`); it's the sole failing SEO audit.
 
 ## Leads
 

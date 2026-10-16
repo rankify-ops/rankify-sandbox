@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeatPumpArt } from "@/components/HeatPumpArt";
+import { FaqSection } from "@/components/Faq";
 import { FormTrust } from "@/components/FormTrust";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { Arrow, Check, Phone, Users } from "@/components/icons";
 import { CtaBand, PlaceholderNotice, TbcBadge } from "@/components/ui";
+import { modelFaqs } from "@/lib/faqs";
 import { formatAUD, getModel, models } from "@/lib/models";
 import { site } from "@/lib/site";
 
@@ -19,10 +22,11 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const model = getModel((await params).slug);
   if (!model) return {};
-  return {
-    title: `${model.name} heat pump, supply & install`,
-    description: `${model.summary} Supply and install from ${formatAUD(model.priceFrom)} (price TBC).`,
-  };
+  return pageMeta({
+    title: `${model.name} heat pump: supply & install from ${formatAUD(model.priceFrom)}`,
+    description: `${model.summary} ${model.capacityLitres} L ${model.type.toLowerCase()} system for ${model.households}. Set supply-and-install price (TBC), rebates handled. Get a free quote.`,
+    path: `/models/${model.slug}`,
+  });
 }
 
 export default async function ModelPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -36,7 +40,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         <div aria-hidden className="pointer-events-none absolute -right-20 top-0 h-96 w-96 rounded-full bg-ember-300/30 blur-3xl" />
         <div className="container-x relative grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_0.8fr]">
           <div>
-            <nav className="text-sm text-ink-400" aria-label="Breadcrumb">
+            <nav className="text-sm text-ink-500" aria-label="Breadcrumb">
               <Link href="/models" className="hover:text-ink-900">Models</Link> <span className="mx-1">/</span>{" "}
               <span className="text-ink-700">{model.name}</span>
             </nav>
@@ -48,14 +52,14 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
             </p>
 
             <div className="card mt-8 max-w-md p-6">
-              <p className="text-sm text-ink-400">Supply &amp; install, set price</p>
+              <p className="text-sm text-ink-500">Supply &amp; install, set price</p>
               <div className="mt-1 flex items-center gap-3">
                 <span className="font-display text-5xl font-semibold text-ink-900">{formatAUD(model.priceFrom)}</span>
                 {!model.verified && <TbcBadge label="Price TBC" />}
               </div>
-              <p className="mt-2 text-xs text-ink-400">Inc. GST (TBC), before eligible rebates. Standard installation only.</p>
+              <p className="mt-2 text-xs text-ink-500">Inc. GST (TBC), before eligible rebates. Standard installation only.</p>
               <Link href={`/quote?model=${model.slug}`} className="btn-primary mt-5 w-full py-3.5 text-base">
-                Get a free quote for this model <Arrow className="h-4 w-4" />
+                Get a free quote <Arrow className="h-4 w-4" />
               </Link>
               <a href={site.phoneHref} className="btn-ghost mt-2.5 w-full py-3">
                 <Phone className="h-4 w-4" /> Call {site.phone}
@@ -65,7 +69,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
               </div>
             </div>
           </div>
-          <HeatPumpArt className="mx-auto w-56 sm:w-72" />
+          <HeatPumpArt className="mx-auto hidden w-72 sm:block" />
         </div>
       </section>
 
@@ -123,6 +127,13 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         title={`Get your fixed price on the ${model.name}`}
         lead="Answer a few quick questions, or leave your number for a callback. A licensed partner installer will confirm your site, price and rebates."
         quoteHref={`/quote?model=${model.slug}`}
+      />
+
+      <FaqSection
+        items={modelFaqs(model)}
+        title={`${model.name}: common questions`}
+        quoteHref={`/quote?model=${model.slug}`}
+        className="pt-4 sm:pt-6"
       />
 
       <section className="bg-cream-100 py-16">

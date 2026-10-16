@@ -40,7 +40,7 @@ export function RebateChecker({ initialState }: { initialState?: string }) {
             </button>
           ))}
         </div>
-        <p className="mt-4 text-sm text-ink-400">
+        <p className="mt-4 text-sm text-ink-500">
           Elsewhere in Australia? Federal STCs still apply. <Link href="#stc" className="underline">See below</Link>.
         </p>
       </div>
@@ -89,11 +89,11 @@ export function ProgramCard({ program: p }: { program: RebateProgram }) {
             {p.scope === "federal" ? "Federal · all states" : p.scope}
           </span>
           <h3 className="mt-1 font-display text-xl font-medium text-ink-900">{p.name}</h3>
-          <p className="text-sm text-ink-400">{p.administrator}</p>
+          <p className="text-sm text-ink-500">{p.administrator}</p>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-ink-400">Indicative amount</p>
-          <p className="flex items-center justify-end gap-2 font-semibold text-ink-900">
+        <div className="w-full sm:w-auto sm:text-right">
+          <p className="text-xs text-ink-500">Indicative amount</p>
+          <p className="flex flex-wrap items-center gap-2 font-semibold text-ink-900 sm:justify-end">
             {p.amount} {!p.verified && <TbcBadge />}
           </p>
         </div>

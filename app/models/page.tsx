@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
 import { formatAUD, models } from "@/lib/models";
 
-export const metadata: Metadata = {
-  title: "Heat pump models & supply-and-install prices",
-  description: "Compare six heat pump hot water systems with set supply-and-install prices.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Heat pump models & fixed supply-and-install prices",
+  description: "Compare six heat pump hot water systems from 180 L to 300 L, each with a set supply-and-install price. Get a free quote from a licensed local installer.",
+  path: "/models",
+});
 
 export default function ModelsPage() {
   return (
@@ -25,8 +27,9 @@ export default function ModelsPage() {
         </div>
       </PageHero>
 
-      <section className="container-x py-16">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <section className="container-x py-16" aria-labelledby="all-models">
+        <h2 id="all-models" className="h-display text-2xl text-ink-900 sm:text-3xl">All six models</h2>
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {models.map((m) => (
             <ModelCard key={m.slug} model={m} />
           ))}
@@ -42,8 +45,8 @@ export default function ModelsPage() {
       <section className="container-x pb-4">
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <caption className="px-6 pt-6 text-left font-display text-xl font-medium text-ink-900">Side-by-side</caption>
-            <thead className="text-xs tracking-wider text-ink-400 uppercase">
+            <caption className="px-6 pt-6 text-left font-display text-xl font-medium text-ink-900">Side-by-side comparison</caption>
+            <thead className="text-xs tracking-wider text-ink-500 uppercase">
               <tr className="border-b border-ink-200/70">
                 <th className="px-6 py-4 font-semibold">Model</th>
                 <th className="px-6 py-4 font-semibold">Type</th>

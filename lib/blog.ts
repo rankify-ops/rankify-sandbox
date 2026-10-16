@@ -16,6 +16,10 @@ export type PostMeta = {
 function readPost(file: string) {
   const raw = fs.readFileSync(path.join(DIR, file), "utf8");
   const { data, content } = matter(raw);
+  // Every image in a post needs alt text: fail the build rather than ship one without.
+  if (/!\[\s*\]\(/.test(content) || /<img(?![^>]*\balt=["'][^"']+["'])[^>]*>/i.test(content)) {
+    throw new Error(`${file}: every image needs descriptive alt text`);
+  }
   const meta: PostMeta = {
     slug: file.replace(/\.mdx$/, ""),
     title: String(data.title),

@@ -2,25 +2,33 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { bestTimes, callbackSchema, fieldErrors, submitLead } from "@/lib/lead";
 import { THANKS_KEY } from "@/lib/site";
+import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, inputClass } from "./formFields";
 import { Arrow } from "./icons";
 
 type Data = { name: string; phone: string; postcode: string; bestTime: string; consent: boolean; company: string };
+const ORDER = ["name", "phone", "postcode", "bestTime", "consent"] as const;
 
 /** The lighter lead option: name, phone, postcode and best time to call. */
 export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "light" | "dark"; autoFocus?: boolean }) {
   const router = useRouter();
-  const id = useId();
+  const uid = useId();
+  const formRef = useRef<HTMLFormElement>(null);
   const dark = tone === "dark";
   const [data, setData] = useState<Data>({ name: "", phone: "", postcode: "", bestTime: "asap", consent: false, company: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
+  const id = (f: string) => `${uid}-${f}`;
 
   const set = <K extends keyof Data>(k: K, v: Data[K]) => {
     setData((d) => ({ ...d, [k]: v }));
-    setErrors((e) => ({ ...e, [k]: "" }));
+    if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
+  };
+  const blur = (k: keyof Data) => {
+    if (data[k] === "") return;
+    setErrors((e) => ({ ...e, [k]: fieldMessage(callbackSchema, k, data[k]) }));
   };
 
   async function submit(e: React.FormEvent) {
@@ -28,13 +36,18 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
     const payload = { type: "callback" as const, ...data };
     const check = callbackSchema.safeParse(payload);
     if (!check.success) {
-      setErrors(fieldErrors(check.error));
+      const errs = fieldErrors(check.error);
+      setErrors(errs);
+      focusFirstError(formRef.current, ORDER, errs);
       return;
     }
     setStatus("submitting");
     const res = await submitLead(payload);
     if (!res.ok) {
-      if (res.errors) setErrors(res.errors);
+      if (res.errors) {
+        setErrors(res.errors);
+        focusFirstError(formRef.current, ORDER, res.errors);
+      }
       setStatus("error");
       return;
     }
@@ -45,69 +58,91 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
     router.push(`/thank-you?type=callback&time=${data.bestTime}`);
   }
 
-  const input = (err?: string) =>
-    `w-full rounded-xl border px-4 py-3 text-base outline-none transition focus:border-ember-500 focus:ring-4 focus:ring-ember-500/20 ${
-      dark ? "bg-white/95 text-ink-900" : "bg-white text-ink-900"
-    } ${err ? "border-red-400" : dark ? "border-transparent" : "border-ink-200"}`;
-  const label = `mb-1.5 block text-sm font-semibold ${dark ? "text-white" : "text-ink-800"}`;
-  const errCls = `mt-1 block text-sm ${dark ? "text-red-300" : "text-red-600"}`;
-
   return (
-    <form onSubmit={submit} noValidate className="space-y-4" aria-label="Request a callback">
+    <form ref={formRef} onSubmit={submit} noValidate className="space-y-4" aria-label="Request a callback">
       <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <input tabIndex={-1} autoComplete="off" value={data.company} onChange={(e) => set("company", e.target.value)} />
       </div>
-      <label className="block">
-        <span className={label}>Name</span>
-        <input autoFocus={autoFocus} autoComplete="name" value={data.name} onChange={(e) => set("name", e.target.value)} className={input(errors.name)} />
-        {errors.name && <span className={errCls}>{errors.name}</span>}
-      </label>
+      <Field id={id("name")} label="Name" error={errors.name} tone={tone}>
+        <input
+          {...fieldA11y(id("name"), errors.name)}
+          data-field="name"
+          autoFocus={autoFocus}
+          autoComplete="name"
+          enterKeyHint="next"
+          value={data.name}
+          onBlur={() => blur("name")}
+          onChange={(e) => set("name", e.target.value)}
+          className={inputClass(errors.name, tone)}
+        />
+      </Field>
       <div className="grid grid-cols-[1.4fr_1fr] gap-3">
-        <label className="block">
-          <span className={label}>Phone</span>
-          <input type="tel" autoComplete="tel" placeholder="04xx xxx xxx" value={data.phone} onChange={(e) => set("phone", e.target.value)} className={input(errors.phone)} />
-          {errors.phone && <span className={errCls}>{errors.phone}</span>}
-        </label>
-        <label className="block">
-          <span className={label}>Postcode</span>
+        <Field id={id("phone")} label="Phone" error={errors.phone} tone={tone}>
           <input
+            {...fieldA11y(id("phone"), errors.phone)}
+            data-field="phone"
+            type="tel"
+            autoComplete="tel"
+            enterKeyHint="next"
+            placeholder="04xx xxx xxx"
+            value={data.phone}
+            onBlur={() => blur("phone")}
+            onChange={(e) => set("phone", e.target.value)}
+            className={inputClass(errors.phone, tone)}
+          />
+        </Field>
+        <Field id={id("postcode")} label="Postcode" error={errors.postcode} tone={tone}>
+          <input
+            {...fieldA11y(id("postcode"), errors.postcode)}
+            data-field="postcode"
             inputMode="numeric"
             autoComplete="postal-code"
+            enterKeyHint="next"
             maxLength={4}
             value={data.postcode}
+            onBlur={() => blur("postcode")}
             onChange={(e) => set("postcode", e.target.value.replace(/\D/g, ""))}
-            className={input(errors.postcode)}
+            className={inputClass(errors.postcode, tone)}
           />
-          {errors.postcode && <span className={errCls}>{errors.postcode}</span>}
-        </label>
+        </Field>
       </div>
-      <label className="block">
-        <span className={label}>Best time to call</span>
-        <select value={data.bestTime} onChange={(e) => set("bestTime", e.target.value)} className={input(errors.bestTime)}>
+      <Field id={id("bestTime")} label="Best time to call" error={errors.bestTime} tone={tone}>
+        <select
+          {...fieldA11y(id("bestTime"), errors.bestTime)}
+          data-field="bestTime"
+          value={data.bestTime}
+          onChange={(e) => set("bestTime", e.target.value)}
+          className={inputClass(errors.bestTime, tone)}
+        >
           {bestTimes.map((t) => (
             <option key={t.value} value={t.value}>{t.label}</option>
           ))}
         </select>
-      </label>
-      <label htmlFor={`${id}-consent`} className={`flex cursor-pointer gap-2.5 text-xs leading-relaxed ${dark ? "text-ink-200" : "text-ink-600"}`}>
-        <input
-          id={`${id}-consent`}
-          type="checkbox"
-          checked={data.consent}
-          onChange={(e) => set("consent", e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-ember-500"
-        />
-        <span>
-          I agree to my details being shared with a licensed partner installer who may call me about a quote. See our{" "}
-          <Link href="/privacy" className="underline">Privacy Policy</Link>.
-        </span>
-      </label>
-      {errors.consent && <p className={`${errCls} -mt-2`}>{errors.consent}</p>}
+      </Field>
+      <div>
+        <label htmlFor={id("consent")} className={`flex cursor-pointer gap-2.5 text-xs leading-relaxed ${dark ? "text-ink-200" : "text-ink-600"}`}>
+          <input
+            {...fieldA11y(id("consent"), errors.consent)}
+            data-field="consent"
+            type="checkbox"
+            checked={data.consent}
+            onChange={(e) => set("consent", e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-ember-600"
+          />
+          <span>
+            I agree to my details being shared with a licensed partner installer who may call me about a quote. See our{" "}
+            <Link href="/privacy" className="underline">Privacy Policy</Link>.
+          </span>
+        </label>
+        <FieldError id={id("consent")} error={errors.consent} tone={tone} />
+      </div>
       {status === "error" && !Object.values(errors).some(Boolean) && (
-        <p className={errCls}>Something went wrong. Please try again, or call us.</p>
+        <p role="alert" className={`text-sm font-medium ${dark ? "text-red-300" : "text-red-700"}`}>
+          We couldn&apos;t send that. Please try again, or call us.
+        </p>
       )}
-      <button type="submit" disabled={status === "submitting"} className="btn-primary w-full py-3.5 text-base">
-        {status === "submitting" ? "Sending…" : "Request my free callback"} <Arrow className="h-4 w-4" />
+      <button type="submit" disabled={status === "submitting"} className="btn-primary w-full px-4 py-3.5 text-base whitespace-nowrap">
+        {status === "submitting" ? "Sending…" : "Request a free callback"} <Arrow className="h-4 w-4" />
       </button>
     </form>
   );

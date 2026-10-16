@@ -5,15 +5,18 @@ import { Footer } from "@/components/Footer";
 import { ExitIntent } from "@/components/ExitIntent";
 import { StickyMobileBar } from "@/components/StickyMobileBar";
 import { site } from "@/lib/site";
+import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: { default: `${site.name}: Heat pump hot water, fixed-price installed`, template: `%s | ${site.name}` },
   description: site.description,
+  alternates: { canonical: "/" },
+  // Preview site: keep everything out of search results until launch.
   robots: { index: false, follow: false },
   openGraph: { siteName: site.name, locale: "en_AU", type: "website" },
 };

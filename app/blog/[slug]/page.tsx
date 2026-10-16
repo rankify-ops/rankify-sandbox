@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -19,9 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPost((await params).slug);
   if (!post) return {};
   return {
-    title: post.meta.title,
-    description: post.meta.description,
-    openGraph: { type: "article", publishedTime: post.meta.date },
+    ...pageMeta({ title: post.meta.title, description: post.meta.description, path: `/blog/${post.meta.slug}`, type: "article" }),
+    openGraph: { title: post.meta.title, description: post.meta.description, url: `/blog/${post.meta.slug}`, type: "article", publishedTime: post.meta.date },
   };
 }
 
@@ -48,7 +48,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <Link href="/blog" className="text-sm font-semibold text-ember-600 hover:text-ember-700">← All guides</Link>
             <h1 className="h-display mt-5 text-4xl text-ink-900 sm:text-5xl">{meta.title}</h1>
             <p className="mt-4 text-lg text-ink-600">{meta.description}</p>
-            <p className="mt-6 text-sm text-ink-400">
+            <p className="mt-6 text-sm text-ink-500">
               {formatDate(meta.date)} · {meta.readingMinutes} min read
             </p>
             <HeroCtas className="mt-8" />

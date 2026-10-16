@@ -10,6 +10,7 @@
   --color-ink-800: #13283d;
   --color-ink-700: #1f3a54;
   --color-ink-600: #3a556f;
+  --color-ink-500: #566b80;
   --color-ink-400: #7f93a7;
   --color-ink-200: #d3dce5;
 
@@ -20,8 +21,8 @@
   --color-ember-300: #fdba74;
   --color-ember-400: #fb923c;
   --color-ember-500: #f26b1d;
-  --color-ember-600: #d9530b;
-  --color-ember-700: #b4420a;
+  --color-ember-600: #c2410c;
+  --color-ember-700: #9a3412;
 
   --color-gum-500: #2f8f6b;
   --color-gum-600: #237256;
@@ -42,7 +43,18 @@
     @apply bg-ember-300 text-ink-900;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ember-500;
+    @apply outline-2 outline-offset-2 outline-ember-600;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -55,7 +67,7 @@
 }
 
 @utility btn-primary {
-  @apply btn bg-ember-500 text-white shadow-[0_8px_24px_-8px_rgb(242_107_29/0.7)] hover:-translate-y-0.5 hover:bg-ember-600;
+  @apply btn bg-ember-600 text-white shadow-[0_8px_24px_-8px_rgb(194_65_12/0.6)] hover:-translate-y-0.5 hover:bg-ember-700 active:translate-y-0;
 }
 
 @utility btn-dark {

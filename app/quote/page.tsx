@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { CallbackForm } from "@/components/CallbackForm";
 import { QuoteForm } from "@/components/QuoteForm";
 import { Check, Phone } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Get a fixed-price heat pump quote",
-  description: "Answer a few quick questions and get matched with a licensed heat pump installer in your area.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Get a free, fixed-price heat pump quote",
+  description: "Answer five quick questions, or request a callback, and get matched with a licensed heat pump installer in your area. Free and no obligation.",
+  path: "/quote",
+});
 
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ model?: string }> }) {
   const { model } = await searchParams;
@@ -60,7 +62,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
               <Phone className="h-5 w-5" /> {site.phone}
             </a>
           </div>
-          <p className="px-1 text-xs leading-relaxed text-ink-400">{referralDisclosure}</p>
+          <p className="px-1 text-xs leading-relaxed text-ink-500">{referralDisclosure}</p>
         </aside>
       </div>
     </section>

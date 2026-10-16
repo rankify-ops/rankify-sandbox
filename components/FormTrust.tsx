@@ -20,11 +20,11 @@ export function FormTrust({ tone = "light", compact = false }: { tone?: "light" 
           );
         })}
       </ul>
-      <p className={`flex gap-2 text-xs leading-relaxed ${dark ? "text-ink-400" : "text-ink-400"}`}>
+      <p className={`flex gap-2 text-xs leading-relaxed ${dark ? "text-ink-200/80" : "text-ink-500"}`}>
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
           {privacyNote}{" "}
-          <Link href="/privacy" className="underline hover:text-ember-600">Privacy Policy</Link>
+          <Link href="/privacy" className={`underline ${dark ? "hover:text-white" : "hover:text-ember-600"}`}>Privacy Policy</Link>
         </span>
       </p>
     </div>

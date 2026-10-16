@@ -35,6 +35,8 @@ function QuoteCta({ title = "Ready to compare fixed prices?" }: { title?: string
 export const mdxComponents: MDXComponents = {
   Callout,
   QuoteCta,
+  // eslint-disable-next-line @next/next/no-img-element -- MDX images are author-supplied; alt is enforced in lib/blog.ts
+  img: ({ alt = "", ...props }) => <img alt={alt} loading="lazy" decoding="async" className="rounded-2xl" {...props} />,
   a: ({ href = "", ...props }) =>
     href.startsWith("/") ? (
       <Link href={href} {...props} />

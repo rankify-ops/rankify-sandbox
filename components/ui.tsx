@@ -6,12 +6,12 @@ import { Arrow, Check, Info, Phone } from "./icons";
 export function HeroCtas({ quoteHref = "/quote", className = "" }: { quoteHref?: string; className?: string }) {
   return (
     <div className={className}>
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <Link href={quoteHref} className="btn-primary px-7 py-3.5 text-base">
           Get a free quote <Arrow className="h-4 w-4" />
         </Link>
-        <a href={site.phoneHref} className="btn-ghost px-7 py-3.5 text-base">
-          <Phone className="h-4 w-4" /> Call {site.phone}
+        <a href={site.phoneHref} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900 sm:justify-start">
+          <Phone className="h-4 w-4 text-ember-600" /> or call {site.phone}
         </a>
       </div>
       <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-600">

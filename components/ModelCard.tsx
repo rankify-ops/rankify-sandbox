@@ -12,12 +12,12 @@ export function ModelCard({ model }: { model: HeatPumpModel }) {
       }`}
     >
       {popular && (
-        <span className="absolute -top-3 left-6 rounded-full bg-ember-500 px-3 py-1 text-xs font-semibold text-white">
+        <span className="absolute -top-3 left-6 rounded-full bg-ember-600 px-3 py-1 text-xs font-semibold text-white">
           Most requested
         </span>
       )}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
+        <span className="text-xs font-semibold tracking-wider text-ink-500 uppercase">
           {model.tier} · {model.type}
         </span>
         <span className="flex items-center gap-1 text-xs text-ink-600">
@@ -34,12 +34,12 @@ export function ModelCard({ model }: { model: HeatPumpModel }) {
         ))}
       </ul>
       <div className="mt-6 border-t border-ink-200/70 pt-5">
-        <p className="text-xs text-ink-400">Supply &amp; install from</p>
+        <p className="text-xs text-ink-500">Supply &amp; install from</p>
         <div className="mt-1 flex items-center gap-2">
           <span className="font-display text-3xl font-semibold text-ink-900">{formatAUD(model.priceFrom)}</span>
           {!model.verified && <TbcBadge label="Price TBC" />}
         </div>
-        <p className="mt-1 text-xs text-ink-400">Before any eligible rebates</p>
+        <p className="mt-1 text-xs text-ink-500">Before any eligible rebates</p>
       </div>
       <div className="mt-6 flex gap-2">
         <Link href={`/quote?model=${model.slug}`} className="btn-primary flex-1 py-2.5">
