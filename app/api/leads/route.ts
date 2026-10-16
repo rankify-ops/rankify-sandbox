@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { leadSchema } from "@/lib/lead";
+import { callbackSchema, fieldErrors, leadSchema } from "@/lib/lead";
 
 // Temporary storage: append to a JSON file. Vercel's filesystem is read-only apart
 // from /tmp (which is per-instance and short-lived), so on Vercel rely on the
@@ -33,13 +33,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = leadSchema.safeParse(body);
+  const isCallback = (body as { type?: unknown } | null)?.type === "callback";
+  const parsed = isCallback ? callbackSchema.safeParse(body) : leadSchema.safeParse(body);
   if (!parsed.success) {
-    const errors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = String(issue.path[0] ?? "form");
-      errors[key] ??= issue.message;
-    }
+    const errors = fieldErrors(parsed.error);
     // A filled honeypot is a bot: pretend success so it doesn't retry.
     if (errors.company) return NextResponse.json({ ok: true });
     return NextResponse.json({ ok: false, errors }, { status: 422 });

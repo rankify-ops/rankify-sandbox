@@ -17,10 +17,28 @@ export const householdSizes = [
   { value: "5+", label: "5+ people" },
 ] as const;
 
+export const bestTimes = [
+  { value: "asap", label: "As soon as possible" },
+  { value: "morning", label: "Morning (8am–12pm)" },
+  { value: "afternoon", label: "Afternoon (12pm–5pm)" },
+  { value: "evening", label: "Evening (5pm–7pm)" },
+] as const;
+
 export const NO_PREFERENCE = "no-preference";
 
+const phoneField = z
+  .string()
+  .trim()
+  .transform((v) => v.replace(/[\s()-]/g, ""))
+  .pipe(z.string().regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number"));
+const postcodeField = z.string().regex(/^\d{4}$/, "Enter a 4-digit Australian postcode");
+const nameField = z.string().trim().min(2, "Enter your name").max(100);
+const honeypot = z.string().max(0).optional();
+const source = z.string().max(300).optional();
+
 export const leadSchema = z.object({
-  postcode: z.string().regex(/^\d{4}$/, "Enter a 4-digit Australian postcode"),
+  type: z.literal("quote").default("quote"),
+  postcode: postcodeField,
   state: z.enum(states, { message: "Select your state or territory" }),
   currentSystem: z.enum(currentSystems.map((s) => s.value) as [string, ...string[]], {
     message: "Select your current system",
@@ -31,21 +49,57 @@ export const leadSchema = z.object({
   preferredModel: z.enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]], {
     message: "Choose a model, or 'Help me choose'",
   }),
-  name: z.string().trim().min(2, "Enter your name").max(100),
-  phone: z
-    .string()
-    .trim()
-    .transform((v) => v.replace(/[\s()-]/g, ""))
-    .pipe(z.string().regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number")),
+  name: nameField,
+  phone: phoneField,
   email: z.string().trim().email("Enter a valid email address").max(200),
   consent: z.literal(true, { message: "Please agree so we can pass your details to an installer" }),
+  // Rebate programs the visitor was shown in the rebate checker, if they came from there.
+  rebatesViewed: z.array(z.string().max(120)).max(10).optional(),
   // Honeypot — real users never see or fill this.
-  company: z.string().max(0).optional(),
-  source: z.string().max(200).optional(),
+  company: honeypot,
+  source,
+});
+
+export const callbackSchema = z.object({
+  type: z.literal("callback"),
+  name: nameField,
+  phone: phoneField,
+  postcode: postcodeField,
+  bestTime: z.enum(bestTimes.map((t) => t.value) as [string, ...string[]], { message: "Pick a time that suits" }),
+  consent: z.literal(true, { message: "Please agree so an installer can call you" }),
+  company: honeypot,
+  source,
 });
 
 export type LeadInput = z.input<typeof leadSchema>;
 export type Lead = z.output<typeof leadSchema>;
+export type CallbackInput = z.input<typeof callbackSchema>;
+
+/** Field → first error message, for showing inline errors. */
+export function fieldErrors(error: z.ZodError) {
+  const errors: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const key = String(issue.path[0] ?? "form");
+    errors[key] ??= issue.message;
+  }
+  return errors;
+}
+
+/** Shared client-side submit used by every lead form. */
+export async function submitLead(payload: object): Promise<{ ok: true } | { ok: false; errors?: Record<string, string> }> {
+  try {
+    const res = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, source: window.location.pathname + window.location.search }),
+    });
+    if (res.ok) return { ok: true };
+    const body = await res.json().catch(() => ({}));
+    return { ok: false, errors: body?.errors };
+  } catch {
+    return { ok: false };
+  }
+}
 
 /** Rough state check from postcode ranges, used to warn about likely typos. */
 export function stateForPostcode(pc: string): string | null {

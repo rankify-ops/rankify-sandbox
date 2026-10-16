@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeatPumpArt } from "@/components/HeatPumpArt";
+import { FormTrust } from "@/components/FormTrust";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
-import { Arrow, Check, Users } from "@/components/icons";
+import { Arrow, Check, Phone, Users } from "@/components/icons";
 import { CtaBand, PlaceholderNotice, TbcBadge } from "@/components/ui";
 import { formatAUD, getModel, models } from "@/lib/models";
+import { site } from "@/lib/site";
 
 export function generateStaticParams() {
   return models.map((m) => ({ slug: m.slug }));
@@ -52,11 +55,14 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
               </div>
               <p className="mt-2 text-xs text-ink-400">Inc. GST (TBC), before eligible rebates. Standard installation only.</p>
               <Link href={`/quote?model=${model.slug}`} className="btn-primary mt-5 w-full py-3.5 text-base">
-                Get a quote for this model <Arrow className="h-4 w-4" />
+                Get a free quote for this model <Arrow className="h-4 w-4" />
               </Link>
-              <Link href="/rebates" className="mt-3 block text-center text-sm font-semibold text-ember-600 hover:text-ember-700">
-                Check which rebates apply →
-              </Link>
+              <a href={site.phoneHref} className="btn-ghost mt-2.5 w-full py-3">
+                <Phone className="h-4 w-4" /> Call {site.phone}
+              </a>
+              <div className="mt-5 border-t border-ink-200/70 pt-5">
+                <FormTrust compact />
+              </div>
             </div>
           </div>
           <HeatPumpArt className="mx-auto w-56 sm:w-72" />
@@ -101,8 +107,23 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
               Your installer confirms any extras before work starts.
             </p>
           </div>
+          <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-ember-500/25 bg-ember-500/5 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-ink-900">Want the {model.name} at your place?</p>
+              <p className="text-sm text-ink-600">Rebates you may be eligible for are applied on your quote.</p>
+            </div>
+            <Link href={`/quote?model=${model.slug}`} className="btn-primary shrink-0">
+              Get a free quote <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
+
+      <LeadCaptureBlock
+        title={`Get your fixed price on the ${model.name}`}
+        lead="Answer a few quick questions, or leave your number for a callback. A licensed partner installer will confirm your site, price and rebates."
+        quoteHref={`/quote?model=${model.slug}`}
+      />
 
       <section className="bg-cream-100 py-16">
         <div className="container-x">
@@ -115,7 +136,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         </div>
       </section>
 
-      <CtaBand />
+      <CtaBand quoteHref={`/quote?model=${model.slug}`} title={`Ready to switch to the ${model.name}?`} />
     </>
   );
 }

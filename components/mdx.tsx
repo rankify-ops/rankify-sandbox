@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { MDXComponents } from "mdx/types";
+import { site } from "@/lib/site";
 import { Arrow, Info } from "./icons";
 
 function Callout({ children, title }: { children: React.ReactNode; title?: string }) {
@@ -17,9 +18,15 @@ function Callout({ children, title }: { children: React.ReactNode; title?: strin
 function QuoteCta({ title = "Ready to compare fixed prices?" }: { title?: string }) {
   return (
     <div className="not-prose my-10 flex flex-col items-start gap-4 rounded-3xl bg-ink-900 p-6 text-white sm:flex-row sm:items-center sm:justify-between">
-      <p className="font-display text-xl">{title}</p>
+      <div>
+        <p className="font-display text-xl">{title}</p>
+        <p className="mt-1 text-sm text-ink-200">
+          Free &amp; no obligation · or call{" "}
+          <a href={site.phoneHref} className="font-semibold text-white underline">{site.phone}</a>
+        </p>
+      </div>
       <Link href="/quote" className="btn-primary shrink-0">
-        Get my quote <Arrow className="h-4 w-4" />
+        Get a free quote <Arrow className="h-4 w-4" />
       </Link>
     </div>
   );

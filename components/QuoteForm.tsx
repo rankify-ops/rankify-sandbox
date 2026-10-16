@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, stateForPostcode } from "@/lib/lead";
+import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, stateForPostcode, submitLead } from "@/lib/lead";
 import { formatAUD, models } from "@/lib/models";
-import { states } from "@/lib/site";
-import { ArrowLeft, Arrow, Check, Shield } from "./icons";
+import { privacyNote, states, THANKS_KEY } from "@/lib/site";
+import { FormTrust } from "./FormTrust";
+import { ArrowLeft, Arrow, Check, Lock } from "./icons";
 import { TbcBadge } from "./ui";
 
 type Data = {
@@ -35,12 +37,28 @@ const recommendFor: Record<string, string[]> = {
   "5+": ["family-plus-315", "cold-climate-300"],
 };
 
-export function QuoteForm({ initialModel }: { initialModel?: string }) {
+export function QuoteForm({
+  initialModel,
+  initialState,
+  rebatesViewed,
+  title,
+  tone = "light",
+}: {
+  initialModel?: string;
+  initialState?: string;
+  /** Rebate programs shown in the checker, sent with the lead so the installer knows what to apply. */
+  rebatesViewed?: string[];
+  title?: string;
+  /** Colour of the trust signals under the form, to suit the section it sits in. */
+  tone?: "light" | "dark";
+}) {
+  const router = useRouter();
   const validInitial = models.some((m) => m.slug === initialModel) ? initialModel! : "";
+  const validState = (states as readonly string[]).includes(initialState ?? "") ? initialState! : "";
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Data>({
     postcode: "",
-    state: "",
+    state: validState,
     currentSystem: "",
     householdSize: "",
     preferredModel: validInitial,
@@ -51,7 +69,7 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
     company: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
 
   const set = <K extends keyof Data>(k: K, v: Data[K]) => {
     setData((d) => ({ ...d, [k]: v }));
@@ -86,41 +104,17 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
     e.preventDefault();
     if (!validateStep(step)) return;
     setStatus("submitting");
-    try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, source: typeof window !== "undefined" ? window.location.pathname + window.location.search : undefined }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        if (body?.errors) setErrors(body.errors);
-        throw new Error("Request failed");
-      }
-      setStatus("done");
-      (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "lead_submitted", state: data.state });
-    } catch {
+    const res = await submitLead({ type: "quote", ...data, rebatesViewed });
+    if (!res.ok) {
+      if (res.errors) setErrors(res.errors);
       setStatus("error");
+      return;
     }
-  }
-
-  if (status === "done") {
-    return (
-      <div className="card p-8 text-center sm:p-12">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gum-50 text-gum-600">
-          <Check className="h-8 w-8" />
-        </span>
-        <h2 className="h-display mt-6 text-3xl text-ink-900">Thanks {data.name.split(" ")[0]}, you&apos;re all set.</h2>
-        <p className="mx-auto mt-3 max-w-md text-ink-600">
-          We&apos;ve received your request. A licensed partner installer servicing {data.postcode} will be in touch to confirm
-          your site details and fixed price.
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link href={`/rebates?state=${data.state}`} className="btn-dark">Review my rebates</Link>
-          <Link href="/blog" className="btn-ghost">Read our buying guides</Link>
-        </div>
-      </div>
-    );
+    try {
+      sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0], postcode: data.postcode }));
+    } catch {}
+    (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "lead_submitted", lead_type: "quote", state: data.state });
+    router.push(`/thank-you?type=quote&state=${data.state}`);
   }
 
   const progress = ((step + 1) / STEPS.length) * 100;
@@ -128,7 +122,8 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
   const recommended = recommendFor[data.householdSize] ?? [];
 
   return (
-    <form onSubmit={submit} noValidate className="card overflow-hidden">
+    <div>
+    <form onSubmit={submit} noValidate className="card overflow-hidden" aria-label="Quote request">
       <div className="border-b border-ink-200/70 px-6 py-5 sm:px-8">
         <div className="flex items-center justify-between text-xs font-medium text-ink-400">
           <span>Step {step + 1} of {STEPS.length}</span>
@@ -140,7 +135,13 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
       </div>
 
       <div className="px-6 py-8 sm:px-8">
+        {title && step === 0 && <p className="mb-2 text-sm font-semibold text-ember-600">{title}</p>}
         <h2 className="h-display text-2xl text-ink-900 sm:text-3xl">{STEPS[step].title}</h2>
+        {rebatesViewed && rebatesViewed.length > 0 && step === 0 && (
+          <p className="mt-3 rounded-xl bg-gum-50 px-4 py-3 text-sm text-gum-600">
+            <strong>Included with your request:</strong> {rebatesViewed.join(" · ")}. Your installer will check what you&apos;re eligible for.
+          </p>
+        )}
 
         {/* Honeypot */}
         <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -249,9 +250,14 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
           </div>
         )}
 
+        {step === STEPS.length - 1 && (
+          <p className="mt-5 flex gap-2 text-xs leading-relaxed text-ink-400">
+            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {privacyNote}
+          </p>
+        )}
         {status === "error" && (
           <p className="mt-6 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-            Something went wrong sending your request. Please check your details and try again.
+            Something went wrong sending your request. Please check your details and try again, or give us a call.
           </p>
         )}
       </div>
@@ -262,8 +268,8 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
         ) : (
-          <span className="flex items-center gap-1.5 text-xs text-ink-400">
-            <Shield className="h-4 w-4" /> Your details stay private
+          <span className="hidden items-center gap-1.5 text-xs font-medium text-ink-600 sm:flex">
+            <Check className="h-4 w-4 text-gum-500" /> Free &amp; no obligation
           </span>
         )}
         {step < STEPS.length - 1 ? (
@@ -272,11 +278,15 @@ export function QuoteForm({ initialModel }: { initialModel?: string }) {
           </button>
         ) : (
           <button type="submit" disabled={status === "submitting"} className="btn-primary px-8">
-            {status === "submitting" ? "Sending…" : "Get my quote"} <Arrow className="h-4 w-4" />
+            {status === "submitting" ? "Sending…" : "Get my free quote"} <Arrow className="h-4 w-4" />
           </button>
         )}
       </div>
     </form>
+    <div className="mt-5 px-1">
+      <FormTrust tone={tone} />
+    </div>
+    </div>
   );
 }
 

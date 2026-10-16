@@ -22,3 +22,19 @@ export const referralDisclosure =
 
 export const states = ["QLD", "NSW", "VIC", "ACT", "SA", "WA", "TAS", "NT"] as const;
 export type AusState = (typeof states)[number];
+
+// Placeholder service promise — confirm with partner installers before launch.
+export const responseTime = "Usually within 1 business day (TBC)";
+
+export const formTrustPoints = [
+  { key: "free", label: "Free, no-obligation quote" },
+  { key: "licensed", label: "Licensed partner installers (TBC)" },
+  { key: "rebates", label: "Rebates handled for you" },
+  { key: "response", label: `Reply ${responseTime.charAt(0).toLowerCase()}${responseTime.slice(1)}` },
+] as const;
+
+export const privacyNote =
+  "Your details are only shared with one licensed partner installer for your area. We never sell your information.";
+
+/** Remembered between the form and the thank-you page (session only, never sent anywhere). */
+export const THANKS_KEY = "ahp:thanks";

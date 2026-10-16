@@ -49,17 +49,26 @@ export function Header() {
             <Phone className="h-4 w-4" /> {site.phone}
           </a>
           <Link href="/quote" className="btn-primary py-2.5">
-            Get a quote
+            Get a free quote
           </Link>
         </div>
-        <button
-          className="grid h-10 w-10 place-items-center rounded-full border border-ink-200 md:hidden"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-label={open ? "Close menu" : "Open menu"}
-        >
-          {open ? <Close className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <a
+            href={site.phoneHref}
+            className="flex h-10 items-center gap-1.5 rounded-full bg-ember-500 px-3.5 text-sm font-semibold text-white"
+            aria-label={`Call ${site.phone}`}
+          >
+            <Phone className="h-4 w-4" /> Call
+          </a>
+          <button
+            className="grid h-10 w-10 place-items-center rounded-full border border-ink-200"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-label={open ? "Close menu" : "Open menu"}
+          >
+            {open ? <Close className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="border-t border-ink-200/60 bg-cream-50 md:hidden">
@@ -70,8 +79,11 @@ export function Header() {
               </Link>
             ))}
             <Link href="/quote" className="btn-primary mt-3">
-              Get a fixed-price quote
+              Get a free quote
             </Link>
+            <a href={site.phoneHref} className="btn-ghost mt-2">
+              <Phone className="h-4 w-4" /> Call {site.phone}
+            </a>
           </nav>
         </div>
       )}

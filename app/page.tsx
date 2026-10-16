@@ -2,16 +2,17 @@ import Link from "next/link";
 import { HeatPumpArt } from "@/components/HeatPumpArt";
 import { ModelCard } from "@/components/ModelCard";
 import { Faq, FaqJsonLd, type FaqItem } from "@/components/Faq";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { CtaBand, SectionHeading, TbcBadge } from "@/components/ui";
-import { Arrow, Bolt, Check, Clock, Leaf, Shield, Tag, Wrench } from "@/components/icons";
+import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/components/icons";
 import { formatAUD, models } from "@/lib/models";
-import { referralDisclosure } from "@/lib/site";
+import { referralDisclosure, site } from "@/lib/site";
 
 const trust = [
   { icon: Tag, title: "Set, upfront pricing", text: "Supply and install prices are published per model. No surprise call-out quotes." },
-  { icon: Shield, title: "Licensed installers", text: "Partner installers hold the plumbing and electrical licences your state requires." },
+  { icon: Shield, title: "Licensed installers (TBC)", text: "Partner installers hold the plumbing and electrical licences your state requires." },
   { icon: Leaf, title: "Rebates applied for you", text: "Eligible STCs are typically taken off your quote upfront by the installer." },
-  { icon: Clock, title: "Quote in 2 minutes", text: "A few quick questions, then a local installer contacts you to confirm." },
+  { icon: Clock, title: "Fast response", text: "Two minutes to request. A local installer usually replies within 1 business day (TBC)." },
 ];
 
 const steps = [
@@ -71,14 +72,14 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/quote" className="btn-primary px-8 py-4 text-base">
-                Get my fixed-price quote <Arrow className="h-4 w-4" />
+                Get my free quote <Arrow className="h-4 w-4" />
               </Link>
-              <Link href="/rebates" className="btn border border-white/20 px-8 py-4 text-base text-white hover:bg-white/10">
-                Check my rebates
-              </Link>
+              <a href={site.phoneHref} className="btn border border-white/20 px-8 py-4 text-base text-white hover:bg-white/10">
+                <Phone className="h-4 w-4" /> Call {site.phone}
+              </a>
             </div>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200">
-              {["No-obligation quote", "Old system removed", "Rebates applied upfront*"].map((t) => (
+              {["Free & no obligation", "Old system removed", "Rebates handled for you*"].map((t) => (
                 <li key={t} className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-ember-400" /> {t}
                 </li>
@@ -161,8 +162,13 @@ export default function Home() {
         </div>
       </section>
 
+      <LeadCaptureBlock
+        title="Get your fixed price, rebates included"
+        lead="Tell us about your home in two minutes, or leave your number and a licensed partner installer will call you back."
+      />
+
       {/* Rebates teaser */}
-      <section className="container-x py-20 sm:py-28">
+      <section className="container-x pb-20 pt-6 sm:pb-28">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <SectionHeading
@@ -170,9 +176,12 @@ export default function Home() {
               title="See what you could save before you commit"
               lead="Federal STCs apply in every state, and QLD, NSW and VIC homes may access extra state programs. Our checker lists them, with links to every official government page."
             />
-            <Link href="/rebates" className="btn-dark mt-8">
-              Open the rebate checker <Arrow className="h-4 w-4" />
-            </Link>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/rebates" className="btn-dark">
+                Check my rebates <Arrow className="h-4 w-4" />
+              </Link>
+              <Link href="/quote" className="btn-ghost">Get a free quote</Link>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
@@ -216,7 +225,13 @@ export default function Home() {
       {/* FAQ */}
       <section className="container-x py-20 sm:py-28">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <SectionHeading eyebrow="FAQ" title="Questions we hear every day" />
+          <div>
+            <SectionHeading eyebrow="FAQ" title="Questions we hear every day" />
+            <p className="mt-4 text-ink-600">Still unsure? Talk to us.</p>
+            <a href={site.phoneHref} className="mt-2 inline-flex items-center gap-2 text-lg font-semibold text-ember-600">
+              <Phone className="h-5 w-5" /> {site.phone}
+            </a>
+          </div>
           <Faq items={faqs} />
         </div>
         <p className="mt-6 text-xs text-ink-400">

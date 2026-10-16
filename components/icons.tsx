@@ -59,3 +59,6 @@ export const Users = (p: P) => (
 export const Droplet = (p: P) => (
   <svg {...base} {...p}><path d="M12 3s7 7.5 7 12a7 7 0 0 1-14 0c0-4.5 7-12 7-12Z" /></svg>
 );
+export const Lock = (p: P) => (
+  <svg {...base} {...p}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+);

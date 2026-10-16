@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHero, PlaceholderNotice } from "@/components/ui";
+import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Privacy Policy" };
@@ -41,6 +41,7 @@ export default function PrivacyPage() {
           </p>
         </div>
       </section>
+      <CtaBand />
     </>
   );
 }

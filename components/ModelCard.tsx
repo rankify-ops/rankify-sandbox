@@ -43,7 +43,7 @@ export function ModelCard({ model }: { model: HeatPumpModel }) {
       </div>
       <div className="mt-6 flex gap-2">
         <Link href={`/quote?model=${model.slug}`} className="btn-primary flex-1 py-2.5">
-          Get a quote
+          Free quote
         </Link>
         <Link href={`/models/${model.slug}`} className="btn-ghost py-2.5" aria-label={`View details for ${model.name}`}>
           Details <Arrow className="h-4 w-4" />

@@ -1,5 +1,29 @@
 import Link from "next/link";
-import { Arrow, Info } from "./icons";
+import { site } from "@/lib/site";
+import { Arrow, Check, Info, Phone } from "./icons";
+
+/** Primary quote CTA + click-to-call, used above the fold on every page. */
+export function HeroCtas({ quoteHref = "/quote", className = "" }: { quoteHref?: string; className?: string }) {
+  return (
+    <div className={className}>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Link href={quoteHref} className="btn-primary px-7 py-3.5 text-base">
+          Get a free quote <Arrow className="h-4 w-4" />
+        </Link>
+        <a href={site.phoneHref} className="btn-ghost px-7 py-3.5 text-base">
+          <Phone className="h-4 w-4" /> Call {site.phone}
+        </a>
+      </div>
+      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-600">
+        {["Free & no obligation", "Licensed installers (TBC)", "Rebates handled"].map((t) => (
+          <span key={t} className="flex items-center gap-1.5">
+            <Check className="h-4 w-4 text-gum-500" /> {t}
+          </span>
+        ))}
+      </p>
+    </div>
+  );
+}
 
 export function TbcBadge({ label = "TBC", className = "" }: { label?: string; className?: string }) {
   return (
@@ -42,11 +66,13 @@ export function SectionHeading({
 }
 
 export function CtaBand({
-  title = "Get your fixed-price quote in under 2 minutes",
+  title = "Get your free, fixed-price quote in 2 minutes",
   lead = "Tell us a little about your home and we'll match you with a licensed partner installer in your area. No obligation.",
+  quoteHref = "/quote",
 }: {
   title?: string;
   lead?: string;
+  quoteHref?: string;
 }) {
   return (
     <section className="container-x py-16 sm:py-24">
@@ -58,12 +84,12 @@ export function CtaBand({
         <h2 className="h-display relative mx-auto max-w-2xl text-3xl text-white sm:text-4xl">{title}</h2>
         <p className="relative mx-auto mt-4 max-w-xl text-ink-200">{lead}</p>
         <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href="/quote" className="btn-primary px-8 py-4 text-base">
-            Start my quote <Arrow className="h-4 w-4" />
+          <Link href={quoteHref} className="btn-primary px-8 py-4 text-base">
+            Get my free quote <Arrow className="h-4 w-4" />
           </Link>
-          <Link href="/rebates" className="btn text-white hover:text-ember-300">
-            Check my rebates first
-          </Link>
+          <a href={site.phoneHref} className="btn border border-white/20 px-8 py-4 text-base text-white hover:bg-white/10">
+            <Phone className="h-4 w-4" /> Call {site.phone}
+          </a>
         </div>
       </div>
     </section>
@@ -75,11 +101,13 @@ export function PageHero({
   title,
   lead,
   children,
+  cta = true,
 }: {
   eyebrow: string;
   title: React.ReactNode;
   lead?: React.ReactNode;
   children?: React.ReactNode;
+  cta?: boolean;
 }) {
   return (
     <section className="relative overflow-hidden border-b border-ink-200/60 bg-cream-100">
@@ -91,6 +119,7 @@ export function PageHero({
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="h-display mt-3 max-w-3xl text-4xl text-ink-900 sm:text-5xl">{title}</h1>
         {lead && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-600">{lead}</p>}
+        {cta && <HeroCtas className="mt-8" />}
         {children}
       </div>
     </section>

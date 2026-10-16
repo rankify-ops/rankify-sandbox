@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ModelCard } from "@/components/ModelCard";
 import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
 import { formatAUD, models } from "@/lib/models";
@@ -31,7 +32,15 @@ export default function ModelsPage() {
           ))}
         </div>
 
-        <div className="card mt-16 overflow-x-auto">
+      </section>
+
+      <LeadCaptureBlock
+        title="Not sure which model suits your home?"
+        lead="Choose 'Help me choose' in the quote form, or request a callback. A licensed installer will recommend the right size and confirm your fixed price."
+      />
+
+      <section className="container-x pb-4">
+        <div className="card overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
             <caption className="px-6 pt-6 text-left font-display text-xl font-medium text-ink-900">Side-by-side</caption>
             <thead className="text-xs tracking-wider text-ink-400 uppercase">
@@ -62,7 +71,7 @@ export default function ModelsPage() {
         </div>
       </section>
 
-      <CtaBand title="Not sure which size you need?" lead="Choose 'Help me choose' in the quote form and your installer will recommend the right system for your household." />
+      <CtaBand title="Found the one? Lock in your price." lead="Get a free, no-obligation quote from a licensed partner installer in your area." />
     </>
   );
 }

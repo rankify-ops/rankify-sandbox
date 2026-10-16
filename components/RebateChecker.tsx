@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { programsFor, rebateStates, type RebateProgram } from "@/lib/rebates";
-import { Arrow, Check, External } from "./icons";
+import { federalSTC, programsFor, rebateStates, type RebateProgram } from "@/lib/rebates";
+import { Check, External } from "./icons";
+import { QuoteForm } from "./QuoteForm";
 import { TbcBadge } from "./ui";
 
 const stateNames: Record<string, string> = { QLD: "Queensland", NSW: "New South Wales", VIC: "Victoria" };
@@ -55,14 +56,23 @@ export function RebateChecker({ initialState }: { initialState?: string }) {
           {programsFor(state).map((p) => (
             <ProgramCard key={p.id} program={p} />
           ))}
-          <div className="flex flex-col items-start gap-4 rounded-3xl bg-ink-900 p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-8">
-            <div>
-              <p className="font-semibold">Want an installer to apply what you&apos;re eligible for?</p>
-              <p className="mt-1 text-sm text-ink-200">They&apos;ll confirm eligibility and show rebates on your quote.</p>
+          <div id="rebate-quote" className="scroll-mt-24 pt-6">
+            <div className="rounded-[2rem] bg-ink-900 p-5 sm:p-8">
+              <p className="text-xs font-semibold tracking-[0.18em] text-ember-400 uppercase">Next step · Free quote</p>
+              <h2 className="h-display mt-2 text-2xl text-white sm:text-3xl">
+                Get a quote with your {state} rebates applied
+              </h2>
+              <p className="mt-2 mb-6 text-ink-200">
+                We&apos;ve started your request with {stateNames[state]} and the programs above. A licensed partner installer
+                will confirm what you&apos;re eligible for and take it off your price.
+              </p>
+              <QuoteForm
+                key={state}
+                tone="dark"
+                initialState={state}
+                rebatesViewed={[federalSTC.name, ...programsFor(state).map((p) => p.name)]}
+              />
             </div>
-            <Link href="/quote" className="btn-primary shrink-0">
-              Get my quote <Arrow className="h-4 w-4" />
-            </Link>
           </div>
         </div>
       )}

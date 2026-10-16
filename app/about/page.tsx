@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { CtaBand, PageHero } from "@/components/ui";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
+import { PageHero } from "@/components/ui";
 import { Shield, Tag, Users, Wrench } from "@/components/icons";
 import { referralDisclosure, site } from "@/lib/site";
 
@@ -74,7 +75,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <CtaBand />
+      <LeadCaptureBlock
+        title="Talk to a licensed installer about your home"
+        lead="Get a free, no-obligation quote, or leave your number and a partner installer will call you back."
+      />
     </>
   );
 }

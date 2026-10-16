@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Arrow } from "@/components/icons";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
 import { ProgramCard, RebateChecker } from "@/components/RebateChecker";
-import { CtaBand, PageHero, PlaceholderNotice } from "@/components/ui";
+import { PageHero, PlaceholderNotice } from "@/components/ui";
 import { federalSTC } from "@/lib/rebates";
 
 export const metadata: Metadata = {
@@ -15,7 +18,7 @@ export default async function RebatesPage({ searchParams }: { searchParams: Prom
       <PageHero
         eyebrow="Rebate checker"
         title="Find the heat pump rebates you may be eligible for"
-        lead="Pick your state to see federal and state programs. Rebates change often, so every program links to its official government page where you can confirm current amounts and eligibility."
+        lead="Pick your state to see federal and state programs, then get a free quote with them applied. Every program links to its official government page."
       >
         <div className="mt-8 max-w-2xl">
           <PlaceholderNotice>
@@ -36,10 +39,22 @@ export default async function RebatesPage({ searchParams }: { searchParams: Prom
           <div className="mt-6">
             <ProgramCard program={federalSTC} />
           </div>
+          <div className="mt-6 flex flex-col gap-4 rounded-3xl border border-ember-500/25 bg-ember-500/5 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-ink-900">In ACT, SA, WA, TAS or NT?</p>
+              <p className="text-sm text-ink-600">Your installer applies eligible STCs straight off your quote.</p>
+            </div>
+            <Link href="/quote" className="btn-primary shrink-0">
+              Get a free quote <Arrow className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      <CtaBand title="Let your installer handle the paperwork" lead="Partner installers typically apply eligible STCs as an upfront discount and can talk you through state programs." />
+      <LeadCaptureBlock
+        title="Let your installer handle the rebate paperwork"
+        lead="Partner installers typically apply eligible STCs as an upfront discount and can talk you through state programs. Get a quote or a quick callback."
+      />
     </>
   );
 }

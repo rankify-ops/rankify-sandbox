@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { mdxComponents } from "@/components/mdx";
-import { CtaBand } from "@/components/ui";
+import { LeadCaptureBlock } from "@/components/LeadCaptureBlock";
+import { HeroCtas } from "@/components/ui";
 import { formatDate, getAllPosts, getPost } from "@/lib/blog";
 import { site } from "@/lib/site";
 
@@ -50,6 +51,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <p className="mt-6 text-sm text-ink-400">
               {formatDate(meta.date)} · {meta.readingMinutes} min read
             </p>
+            <HeroCtas className="mt-8" />
           </div>
         </header>
         <div className="container-x max-w-3xl py-14">
@@ -58,7 +60,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </article>
-      <CtaBand />
+      <LeadCaptureBlock
+        title="Ready to stop paying to heat water the old way?"
+        lead="Get a free, fixed-price quote from a licensed partner installer, with the rebates you may be eligible for applied. Or leave your number for a quick callback."
+      />
     </>
   );
 }
