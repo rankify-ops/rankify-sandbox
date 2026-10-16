@@ -117,7 +117,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
             <a href={bomUrl(city.bom.stationId)} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink-800">
               {city.bom.station} (station {city.bom.stationId})
             </a>
-            , all years {city.bom.period}. Checked {formatCheckedDate(CITY_DATA_CHECKED)}.
+            , all years {city.bom.period}{city.bom.note ? ` (${city.bom.note})` : ""}. Checked {formatCheckedDate(CITY_DATA_CHECKED)}.
           </p>
           <div className="mt-6 rounded-2xl bg-cream-100 p-5">
             <h3 className="font-semibold text-ink-900">NCC climate zone {city.ncc.zone}: {city.ncc.name}</h3>
@@ -168,7 +168,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
               <div className="rounded-2xl border border-ember-500/25 bg-ember-500/5 p-5">
                 <p className="font-semibold text-ink-900">Want these taken off a real price?</p>
                 <p className="mt-1 text-sm text-ink-600">Your installer confirms eligibility and applies the rebates on your quote.</p>
-                <div className="mt-4 grid gap-2 sm:flex">
+                <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
                   <Link href="/quote" className="btn-primary whitespace-nowrap">Get a free quote <Arrow className="h-4 w-4" /></Link>
                   <Link href="/quote#callback" className="btn-ghost whitespace-nowrap">Request a callback</Link>
                 </div>

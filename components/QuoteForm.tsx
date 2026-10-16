@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
-import { currentSystems, HONEYPOT_FIELD, householdSizes, leadSchema, NO_PREFERENCE, needs, stateForPostcode, submitLead } from "@/lib/lead";
+import { currentSystems, HONEYPOT_FIELD, householdSizes, leadSchema, NO_PREFERENCE, needs, saveThanks, stateForPostcode, submitLead } from "@/lib/lead";
 import { formatAuPhone } from "@/lib/phone";
 import { getModel } from "@/lib/models";
-import { privacyNote, states, THANKS_KEY } from "@/lib/site";
+import { privacyNote, states } from "@/lib/site";
 import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
 import { FormTrust, FormTrustInline } from "./FormTrust";
 import { ArrowLeft, Arrow, Check, Clock, Close, Lock } from "./icons";
@@ -30,14 +30,23 @@ type Data = {
  * questions that decide rebates and installer), two one-tap questions, then contact details
  * last. Every step is short, and progress plus time left are always visible.
  */
-const STEPS = [
+type Step = { key: string; title: string; why: string; fields: readonly string[] };
+
+const STANDARD_STEPS: Step[] = [
   { key: "postcode", title: "What's your postcode?", why: "So we can check your rebates and match an installer who covers your area.", fields: ["postcode", "state"] },
   { key: "system", title: "What heats your water now?", why: "This decides which rebates you may be eligible for.", fields: ["currentSystem"] },
   { key: "need", title: "What do you need?", why: "So we know how quickly to get an installer to you.", fields: ["need"] },
   { key: "household", title: "How many people live there?", why: "This sets the right tank size for your home.", fields: ["householdSize"] },
   { key: "contact", title: "Where should we send your quote?", why: "Last step. Shared with one licensed local installer at a time.", fields: ["name", "phone", "email", "consent"] },
-] as const;
-const SECONDS_LEFT = [60, 45, 35, 25, 15];
+];
+
+/** Urgent mode (hot water has stopped): 3 steps, with "need" already set to failed. */
+const URGENT_STEPS: Step[] = [
+  { key: "postcode", title: "Where's the property?", why: "So we can pass your request to an installer who covers your postcode.", fields: ["postcode", "state"] },
+  { key: "systemHousehold", title: "What did you have, and for how many people?", why: "So the installer can quote a replacement that fits.", fields: ["currentSystem", "householdSize"] },
+  { key: "contact", title: "Who should the installer call?", why: "Last step. Flagged as urgent and shared with one licensed installer at a time.", fields: ["name", "phone", "email", "consent"] },
+];
+const SECONDS_LEFT = { standard: [60, 45, 35, 25, 15], urgent: [30, 20, 10] };
 
 export function QuoteForm({
   initialModel,
@@ -48,6 +57,7 @@ export function QuoteForm({
   variant = "card",
   heading = "Free quote in 60 seconds",
   placement = "page",
+  mode = "standard",
 }: {
   initialModel?: string;
   initialState?: string;
@@ -61,7 +71,10 @@ export function QuoteForm({
   heading?: string;
   /** Where the form sits, sent with analytics events (e.g. "home-hero", "popup", "city-brisbane"). */
   placement?: string;
+  /** `urgent` is the 3-step form for a broken system: postcode, system + household, contact. */
+  mode?: "standard" | "urgent";
 }) {
+  const STEPS = mode === "urgent" ? URGENT_STEPS : STANDARD_STEPS;
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
@@ -74,7 +87,7 @@ export function QuoteForm({
   const [step, setStep] = useState(startStep);
   const [hp, setHp] = useState("");
   const [data, setData] = useState<Data>({
-    need: "",
+    need: mode === "urgent" ? "failed" : "",
     currentSystem: "",
     householdSize: "",
     postcode: /^\d{4}$/.test(initialPostcode ?? "") ? initialPostcode! : "",
@@ -142,8 +155,11 @@ export function QuoteForm({
 
   function choose(k: "need" | "currentSystem" | "householdSize", v: string) {
     set(k, v);
-    // One-tap steps advance on their own.
-    window.setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 150);
+    // One-tap steps advance on their own (once every question on the step is answered).
+    const answered = { ...data, [k]: v };
+    if (STEPS[step].fields.every((f) => answered[f as keyof Data])) {
+      window.setTimeout(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 150);
+    }
   }
 
   async function submit(e: React.FormEvent) {
@@ -164,11 +180,17 @@ export function QuoteForm({
       setStatus("error");
       return;
     }
-    try {
-      sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0] }));
-    } catch {}
+    saveThanks({
+      firstName: data.name.trim().split(/\s+/)[0],
+      leadId: res.id,
+      leadType: "quote",
+      placement,
+      state: data.state,
+      urgent: data.need === "failed",
+      tracking: res.tracking,
+    });
     track("form_submit", { form: "quote", placement, state: data.state, need: data.need, ...res.tracking });
-    router.push(`/thank-you?type=quote&state=${data.state}`);
+    router.push(`/thank-you?type=quote&state=${data.state}${data.need === "failed" ? "&urgent=1" : ""}`);
   }
 
   const last = step === STEPS.length - 1;
@@ -185,7 +207,7 @@ export function QuoteForm({
           <div className="flex items-center justify-between gap-3">
             <p className="font-display text-lg font-semibold text-ink-900">{heading}</p>
             <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-ink-500" aria-live="polite">
-              <Clock className="h-3.5 w-3.5" /> ~{SECONDS_LEFT[step]}s left
+              <Clock className="h-3.5 w-3.5" /> ~{SECONDS_LEFT[mode][step]}s left
             </span>
           </div>
           <div
@@ -234,6 +256,34 @@ export function QuoteForm({
               error={errors.currentSystem}
               errorId={id("currentSystem")}
             />
+          )}
+          {key === "systemHousehold" && (
+            <>
+              <p id={id("sys-label")} className="mt-5 text-sm font-semibold text-ink-800">Current system</p>
+              <Tiles
+                name="currentSystem"
+                labelledBy={id("sys-label")}
+                cols={compact ? 2 : 3}
+                options={[...currentSystems]}
+                value={data.currentSystem}
+                onChoose={(v) => choose("currentSystem", v)}
+                error={errors.currentSystem}
+                errorId={id("currentSystem")}
+                tight
+              />
+              <p id={id("hh-label")} className="mt-5 text-sm font-semibold text-ink-800">People in the home</p>
+              <Tiles
+                name="householdSize"
+                labelledBy={id("hh-label")}
+                cols={3}
+                options={[...householdSizes]}
+                value={data.householdSize}
+                onChoose={(v) => choose("householdSize", v)}
+                error={errors.householdSize}
+                errorId={id("householdSize")}
+                tight
+              />
+            </>
           )}
           {key === "household" && (
             <Tiles
@@ -420,6 +470,7 @@ function Tiles({
   error,
   errorId,
   cols = 2,
+  tight = false,
 }: {
   name: string;
   labelledBy: string;
@@ -429,6 +480,8 @@ function Tiles({
   error?: string;
   errorId: string;
   cols?: 2 | 3;
+  /** Less space above, for a second question on the same step. */
+  tight?: boolean;
 }) {
   const focusIndex = Math.max(0, options.findIndex((o) => o.value === value));
 
@@ -443,7 +496,7 @@ function Tiles({
   }
 
   return (
-    <div className="mt-5">
+    <div className={tight ? "mt-2" : "mt-5"}>
       <div
         className={`grid gap-2.5 ${cols === 3 ? "grid-cols-3" : "grid-cols-1 min-[420px]:grid-cols-2"}`}
         role="radiogroup"

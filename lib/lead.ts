@@ -1,5 +1,5 @@
 import * as z from "zod/mini";
-import { states } from "./site";
+import { states, THANKS_KEY } from "./site";
 import { models } from "./models";
 import { getAttribution, TRACKING_PARAMS } from "./attribution";
 import { normaliseAuPhone, phoneError } from "./phone";
@@ -131,7 +131,7 @@ export function fieldErrors(error: { issues: { path: PropertyKey[]; message: str
 /** Shared client-side submit used by every lead form. */
 export async function submitLead(
   payload: object,
-): Promise<{ ok: true; tracking: Record<string, string | boolean> } | { ok: false; errors?: Record<string, string> }> {
+): Promise<{ ok: true; id?: string; tracking: Record<string, string | boolean> } | { ok: false; errors?: Record<string, string> }> {
   const attribution = getAttribution();
   try {
     const res = await fetch("/api/leads", {
@@ -147,7 +147,10 @@ export async function submitLead(
       has_gclid: !!(attribution?.gclid || attribution?.gbraid || attribution?.wbraid),
       has_fbclid: !!attribution?.fbclid,
     };
-    if (res.ok) return { ok: true, tracking };
+    if (res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { ok: true, id: typeof body?.id === "string" ? body.id : undefined, tracking };
+    }
     const body = await res.json().catch(() => ({}));
     return { ok: false, errors: body?.errors };
   } catch {
@@ -168,4 +171,26 @@ export function stateForPostcode(pc: string): string | null {
   if (n >= 7000 && n <= 7999) return "TAS";
   if (n >= 800 && n <= 999) return "NT";
   return null;
+}
+
+/**
+ * What the thank-you page needs, kept in sessionStorage for this tab only: the first name
+ * for the greeting, and non-personal details for the one-off `lead_confirmed` event.
+ */
+export type ThanksData = {
+  firstName: string;
+  leadId?: string;
+  leadType: "quote" | "callback";
+  placement: string;
+  state?: string;
+  urgent?: boolean;
+  tracking?: Record<string, string | boolean>;
+  /** Set once `lead_confirmed` has fired, so a refresh doesn't count the lead twice. */
+  confirmed?: boolean;
+};
+
+export function saveThanks(t: ThanksData) {
+  try {
+    sessionStorage.setItem(THANKS_KEY, JSON.stringify(t));
+  } catch {}
 }

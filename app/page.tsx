@@ -11,7 +11,7 @@ import { Arrow, Bolt, Check, Clock, Leaf, Phone, Shield, Tag, Wrench } from "@/c
 import { homeFaqs } from "@/lib/faqs";
 import { formatAUD, models } from "@/lib/models";
 import { formatCheckedDate, LAST_CHECKED } from "@/lib/rebates";
-import { comparePath, howItWorksPath, referralDisclosure, site } from "@/lib/site";
+import { brokenPath, comparePath, howItWorksPath, referralDisclosure, site } from "@/lib/site";
 
 const trust = [
   { icon: Tag, title: "Clear guide prices", text: "Supply-and-install guide prices are published per model. Your installer locks in a fixed price." },
@@ -51,10 +51,18 @@ export default function Home() {
         </div>
         <div className="container-x relative grid items-center gap-10 pb-20 pt-12 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-28">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes Australia-wide (coverage TBC)
-            </p>
-            <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[3.4rem]">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={brokenPath}
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ember-400/40 bg-ember-500/15 px-3.5 text-sm font-semibold text-white hover:bg-ember-500/25"
+              >
+                <span aria-hidden className="h-2 w-2 rounded-full bg-ember-400" /> Hot water stopped? Urgent replacement quote <Arrow className="h-4 w-4" />
+              </Link>
+              <p className="hidden items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200 sm:inline-flex">
+                <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes Australia-wide (coverage TBC)
+              </p>
+            </div>
+            <h1 className="h-display mt-5 text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[3.4rem]">
               Cut your hot water power bill. <span className="italic text-ember-400">Let rebates</span> cover part of the switch.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-200">

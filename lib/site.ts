@@ -18,6 +18,9 @@ export const comparePath = "/best-heat-pump-hot-water-systems";
 
 export const howItWorksPath = "/how-it-works";
 
+/** Urgent landing page for a broken hot water system. */
+export const brokenPath = "/hot-water-broken";
+
 export const nav = [
   { href: "/models", label: "Models" },
   { href: comparePath, label: "Compare" },

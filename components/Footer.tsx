@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer className="bg-ink-950 pb-24 text-ink-200 md:pb-0">
       <FooterQuote />
-      <div className="container-x grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_0.8fr_1fr_1fr]">
+      <div className="container-x grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo light />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-400">{site.tagline}</p>
@@ -22,11 +22,6 @@ export function Footer() {
         <FooterCol title="Models">
           {models.map((m) => (
             <FooterLink key={m.slug} href={`/models/${m.slug}`}>{m.name}</FooterLink>
-          ))}
-        </FooterCol>
-        <FooterCol title="Local guides">
-          {cities.map((c) => (
-            <FooterLink key={c.slug} href={cityPath(c)}>{c.name}</FooterLink>
           ))}
         </FooterCol>
         <FooterCol title="Rebates">
@@ -43,6 +38,22 @@ export function Footer() {
           <FooterLink href="/privacy">Privacy</FooterLink>
         </FooterCol>
       </div>
+      <nav className="border-t border-white/10" aria-label="Local guides">
+        <div className="container-x py-6">
+          <h3 className="text-sm font-semibold text-white">
+            <Link href="/heat-pump-hot-water" className="hover:text-ember-300">Heat pump hot water near you</Link>
+          </h3>
+          <ul className="mt-2 flex flex-wrap gap-x-4 text-sm">
+            {cities.map((c) => (
+              <li key={c.slug}>
+                <Link href={cityPath(c)} className="tap text-ink-400 transition-colors hover:text-white">
+                  {c.name} <span className="text-xs">{c.state}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
       <div className="border-t border-white/10">
         <div className="container-x space-y-3 py-6 text-xs leading-relaxed text-ink-400">
           <p>

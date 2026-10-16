@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { nav, site } from "@/lib/site";
+import { brokenPath, nav, site } from "@/lib/site";
 import { Close, Menu, Phone } from "./icons";
 
 export function Logo({ light = false }: { light?: boolean }) {
@@ -42,7 +42,7 @@ export function Header() {
             <Link
               key={n.href}
               href={n.href}
-              className={`rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors xl:px-3.5 ${
                 pathname.startsWith(n.href) ? "bg-ink-900/5 text-ink-900" : "text-ink-600 hover:text-ink-900"
               }`}
             >
@@ -51,11 +51,20 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
-          <a href={site.phoneHref} className="flex items-center gap-1.5 text-sm font-semibold text-ink-700 hover:text-ink-900">
-            <Phone className="h-4 w-4" /> {site.phone}
+          <Link href={brokenPath} className="flex items-center gap-1.5 rounded-full px-2 py-2 text-sm font-semibold whitespace-nowrap text-ember-700 hover:text-ember-800">
+            <span aria-hidden className="h-2 w-2 rounded-full bg-ember-600" />
+            <span className="xl:hidden">Broken?</span>
+            <span className="hidden xl:inline">Hot water broken?</span>
+          </Link>
+          <a
+            href={site.phoneHref}
+            className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 text-sm font-semibold whitespace-nowrap text-ink-700 hover:text-ink-900"
+            aria-label={`Call ${site.phone}`}
+          >
+            <Phone className="h-4 w-4" /> <span className="hidden 2xl:inline">{site.phone}</span>
           </a>
-          <Link href="/quote" className="btn-primary py-2.5">
-            Free quote <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-xs font-bold">60s</span>
+          <Link href="/quote" className="btn-primary py-2.5 whitespace-nowrap">
+            Free quote <span className="hidden rounded-full bg-white/20 px-1.5 py-0.5 text-xs font-bold xl:inline">60s</span>
           </Link>
         </div>
         <div className="flex items-center gap-1.5 lg:hidden">
@@ -83,6 +92,9 @@ export function Header() {
       {open && (
         <div id="mobile-menu" className="border-t border-ink-200/60 bg-cream-50 lg:hidden">
           <nav className="container-x flex flex-col py-3" aria-label="Mobile">
+            <Link href={brokenPath} className="mb-1 flex items-center gap-2 rounded-xl bg-ember-500/10 px-3 py-3 font-semibold text-ember-800">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-ember-600" /> Hot water broken? Urgent replacement quote
+            </Link>
             {nav.map((n) => (
               <Link key={n.href} href={n.href} className="rounded-xl px-3 py-3 font-medium text-ink-800 hover:bg-ink-900/5">
                 {n.label}

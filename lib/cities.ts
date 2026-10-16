@@ -28,6 +28,8 @@ export type City = {
     /** Mean number of days a year with a minimum of 0 °C or below. */
     frostDaysYear: number;
     period: string;
+    /** Shown after the period, e.g. when the best long-record station has closed. */
+    note?: string;
   };
   ncc: { zone: number; name: string; sourceUrl: string; sourceLabel: string };
   intro: string;
@@ -37,6 +39,8 @@ export type City = {
   localTips: string[];
   /** Nearby areas, for copy only. Not a claim that installers cover them. */
   nearby: string[];
+  /** Regional centre rather than a capital city (grouped separately in lists). */
+  regional?: boolean;
 };
 
 const NCC_ZONES = "https://www.abcb.gov.au/ncc-navigator/understanding-ncc-climate-zones";
@@ -229,8 +233,296 @@ export const cities: City[] = [
     ],
     nearby: ["Glenorchy", "Kingston", "Clarence", "Sorell"],
   },
+  // ---- Darwin and regional centres (BOM and ABCB data checked 16 October 2026) ----
+  {
+    slug: "darwin",
+    name: "Darwin",
+    state: "NT",
+    postcode: "0800",
+    bom: { station: "Darwin Airport", stationId: "014015", julyMeanMin: 19.3, janMeanMax: 31.8, frostDaysYear: 0, period: "1941–2026" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("nt"), sourceLabel: "ABCB: Northern Territory climate zone table" },
+    intro:
+      "Darwin's warm air all year means a heat pump barely has to work for its heat. The things to plan for are heat, humidity, cyclone season and placement.",
+    climateNote:
+      "Darwin Airport's coldest month, July, still averages a 19.3 °C minimum, and the hottest months (October and November) average 33.4 °C maximums. Every system in our range runs well inside its rated range, which tops out at 42–43 °C for most models.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated up to 43 °C." },
+      { slug: "emerald-all-in-one-220", why: "Our lowest guide price, for units and smaller homes." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand and Australian made, with a booster element for heavy-use days." },
+    ],
+    localTips: [
+      "Darwin postcodes are in STC zone 1, which earns fewer certificates than zones 3–5 for every model in our range, so STC discounts are smaller here than down south.",
+      "In cyclone regions, ask your installer how the unit and tank will be secured to meet local requirements.",
+      "Heat pumps make condensation, and more of it in humid air. Make sure the condensate drain runs somewhere sensible.",
+      "We couldn't find a current Northern Territory Government rebate for heat pump hot water. Federal STCs still apply.",
+    ],
+    nearby: ["Palmerston", "Litchfield", "Howard Springs", "Humpty Doo"],
+  },
+  {
+    slug: "sunshine-coast",
+    name: "Sunshine Coast",
+    state: "QLD",
+    postcode: "4558",
+    regional: true,
+    bom: { station: "Sunshine Coast Airport", stationId: "040861", julyMeanMin: 9.7, janMeanMax: 29.1, frostDaysYear: 0, period: "1994–2026" },
+    ncc: { zone: 2, name: "warm humid summer, mild winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    intro:
+      "The Sunshine Coast's mild, frost-free climate suits any heat pump in our range, so you can choose on price, size, noise and coastal placement.",
+    climateNote:
+      "Sunshine Coast Airport averages a 9.7 °C minimum in July with no frost days, and a 29.1 °C mean maximum in January.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, comfortably within its rated range here." },
+      { slug: "emerald-all-in-one-220", why: "Compact and our lowest guide price, for units and townhouses." },
+      { slug: "sanden-eco-plus-315", why: "A quiet split if the unit has to sit near bedrooms or a neighbour." },
+    ],
+    localTips: [
+      "Close to the beach, salt air can affect outdoor equipment. Ask about placement and any coastal conditions in the warranty.",
+      "With rooftop solar, a daytime timer lets the heat pump run on your own power.",
+      "There's no current Queensland state rebate we could find, so federal STCs are the main discount.",
+    ],
+    nearby: ["Maroochydore", "Caloundra", "Noosa", "Nambour"],
+  },
+  {
+    slug: "toowoomba",
+    name: "Toowoomba",
+    state: "QLD",
+    postcode: "4350",
+    regional: true,
+    bom: { station: "Toowoomba Airport", stationId: "041529", julyMeanMin: 6.7, janMeanMax: 28.4, frostDaysYear: 0.9, period: "1996–2026" },
+    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    intro:
+      "Toowoomba is noticeably cooler than the coast, with crisp winter mornings, so it's worth choosing a heat pump with a bit of cold-weather headroom.",
+    climateNote:
+      "Toowoomba Airport averages a 6.7 °C minimum in July, about 4 °C colder than Brisbane, with the odd frost (0.9 days a year on average). It's in NCC climate zone 5, not zone 2 like Brisbane and the coast.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated from −5 °C." },
+      { slug: "reclaim-energy-co2-315", why: "A quiet CO2 split that runs even at −10 °C, for frosty spots and the range." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand, Australian made, with a 2.4 kW booster for cold snaps." },
+    ],
+    localTips: [
+      "Out on the Darling Downs, mornings can be colder than at the airport station. A CO2 split is the safer choice there.",
+      "Toowoomba postcodes are in STC zone 3, the same as Brisbane.",
+      "There's no current Queensland state rebate we could find, so federal STCs are the main discount.",
+    ],
+    nearby: ["Highfields", "Westbrook", "Oakey", "Pittsworth"],
+  },
+  {
+    slug: "townsville",
+    name: "Townsville",
+    state: "QLD",
+    postcode: "4810",
+    regional: true,
+    bom: { station: "Townsville Aero", stationId: "032040", julyMeanMin: 13.9, janMeanMax: 31.5, frostDaysYear: 0, period: "1940–2026" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    intro:
+      "Townsville's warm climate makes heat pumps very efficient. Plan for summer heat, humidity, cyclone season and where the unit sits.",
+    climateNote:
+      "Townsville Aero averages a 13.9 °C minimum in July with no frost, and a 31.5 °C maximum in January (December is slightly hotter at 31.6 °C).",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated up to 43 °C." },
+      { slug: "emerald-all-in-one-220", why: "Our lowest guide price, for smaller homes and units." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand and Australian made, with local service support." },
+    ],
+    localTips: [
+      "Townsville postcodes are in STC zone 1, which earns fewer certificates than zones 3–5 for every model in our range, so STC discounts are smaller than in the south.",
+      "In cyclone regions, ask your installer how the unit and tank will be secured to meet local requirements.",
+      "There's no current Queensland state rebate we could find, so federal STCs are the main discount.",
+    ],
+    nearby: ["Thuringowa", "Kirwan", "Douglas", "Magnetic Island"],
+  },
+  {
+    slug: "cairns",
+    name: "Cairns",
+    state: "QLD",
+    postcode: "4870",
+    regional: true,
+    bom: { station: "Cairns Aero", stationId: "031011", julyMeanMin: 17.2, janMeanMax: 31.5, frostDaysYear: 0, period: "1942–2026" },
+    ncc: { zone: 1, name: "high humidity summer, warm winter", sourceUrl: nccPdf("qld"), sourceLabel: "ABCB: Queensland climate zone table" },
+    intro:
+      "Cairns is warm and humid all year, so a heat pump has plenty of heat to draw on. Placement, humidity and cyclone season matter more than cold.",
+    climateNote:
+      "Cairns Aero averages a 17.2 °C minimum in July with no frost, and a 31.5 °C mean maximum in January.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated up to 43 °C." },
+      { slug: "emerald-all-in-one-220", why: "Compact and our lowest guide price." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand and Australian made, with a booster for heavy-use days." },
+    ],
+    localTips: [
+      "Heat pumps make condensation, and more of it in humid air. Make sure the condensate drain runs somewhere sensible.",
+      "Cairns postcodes are in STC zone 1, which earns fewer certificates than zones 3–5 for every model in our range.",
+      "In cyclone regions, ask your installer how the unit and tank will be secured to meet local requirements.",
+    ],
+    nearby: ["Edmonton", "Smithfield", "Gordonvale", "Palm Cove"],
+  },
+  {
+    slug: "newcastle",
+    name: "Newcastle",
+    state: "NSW",
+    postcode: "2300",
+    regional: true,
+    bom: { station: "Newcastle Nobbys Signal Station", stationId: "061055", julyMeanMin: 8.5, janMeanMax: 25.6, frostDaysYear: 0, period: "1862–2026" },
+    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    intro:
+      "Newcastle homes can combine federal STCs with the NSW Hot Water Upgrade Incentive, which makes swapping out an old electric tank good value.",
+    climateNote:
+      "Nobbys, on the coast, averages an 8.5 °C minimum in July with no frost days. Inland is cooler: Williamtown RAAF (station 061078) averages 6.5 °C in July.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, and a common electric tank replacement." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand, Australian made, with local service support." },
+      { slug: "stiebel-eltron-wwk-302", why: "A larger all-in-one for bigger households." },
+    ],
+    localTips: [
+      "The official NSW incentive is indicative: up to $640 replacing an electric water heater or $330 replacing gas, as an upfront discount from participating installers.",
+      "Near the coast, ask about placement and any coastal conditions in the warranty.",
+      "If you're out towards the Hunter Valley, winter mornings are colder, so look at the rated minimum temperature.",
+    ],
+    nearby: ["Lake Macquarie", "Maitland", "Port Stephens", "Cessnock"],
+  },
+  {
+    slug: "central-coast",
+    name: "Central Coast",
+    state: "NSW",
+    postcode: "2250",
+    regional: true,
+    bom: { station: "Gosford (Narara Research Station)", stationId: "061087", julyMeanMin: 4.7, janMeanMax: 27.6, frostDaysYear: 2.6, period: "1954–2013", note: "station closed 2013" },
+    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    intro:
+      "The Central Coast's valleys get colder winter mornings than you might expect, while the beaches stay mild. Choose a model that suits where you are.",
+    climateNote:
+      "Narara, in the valley behind Gosford, averaged a 4.7 °C minimum in July and 2.6 frost days a year over its record (1954–2013). The newer Gosford station (061425, 2013–2026) averages 7.1 °C in July with no frost days, and coastal suburbs are milder again.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated from −5 °C." },
+      { slug: "reclaim-energy-co2-315", why: "A quiet CO2 split that runs even at −10 °C, for frost-prone valleys." },
+      { slug: "rheem-ambiheat-270", why: "Big-brand, Australian made, with a booster element." },
+    ],
+    localTips: [
+      "The NSW Hot Water Upgrade Incentive is an upfront discount from participating installers. Ask yours to show it on the quote.",
+      "Central Coast postcodes are in STC zone 3, the same as Sydney.",
+      "Sloping blocks are common, so check access to the spot where the unit will go.",
+    ],
+    nearby: ["Gosford", "Wyong", "Terrigal", "Woy Woy"],
+  },
+  {
+    slug: "wollongong",
+    name: "Wollongong",
+    state: "NSW",
+    postcode: "2500",
+    regional: true,
+    bom: { station: "Bellambi", stationId: "068228", julyMeanMin: 10.3, janMeanMax: 25.0, frostDaysYear: 0, period: "1997–2026" },
+    ncc: { zone: 5, name: "warm temperate", sourceUrl: nccPdf("nsw"), sourceLabel: "ABCB: NSW and ACT climate zone table" },
+    intro:
+      "Wollongong's mild coastal climate is easy on heat pumps. Coastal placement and the NSW incentive are the main things to get right.",
+    climateNote:
+      "Bellambi averages a 10.3 °C minimum in July with no frost days, and a 25.0 °C maximum in January. Albion Park (068241), further south, is cooler at 6.5 °C in July with 1.7 frost days a year.",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, comfortably within its rated range." },
+      { slug: "emerald-all-in-one-220", why: "Compact and our lowest guide price, for units." },
+      { slug: "sanden-eco-plus-315", why: "A quiet CO2 split for tight blocks close to neighbours." },
+    ],
+    localTips: [
+      "Close to the beach, ask about placement and any coastal conditions in the warranty.",
+      "The official NSW incentive is indicative: up to $640 replacing an electric water heater, or $330 replacing gas.",
+      "Wollongong postcodes are in STC zone 3, the same as Sydney.",
+    ],
+    nearby: ["Shellharbour", "Kiama", "Thirroul", "Dapto"],
+  },
+  {
+    slug: "geelong",
+    name: "Geelong",
+    state: "VIC",
+    postcode: "3220",
+    regional: true,
+    bom: { station: "Breakwater (Geelong Racecourse)", stationId: "087184", julyMeanMin: 6.4, janMeanMax: 26.0, frostDaysYear: 0.6, period: "2011–2026" },
+    ncc: { zone: 6, name: "mild temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    intro:
+      "Geelong households can get up to $1,000 from Solar Victoria on top of federal STCs, which makes this one of the best-value places to switch.",
+    climateNote:
+      "Geelong Racecourse averages a 6.4 °C minimum in July and about half a frost day a year, over a shorter record (2011–2026).",
+    picks: [
+      { slug: "istore-270", why: "Good value for families, rated from −5 °C." },
+      { slug: "reclaim-energy-co2-315", why: "A quiet CO2 split that runs even at −10 °C, for colder spots inland." },
+      { slug: "sanden-eco-plus-315", why: "Premium CO2 split rated from −10 °C, with a 15-year tank warranty (pro rata)." },
+    ],
+    localTips: [
+      "Solar Victoria's rebate is applied by an authorised retailer and deducted from your invoice. Check the eligibility rules before you book.",
+      "Geelong postcodes are in STC zone 4, which earns slightly more certificates than zones 1–3 for every model in our range.",
+      "Near the bay or the Surf Coast, ask about placement and any coastal conditions in the warranty.",
+    ],
+    nearby: ["Lara", "Torquay", "Ocean Grove", "Bellarine"],
+  },
+  {
+    slug: "ballarat",
+    name: "Ballarat",
+    state: "VIC",
+    postcode: "3350",
+    regional: true,
+    bom: { station: "Ballarat Aerodrome", stationId: "089002", julyMeanMin: 3.2, janMeanMax: 25.3, frostDaysYear: 15.7, period: "1908–2026" },
+    ncc: { zone: 7, name: "cool temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    intro:
+      "Ballarat's cold winters make model choice important. Pick a system rated well below zero, and you can still stack federal STCs with Solar Victoria's rebate.",
+    climateNote:
+      "Ballarat Aerodrome averages a 3.2 °C minimum in July and about 16 frost days a year. It's in NCC climate zone 7, the same as Canberra and Hobart.",
+    picks: [
+      { slug: "sanden-eco-plus-315", why: "Rated from −10 °C to +42 °C. The CO2 split keeps heating through hard frosts." },
+      { slug: "reclaim-energy-co2-315", why: "Runs even at an outside temperature of −10 °C, and quiet at 37 dB." },
+      { slug: "emerald-all-in-one-220", why: "The budget pick for smaller homes, rated to −7 °C on the heat pump alone." },
+    ],
+    localTips: [
+      "Ballarat postcodes are in STC zone 5, which earns more certificates than zones 1–3 for every model in our range.",
+      "Defrost cycles are normal on frosty mornings. A CO2 split copes best.",
+      "Solar Victoria's rebate is up to $1,000 (up to $1,400 for locally made products) for eligible households.",
+    ],
+    nearby: ["Sebastopol", "Wendouree", "Buninyong", "Creswick"],
+  },
+  {
+    slug: "bendigo",
+    name: "Bendigo",
+    state: "VIC",
+    postcode: "3550",
+    regional: true,
+    bom: { station: "Bendigo Airport", stationId: "081123", julyMeanMin: 2.7, janMeanMax: 30.4, frostDaysYear: 23.8, period: "1991–2026" },
+    ncc: { zone: 6, name: "mild temperate", sourceUrl: nccPdf("vic"), sourceLabel: "ABCB: Victoria climate zone table" },
+    intro:
+      "Bendigo has hot summers and frosty winters, so a heat pump here needs a wide operating range at both ends.",
+    climateNote:
+      "Bendigo Airport averages a 2.7 °C minimum in July and about 24 frost days a year, but a 30.4 °C maximum in January.",
+    picks: [
+      { slug: "sanden-eco-plus-315", why: "Rated from −10 °C to +42 °C, covering frosty mornings and hot afternoons." },
+      { slug: "reclaim-energy-co2-315", why: "A quiet CO2 split that runs even at −10 °C." },
+      { slug: "emerald-all-in-one-220", why: "The budget pick, rated −7 °C to 43 °C on the heat pump alone." },
+    ],
+    localTips: [
+      "Despite the frosts, Bendigo postcode 3550 is in STC zone 3 on the CER table, so check your own postcode in our rebate checker.",
+      "Solar Victoria's rebate is applied by an authorised retailer and deducted from your invoice, for eligible households.",
+      "Shade from the afternoon sun helps on hot days, as long as the unit still gets good airflow.",
+    ],
+    nearby: ["Kangaroo Flat", "Strathfieldsaye", "Eaglehawk", "Castlemaine"],
+  },
+  {
+    slug: "launceston",
+    name: "Launceston",
+    state: "TAS",
+    postcode: "7250",
+    regional: true,
+    bom: { station: "Launceston (Ti Tree Bend)", stationId: "091237", julyMeanMin: 2.4, janMeanMax: 24.7, frostDaysYear: 25.0, period: "1980–2026" },
+    ncc: { zone: 7, name: "cool temperate", sourceUrl: nccPdf("tas"), sourceLabel: "ABCB: Tasmania climate zone table" },
+    intro:
+      "Launceston's frosty Tamar Valley winters are about as tough as it gets for a heat pump in a city. A cold-rated CO2 system is the safe choice.",
+    climateNote:
+      "Ti Tree Bend averages a 2.4 °C minimum in July and about 25 frost days a year. Launceston Airport (091311) is colder, at about 31 frost days a year.",
+    picks: [
+      { slug: "sanden-eco-plus-315", why: "Rated from −10 °C to +42 °C, with a 15-year tank warranty (pro rata)." },
+      { slug: "reclaim-energy-co2-315", why: "A quiet CO2 split that runs even at −10 °C." },
+      { slug: "stiebel-eltron-wwk-302", why: "A large all-in-one with active defrost, for bigger households." },
+    ],
+    localTips: [
+      "Launceston postcodes are in STC zone 5, which earns more certificates than zones 1–3 for every model in our range.",
+      "Defrost cycles are normal on frosty mornings. A CO2 split or a unit with active defrost copes best.",
+      "We couldn't confirm a current Tasmanian state program, because the official pages wouldn't load when we checked. Federal STCs still apply.",
+    ],
+    nearby: ["West Tamar", "Meander Valley", "Northern Midlands", "George Town"],
+  },
 ];
-
 export const cityPath = (c: City) => `/heat-pump-hot-water/${c.slug}`;
 export const getCity = (slug: string) => cities.find((c) => c.slug === slug);
 export const citiesForState = (state: string) => cities.filter((c) => c.state === state);

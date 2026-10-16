@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
-import { bestTimes, callbackSchema, fieldErrors, HONEYPOT_FIELD, submitLead } from "@/lib/lead";
+import { bestTimes, callbackSchema, fieldErrors, HONEYPOT_FIELD, saveThanks, submitLead } from "@/lib/lead";
 import { formatAuPhone } from "@/lib/phone";
-import { THANKS_KEY } from "@/lib/site";
 import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
 import { Arrow } from "./icons";
 
@@ -70,9 +69,7 @@ export function CallbackForm({
       setStatus("error");
       return;
     }
-    try {
-      sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0] }));
-    } catch {}
+    saveThanks({ firstName: data.name.trim().split(/\s+/)[0], leadId: res.id, leadType: "callback", placement, tracking: res.tracking });
     track("form_submit", { form: "callback", placement, ...res.tracking });
     router.push(`/thank-you?type=callback&time=${data.bestTime}`);
   }
