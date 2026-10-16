@@ -4,6 +4,10 @@ import path from "node:path";
 import { after, NextResponse } from "next/server";
 import { callbackSchema, fieldErrors, HONEYPOT_FIELD, leadSchema } from "@/lib/lead";
 import { forwardLead } from "@/lib/leadWebhook";
+import { phoneKind } from "@/lib/phone";
+
+/** Faster than any person can fill the form: flagged (not discarded) so the buyer can filter. */
+const MIN_HUMAN_MS = { quote: 4000, callback: 2500 };
 
 // Temporary storage: append to a JSON file. Vercel's filesystem is read-only apart
 // from /tmp (which is per-instance and short-lived), so on Vercel rely on the
@@ -48,11 +52,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, errors: fieldErrors(parsed.error) }, { status: 422 });
   }
 
-  const { company, ...fields } = parsed.data;
+  const { [HONEYPOT_FIELD]: _trap, ...fields } = parsed.data;
+  const type = isCallback ? "callback" : "quote";
   const lead = {
     id: randomUUID(),
     receivedAt: new Date().toISOString(),
     ...fields,
+    phoneType: phoneKind(fields.phone),
+    // Missing timing means the API was called directly, not from our forms.
+    suspectedBot: fields.formMs === undefined || fields.formMs < MIN_HUMAN_MS[type],
     userAgent: req.headers.get("user-agent") ?? undefined,
   };
 

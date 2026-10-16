@@ -52,7 +52,7 @@ export default function Home() {
         <div className="container-x relative grid items-center gap-10 pb-20 pt-12 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-28">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-ink-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes in QLD, NSW &amp; VIC
+              <span className="h-1.5 w-1.5 rounded-full bg-gum-500" /> Matching homes Australia-wide (coverage TBC)
             </p>
             <h1 className="h-display mt-6 text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[3.4rem]">
               Cut your hot water power bill. <span className="italic text-ember-400">Let rebates</span> cover part of the switch.
@@ -111,7 +111,7 @@ export default function Home() {
           <div id="hero-quote" className="relative w-full scroll-mt-20 text-ink-900">
             <div aria-hidden className="absolute -inset-3 rounded-[2.25rem] bg-gradient-to-br from-ember-500/40 to-gum-500/20 blur-2xl" />
             <div className="relative">
-              <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" />
+              <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" placement="home-hero" />
             </div>
           </div>
         </div>

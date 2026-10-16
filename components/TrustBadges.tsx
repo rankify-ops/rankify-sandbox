@@ -8,7 +8,7 @@ import { Check, Shield, Users } from "./icons";
 const badges = [
   { icon: Shield, title: "Licensed installers", detail: "Plumbing & electrical licence numbers TBC" },
   { icon: Check, title: "Fully insured", detail: "Public liability insurer & cover TBC" },
-  { icon: Users, title: "Partner installer network", detail: "Partners across QLD, NSW & VIC, network size TBC" },
+  { icon: Users, title: "Partner installer network", detail: "Licensed partners, network size and coverage TBC" },
 ];
 
 export function TrustBadges({ tone = "light", className = "" }: { tone?: "light" | "dark"; className?: string }) {

@@ -22,8 +22,15 @@ export default function PrivacyPage() {
           <h2>What we collect</h2>
           <p>
             When you request a quote we collect your postcode, state, current hot water system, household size,
-            preferred model, name, phone number and email address. We also collect basic technical data such as your
-            browser type.
+            preferred model, name, phone number and (if you give it) email address. We also collect basic technical data
+            such as your browser type.
+          </p>
+          <p>
+            To understand which of our ads and pages bring in enquiries, we also record how you found us: the page you first
+            landed on, the website that referred you, and any campaign tags in the link you clicked (such as UTM
+            parameters and ad click IDs from Google or Facebook). This is stored in your browser for up to 90 days and sent
+            with your enquiry. We use it to measure and improve our advertising, and don&apos;t use it to identify you on
+            other sites.
           </p>
           <h2>Why we collect it</h2>
           <p>

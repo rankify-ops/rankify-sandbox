@@ -34,7 +34,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <a href={site.phoneHref} className="font-semibold whitespace-nowrap text-ember-600 underline">{site.phone}</a>.
           </p>
           <div className="mt-8">
-            <QuoteForm initialModel={model} heading="Free quote in 60 seconds" />
+            <QuoteForm placement="quote-page" initialModel={model} heading="Free quote in 60 seconds" />
           </div>
         </div>
         <aside className="space-y-5 lg:pt-44">
@@ -42,7 +42,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <p className="text-xs font-semibold tracking-[0.18em] text-ember-600 uppercase">The quick option</p>
             <h2 className="mt-1.5 font-display text-2xl font-medium text-ink-900">Rather we call you?</h2>
             <p className="mt-1 mb-5 text-sm text-ink-600">Just four fields. A licensed installer will ring at a time that suits.</p>
-            <CallbackForm />
+            <CallbackForm placement="quote-page" />
             <FormTrustInline />
           </div>
           <div className="card p-6">

@@ -1,6 +1,8 @@
 import * as z from "zod/mini";
 import { states } from "./site";
 import { models } from "./models";
+import { getAttribution, TRACKING_PARAMS } from "./attribution";
+import { normaliseAuPhone, phoneError } from "./phone";
 
 /** What the visitor needs. `failed` flags an urgent job for the installer. */
 export const needs = [
@@ -33,17 +35,34 @@ export const bestTimes = [
 
 export const NO_PREFERENCE = "no-preference";
 
-const phoneField = z.string({ error: "Enter your mobile number" }).check(
-  z.trim(),
-  z.overwrite((v) => v.replace(/[\s()-]/g, "")),
-  z.regex(/^(\+?61|0)[2-478]\d{8}$/, "Enter a valid Australian phone number"),
+/** Australian mobile (04) or landline (02, 03, 07, 08), stored as 0412345678. */
+const phoneField = z.string({ error: "Enter your phone number" }).check(
+  z.overwrite(normaliseAuPhone),
+  z.refine((v) => phoneError(v) === null, { error: (iss) => phoneError(String(iss.input)) ?? "Enter a valid Australian phone number" }),
 );
 const postcodeField = z.string({ error: "Enter a 4-digit Australian postcode" }).check(z.regex(/^\d{4}$/, "Enter a 4-digit Australian postcode"));
 const nameField = z.string({ error: "Enter your name" }).check(z.trim(), z.minLength(2, "Enter your name"), z.maxLength(100));
 /** Name of the hidden anti-spam field on every lead form. */
-export const HONEYPOT_FIELD = "company";
+// Deliberately not a name browsers autofill (like "company"), so a real visitor's autofill
+// can never fill it and get their lead discarded.
+export const HONEYPOT_FIELD = "hp_extra_info";
 const honeypot = z.optional(z.string().check(z.maxLength(0, "Leave this field blank")));
 const source = z.optional(z.string().check(z.maxLength(300)));
+const short = z.optional(z.string().check(z.maxLength(300)));
+/** UTM parameters, click IDs, landing page and referrer (see lib/attribution.ts). Unknown keys are dropped. */
+const attribution = z.optional(
+  z.object({
+    ...(Object.fromEntries(TRACKING_PARAMS.map((p) => [p, short])) as Record<(typeof TRACKING_PARAMS)[number], typeof short>),
+    landingPage: short,
+    referrer: short,
+    capturedAt: short,
+    firstLandingPage: short,
+    firstReferrer: short,
+    firstCapturedAt: short,
+  }),
+);
+/** Milliseconds from first interaction to submit. Very fast submits are flagged as likely bots. */
+const formMs = z.optional(z.number().check(z.int(), z.nonnegative()));
 
 const options = <T extends readonly { value: string }[]>(list: T) => list.map((o) => o.value) as [string, ...string[]];
 
@@ -52,13 +71,13 @@ const options = <T extends readonly { value: string }[]>(list: T) => list.map((o
  * where the quote and callback forms validate each step).
  */
 
-/** The 60-second quote form. Order matches the form: need → system → household → postcode → contact. */
+/** The 60-second quote form. Order matches the form: postcode → system → need → household → contact. */
 export const leadSchema = z.object({
   type: z._default(z.literal("quote", { error: "Invalid lead type" }), "quote"),
-  need: z.enum(options(needs), { error: "Choose what you need" }),
   postcode: postcodeField,
   state: z.enum(states, { error: "Select your state or territory" }),
   currentSystem: z.enum(options(currentSystems), { error: "Choose your current system" }),
+  need: z.enum(options(needs), { error: "Choose what you need" }),
   householdSize: z.enum(options(householdSizes), { error: "Choose your household size" }),
   // Set from context (e.g. the model page the visitor came from); not a form step.
   preferredModel: z._default(z.enum([NO_PREFERENCE, ...models.map((m) => m.slug)] as [string, ...string[]], { error: "Unknown model" }), NO_PREFERENCE),
@@ -76,8 +95,10 @@ export const leadSchema = z.object({
   // Rebate programs the visitor was shown in the rebate checker, if they came from there.
   rebatesViewed: z.optional(z.array(z.string().check(z.maxLength(120))).check(z.maxLength(10, "Too many rebate programs"))),
   // Honeypot — real users never see or fill this.
-  company: honeypot,
+  [HONEYPOT_FIELD]: honeypot,
   source,
+  attribution,
+  formMs,
 });
 
 export const callbackSchema = z.object({
@@ -87,8 +108,10 @@ export const callbackSchema = z.object({
   postcode: postcodeField,
   bestTime: z.enum(options(bestTimes), { error: "Pick a time that suits" }),
   consent: z.literal(true, { error: "Please agree so an installer can call you" }),
-  company: honeypot,
+  [HONEYPOT_FIELD]: honeypot,
   source,
+  attribution,
+  formMs,
 });
 
 export type LeadInput = z.input<typeof leadSchema>;
@@ -106,14 +129,25 @@ export function fieldErrors(error: { issues: { path: PropertyKey[]; message: str
 }
 
 /** Shared client-side submit used by every lead form. */
-export async function submitLead(payload: object): Promise<{ ok: true } | { ok: false; errors?: Record<string, string> }> {
+export async function submitLead(
+  payload: object,
+): Promise<{ ok: true; tracking: Record<string, string | boolean> } | { ok: false; errors?: Record<string, string> }> {
+  const attribution = getAttribution();
   try {
     const res = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, source: window.location.pathname + window.location.search }),
+      body: JSON.stringify({ ...payload, source: window.location.pathname + window.location.search, attribution }),
     });
-    if (res.ok) return { ok: true };
+    // Campaign details for the analytics event (no personal details).
+    const tracking: Record<string, string | boolean> = {
+      utm_source: attribution?.utm_source ?? "",
+      utm_medium: attribution?.utm_medium ?? "",
+      utm_campaign: attribution?.utm_campaign ?? "",
+      has_gclid: !!(attribution?.gclid || attribution?.gbraid || attribution?.wbraid),
+      has_fbclid: !!attribution?.fbclid,
+    };
+    if (res.ok) return { ok: true, tracking };
     const body = await res.json().catch(() => ({}));
     return { ok: false, errors: body?.errors };
   } catch {

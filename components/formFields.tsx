@@ -84,7 +84,7 @@ export function Honeypot({ value, onChange }: { value: string; onChange: (v: str
   return (
     <div aria-hidden="true" className="pointer-events-none absolute -left-[10000px] top-auto h-px w-px overflow-hidden opacity-0">
       <label>
-        Company (leave this blank)
+        Leave this field blank
         <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" value={value} onChange={(e) => onChange(e.target.value)} />
       </label>
     </div>

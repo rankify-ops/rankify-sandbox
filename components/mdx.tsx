@@ -32,7 +32,7 @@ function QuoteCta({ title = "Get your free quote in 60 seconds" }: { title?: str
         </span>
       </div>
       <div className="text-ink-900">
-        <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" />
+        <QuoteForm variant="compact" tone="dark" heading="Free quote in 60 seconds" placement="blog-inline" />
       </div>
     </aside>
   );

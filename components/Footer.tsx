@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { referralDisclosure, site } from "@/lib/site";
 import { models } from "@/lib/models";
+import { cities, cityPath } from "@/lib/cities";
 import { Logo } from "./Header";
 import { FooterQuote } from "./FooterQuote";
 import { Phone } from "./icons";
@@ -9,7 +10,7 @@ export function Footer() {
   return (
     <footer className="bg-ink-950 pb-24 text-ink-200 md:pb-0">
       <FooterQuote />
-      <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="container-x grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_0.8fr_1fr_1fr]">
         <div>
           <Logo light />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-400">{site.tagline}</p>
@@ -23,11 +24,15 @@ export function Footer() {
             <FooterLink key={m.slug} href={`/models/${m.slug}`}>{m.name}</FooterLink>
           ))}
         </FooterCol>
+        <FooterCol title="Local guides">
+          {cities.map((c) => (
+            <FooterLink key={c.slug} href={cityPath(c)}>{c.name}</FooterLink>
+          ))}
+        </FooterCol>
         <FooterCol title="Rebates">
-          <FooterLink href="/rebates?state=QLD">Queensland</FooterLink>
-          <FooterLink href="/rebates?state=NSW">New South Wales</FooterLink>
-          <FooterLink href="/rebates?state=VIC">Victoria</FooterLink>
+          <FooterLink href="/rebates">Postcode rebate checker</FooterLink>
           <FooterLink href="/blog/heat-pump-hot-water-rebates-by-state">Rebates by state</FooterLink>
+          <FooterLink href="/blog/heat-pump-hot-water-cost-australia">Installed price guide</FooterLink>
         </FooterCol>
         <FooterCol title="Company">
           <FooterLink href="/best-heat-pump-hot-water-systems">Compare systems</FooterLink>
@@ -45,7 +50,7 @@ export function Footer() {
             <Link href="/how-it-works" className="underline hover:text-white">How it works</Link>.
           </p>
           <p>
-            Model prices are guide prices for standard supply and installation before rebates, confirmed by your installer after a site check. Rebate amounts marked TBC are placeholders. Neither is an offer.
+            Model prices are guide prices for standard supply and installation before rebates, confirmed by your installer after a site check. Neither is an offer.
             Rebate eligibility is set by each government program, so always confirm it on the official page.
           </p>
           <p>© {new Date().getFullYear()} {site.name} · {site.abn}</p>

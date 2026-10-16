@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { currentSystems, householdSizes, leadSchema, NO_PREFERENCE, needs, stateForPostcode, submitLead } from "@/lib/lead";
+import { track } from "@/lib/analytics";
+import { currentSystems, HONEYPOT_FIELD, householdSizes, leadSchema, NO_PREFERENCE, needs, stateForPostcode, submitLead } from "@/lib/lead";
+import { formatAuPhone } from "@/lib/phone";
 import { getModel } from "@/lib/models";
 import { privacyNote, states, THANKS_KEY } from "@/lib/site";
 import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
@@ -21,25 +23,21 @@ type Data = {
   phone: string;
   email: string;
   consent: boolean;
-  company: string;
 };
 
 /**
- * The 60-second quote form. Three one-tap questions, a postcode, then contact details
+ * The 60-second quote form. Postcode and current system first (the easy, low-commitment
+ * questions that decide rebates and installer), two one-tap questions, then contact details
  * last. Every step is short, and progress plus time left are always visible.
  */
 const STEPS = [
+  { key: "postcode", title: "What's your postcode?", why: "So we can check your rebates and match an installer who covers your area.", fields: ["postcode", "state"] },
+  { key: "system", title: "What heats your water now?", why: "This decides which rebates you may be eligible for.", fields: ["currentSystem"] },
   { key: "need", title: "What do you need?", why: "So we know how quickly to get an installer to you.", fields: ["need"] },
-  { key: "system", title: "What heats your water now?", why: "This helps check which rebates you may be eligible for.", fields: ["currentSystem"] },
   { key: "household", title: "How many people live there?", why: "This sets the right tank size for your home.", fields: ["householdSize"] },
-  { key: "postcode", title: "What's your postcode?", why: "So we match you with an installer who covers your area.", fields: ["postcode", "state"] },
   { key: "contact", title: "Where should we send your quote?", why: "Last step. Shared with one licensed local installer at a time.", fields: ["name", "phone", "email", "consent"] },
 ] as const;
 const SECONDS_LEFT = [60, 45, 35, 25, 15];
-
-function track(event: string, extra: Record<string, unknown> = {}) {
-  (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event, ...extra });
-}
 
 export function QuoteForm({
   initialModel,
@@ -49,6 +47,7 @@ export function QuoteForm({
   tone = "light",
   variant = "card",
   heading = "Free quote in 60 seconds",
+  placement = "page",
 }: {
   initialModel?: string;
   initialState?: string;
@@ -60,14 +59,20 @@ export function QuoteForm({
   /** `card` shows trust signals under the form; `compact` is for the hero, footer and popup. */
   variant?: "card" | "compact";
   heading?: string;
+  /** Where the form sits, sent with analytics events (e.g. "home-hero", "popup", "city-brisbane"). */
+  placement?: string;
 }) {
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(false);
-  const started = useRef(false);
-  const [step, setStep] = useState(0);
+  const startedAt = useRef<number | null>(null);
+  const prefilled = /^\d{4}$/.test(initialPostcode ?? "") && (states as readonly string[]).includes(initialState ?? "");
+  // With postcode and state already known (e.g. from the rebate checker), start on step 2.
+  const startStep = prefilled ? 1 : 0;
+  const [step, setStep] = useState(startStep);
+  const [hp, setHp] = useState("");
   const [data, setData] = useState<Data>({
     need: "",
     currentSystem: "",
@@ -80,7 +85,6 @@ export function QuoteForm({
     phone: "",
     email: "",
     consent: false,
-    company: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
@@ -94,17 +98,18 @@ export function QuoteForm({
       mounted.current = true;
       return;
     }
-    track("quote_step", { step: STEPS[step].key, step_number: step + 1 });
+    track("form_step", { form: "quote", step: STEPS[step].key, step_number: step + 1, total_steps: STEPS.length, placement });
     stepRef.current
       ?.querySelector<HTMLElement>('input:not([tabindex="-1"]), select, [role="radio"][tabindex="0"]')
       ?.focus({ preventScroll: true });
     formRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once per step change only
   }, [step]);
 
   const set = <K extends keyof Data>(k: K, v: Data[K]) => {
-    if (!started.current) {
-      started.current = true;
-      track("quote_start");
+    if (startedAt.current === null) {
+      startedAt.current = Date.now();
+      track("form_start", { form: "quote", placement });
     }
     setData((d) => ({ ...d, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
@@ -147,8 +152,10 @@ export function QuoteForm({
     if (step < STEPS.length - 1) return next();
     if (!validateStep(step)) return;
     setStatus("submitting");
-    const res = await submitLead({ type: "quote", ...data, rebatesViewed });
+    const formMs = startedAt.current === null ? 0 : Date.now() - startedAt.current;
+    const res = await submitLead({ type: "quote", ...data, rebatesViewed, [HONEYPOT_FIELD]: hp, formMs });
     if (!res.ok) {
+      track("form_submit_error", { form: "quote", placement });
       if (res.errors) {
         setErrors(res.errors);
         const bad = STEPS.findIndex((s) => s.fields.some((f) => res.errors?.[f]));
@@ -160,11 +167,12 @@ export function QuoteForm({
     try {
       sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0] }));
     } catch {}
-    track("lead_submitted", { lead_type: "quote", state: data.state, need: data.need });
+    track("form_submit", { form: "quote", placement, state: data.state, need: data.need, ...res.tracking });
     router.push(`/thank-you?type=quote&state=${data.state}`);
   }
 
   const last = step === STEPS.length - 1;
+  const key = STEPS[step].key;
   const progress = ((step + 1) / STEPS.length) * 100;
   const suggestedState = stateForPostcode(data.postcode);
   const headingId = id("step-title");
@@ -194,7 +202,7 @@ export function QuoteForm({
         </div>
 
         <div ref={stepRef} className={`py-6 ${pad}`}>
-          {model && step === 0 && (
+          {model && step === startStep && (
             <p className="mb-4 flex items-center justify-between gap-2 rounded-xl bg-cream-100 px-3 py-2 text-sm text-ink-700">
               <span>Quoting on the <strong>{model.name}</strong></span>
               <button type="button" onClick={() => set("preferredModel", NO_PREFERENCE)} className="-my-2 -mr-2 grid h-11 w-11 place-items-center rounded-full hover:bg-cream-200" aria-label="Remove model preference">
@@ -202,7 +210,7 @@ export function QuoteForm({
               </button>
             </p>
           )}
-          {rebatesViewed && rebatesViewed.length > 0 && step === 0 && (
+          {rebatesViewed && rebatesViewed.length > 0 && step === startStep && (
             <p className="mb-4 rounded-xl bg-gum-50 px-3 py-2 text-sm text-gum-600">
               <strong>Rebates included:</strong> {rebatesViewed.join(" · ")}
             </p>
@@ -210,12 +218,12 @@ export function QuoteForm({
           <h2 id={headingId} className={`h-display text-ink-900 ${compact ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}>{STEPS[step].title}</h2>
           <p className="mt-1 text-sm text-ink-600">{STEPS[step].why}</p>
 
-          <Honeypot value={data.company} onChange={(v) => set("company", v)} />
+          <Honeypot value={hp} onChange={setHp} />
 
-          {step === 0 && (
+          {key === "need" && (
             <Tiles name="need" labelledBy={headingId} options={[...needs]} value={data.need} onChoose={(v) => choose("need", v)} error={errors.need} errorId={id("need")} />
           )}
-          {step === 1 && (
+          {key === "system" && (
             <Tiles
               name="currentSystem"
               labelledBy={headingId}
@@ -227,7 +235,7 @@ export function QuoteForm({
               errorId={id("currentSystem")}
             />
           )}
-          {step === 2 && (
+          {key === "household" && (
             <Tiles
               name="householdSize"
               labelledBy={headingId}
@@ -240,7 +248,7 @@ export function QuoteForm({
             />
           )}
 
-          {step === 3 && (
+          {key === "postcode" && (
             <div className="mt-5 grid grid-cols-[1.3fr_1fr] gap-3">
               <Field id={id("postcode")} label="Postcode" error={errors.postcode}>
                 <input
@@ -284,7 +292,7 @@ export function QuoteForm({
             </div>
           )}
 
-          {step === 4 && (
+          {key === "contact" && (
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <Field id={id("name")} label="Name" error={errors.name} className="sm:col-span-2">
                 <input
@@ -298,16 +306,19 @@ export function QuoteForm({
                   className={inputClass(errors.name)}
                 />
               </Field>
-              <Field id={id("phone")} label="Mobile" error={errors.phone}>
+              <Field id={id("phone")} label="Phone" hint="Mobile or landline" error={errors.phone}>
                 <input
-                  {...fieldA11y(id("phone"), errors.phone)}
+                  {...fieldA11y(id("phone"), errors.phone, true)}
                   data-field="phone"
                   type="tel"
                   autoComplete="tel"
                   enterKeyHint="next"
                   placeholder="04xx xxx xxx"
                   value={data.phone}
-                  onBlur={() => blur("phone")}
+                  onBlur={() => {
+                    blur("phone");
+                    setData((d) => ({ ...d, phone: formatAuPhone(d.phone) }));
+                  }}
                   onChange={(e) => set("phone", e.target.value)}
                   className={inputClass(errors.phone)}
                 />
@@ -377,7 +388,7 @@ export function QuoteForm({
             <button type="submit" disabled={status === "submitting"} className="btn-primary ml-auto px-6">
               {status === "submitting" ? "Sending…" : "Get my free quote"} <Arrow className="h-4 w-4" />
             </button>
-          ) : step >= 3 ? (
+          ) : key === "postcode" ? (
             <button type="submit" className="btn-primary ml-auto">
               Continue <Arrow className="h-4 w-4" />
             </button>

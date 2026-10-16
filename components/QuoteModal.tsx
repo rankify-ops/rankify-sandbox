@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
@@ -39,7 +40,7 @@ export function QuoteModal() {
       } catch {}
       // /quote#callback opens the lighter callback form instead.
       const mode = url.hash === "#callback" ? "callback" : "quote";
-      (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: `${mode}_open`, from: window.location.pathname });
+      track(`${mode}_open`, { from: window.location.pathname });
       setOpen((o) => ({ mode, model: url.searchParams.get("model") ?? undefined, n: (o?.n ?? 0) + 1 }));
     };
     // Capture phase: runs before next/link's own click handler, which then sees the
@@ -79,11 +80,11 @@ export function QuoteModal() {
           <div key={open.n} className="card p-5">
             <p className="font-display text-xl font-semibold text-ink-900">Request a free callback</p>
             <p className="mt-1 mb-5 text-sm text-ink-600">Four quick fields. A licensed local installer will ring at a time that suits.</p>
-            <CallbackForm autoFocus />
+            <CallbackForm autoFocus placement="popup" />
             <FormTrustInline />
           </div>
         ) : (
-          <QuoteForm key={open.n} variant="compact" initialModel={open.model} />
+          <QuoteForm key={open.n} variant="compact" placement="popup" initialModel={open.model} />
         )}
         <div className="mt-2 px-2 pb-2">
           <a href={site.phoneHref} className="tap mt-1 w-full justify-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900">

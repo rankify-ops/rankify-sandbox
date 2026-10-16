@@ -3,26 +3,43 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
-import { bestTimes, callbackSchema, fieldErrors, submitLead } from "@/lib/lead";
+import { track } from "@/lib/analytics";
+import { bestTimes, callbackSchema, fieldErrors, HONEYPOT_FIELD, submitLead } from "@/lib/lead";
+import { formatAuPhone } from "@/lib/phone";
 import { THANKS_KEY } from "@/lib/site";
 import { Field, FieldError, fieldA11y, fieldMessage, focusFirstError, Honeypot, inputClass } from "./formFields";
 import { Arrow } from "./icons";
 
-type Data = { name: string; phone: string; postcode: string; bestTime: string; consent: boolean; company: string };
+type Data = { name: string; phone: string; postcode: string; bestTime: string; consent: boolean };
 const ORDER = ["name", "phone", "postcode", "bestTime", "consent"] as const;
 
 /** The lighter lead option: name, phone, postcode and best time to call. */
-export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "light" | "dark"; autoFocus?: boolean }) {
+export function CallbackForm({
+  tone = "light",
+  autoFocus = false,
+  placement = "page",
+}: {
+  tone?: "light" | "dark";
+  autoFocus?: boolean;
+  /** Where the form sits, sent with analytics events (e.g. "popup", "exit-intent", "quote-page"). */
+  placement?: string;
+}) {
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const dark = tone === "dark";
-  const [data, setData] = useState<Data>({ name: "", phone: "", postcode: "", bestTime: "asap", consent: false, company: "" });
+  const [data, setData] = useState<Data>({ name: "", phone: "", postcode: "", bestTime: "asap", consent: false });
+  const [hp, setHp] = useState("");
+  const startedAt = useRef<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const id = (f: string) => `${uid}-${f}`;
 
   const set = <K extends keyof Data>(k: K, v: Data[K]) => {
+    if (startedAt.current === null) {
+      startedAt.current = Date.now();
+      track("form_start", { form: "callback", placement });
+    }
     setData((d) => ({ ...d, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
   };
@@ -33,7 +50,8 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const payload = { type: "callback" as const, ...data };
+    const formMs = startedAt.current === null ? 0 : Date.now() - startedAt.current;
+    const payload = { type: "callback" as const, ...data, [HONEYPOT_FIELD]: hp, formMs };
     const check = callbackSchema.safeParse(payload);
     if (!check.success) {
       const errs = fieldErrors(check.error);
@@ -44,6 +62,7 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
     setStatus("submitting");
     const res = await submitLead(payload);
     if (!res.ok) {
+      track("form_submit_error", { form: "callback", placement });
       if (res.errors) {
         setErrors(res.errors);
         focusFirstError(formRef.current, ORDER, res.errors);
@@ -54,13 +73,13 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
     try {
       sessionStorage.setItem(THANKS_KEY, JSON.stringify({ firstName: data.name.trim().split(/\s+/)[0] }));
     } catch {}
-    (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "lead_submitted", lead_type: "callback" });
+    track("form_submit", { form: "callback", placement, ...res.tracking });
     router.push(`/thank-you?type=callback&time=${data.bestTime}`);
   }
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="space-y-4" aria-label="Request a callback">
-      <Honeypot value={data.company} onChange={(v) => set("company", v)} />
+      <Honeypot value={hp} onChange={setHp} />
       <Field id={id("name")} label="Name" error={errors.name} tone={tone}>
         <input
           {...fieldA11y(id("name"), errors.name)}
@@ -82,9 +101,12 @@ export function CallbackForm({ tone = "light", autoFocus = false }: { tone?: "li
             type="tel"
             autoComplete="tel"
             enterKeyHint="next"
-            placeholder="04xx xxx xxx"
+            placeholder="Mobile or landline"
             value={data.phone}
-            onBlur={() => blur("phone")}
+            onBlur={() => {
+              blur("phone");
+              setData((d) => ({ ...d, phone: formatAuPhone(d.phone) }));
+            }}
             onChange={(e) => set("phone", e.target.value)}
             className={inputClass(errors.phone, tone)}
           />

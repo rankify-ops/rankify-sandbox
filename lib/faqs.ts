@@ -58,7 +58,7 @@ export function modelFaqs(m: HeatPumpModel): FaqItem[] {
     },
     {
       q: "How long does installation take?",
-      a: "A standard like-for-like swap is usually completed in a single visit (TBC). Your installer will confirm timing once they've reviewed your site.",
+      a: "A straightforward like-for-like swap is typically done in a single visit of around half a day to a day. Switching from gas, moving the unit or electrical upgrades can add time, and your installer confirms timing after the site check. Our install guide walks through each step.",
     },
     {
       q: m.type === "Split" ? "Why choose a split system?" : "Where can an integrated unit go?",

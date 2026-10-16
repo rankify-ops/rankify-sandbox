@@ -87,7 +87,7 @@ export function ExitIntent() {
           </div>
         </div>
         <div className="p-8">
-          <CallbackForm autoFocus />
+          <CallbackForm autoFocus placement="exit-intent" />
           <p className="mt-4 text-center text-sm text-ink-600">
             Prefer the full form?{" "}
             <Link href="/quote" onClick={() => setOpen(false)} className="font-semibold text-ember-600 hover:text-ember-700">

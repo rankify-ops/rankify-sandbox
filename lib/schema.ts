@@ -49,3 +49,17 @@ export function productList(models: HeatPumpModel[], name: string) {
     itemListElement: models.map((m, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/models/${m.slug}`), name: m.name })),
   };
 }
+
+/** Service offered in a city: the referral-to-installer service, with the city as area served. */
+export function cityServiceSchema(c: { name: string; state: string; slug: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": abs(`/heat-pump-hot-water/${c.slug}#service`),
+    name: `Heat pump hot water quotes in ${c.name}`,
+    serviceType: "Heat pump hot water supply and installation (referral to licensed partner installers)",
+    url: abs(`/heat-pump-hot-water/${c.slug}`),
+    areaServed: { "@type": "City", name: c.name, containedInPlace: { "@type": "State", name: c.state } },
+    provider: { "@type": "Organization", name: site.name, url: siteUrl },
+  };
+}

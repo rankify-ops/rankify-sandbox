@@ -11,7 +11,7 @@ export const site = {
   // Business address: TBC. Leave fields empty until confirmed; empty fields are left
   // out of the structured data rather than published as made-up values.
   address: { street: "", locality: "", region: "", postcode: "", country: "AU" },
-  areaServed: ["Queensland", "New South Wales", "Victoria"],
+  areaServed: ["Queensland", "New South Wales", "Victoria", "Australian Capital Territory", "South Australia", "Western Australia", "Tasmania"],
 };
 
 export const comparePath = "/best-heat-pump-hot-water-systems";
@@ -49,5 +49,5 @@ export const privacyNote =
 export const THANKS_KEY = "ahp:thanks";
 
 // Trust copy near forms. The network size is a placeholder until partner numbers are confirmed.
-export const installerNetwork = "Licensed partner installers across QLD, NSW & VIC (network size TBC)";
+export const installerNetwork = "Licensed partner installers in your area (network size and coverage TBC)";
 export const rebateHelpNote = "Not sure what you're eligible for? Your installer checks STCs and state rebates and takes them off your quote.";

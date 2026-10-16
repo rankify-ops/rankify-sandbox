@@ -31,11 +31,11 @@ export function LeadCaptureTabs({ model }: { model?: string }) {
         ))}
       </div>
       <div role="tabpanel" id={`${uid}-quote`} aria-labelledby={`${uid}-quote-tab`} hidden={tab !== "quote"} className="text-ink-900">
-        <QuoteForm variant="compact" tone="dark" initialModel={model} />
+        <QuoteForm variant="compact" tone="dark" initialModel={model} placement="lead-block" />
       </div>
       <div role="tabpanel" id={`${uid}-callback`} aria-labelledby={`${uid}-callback-tab`} hidden={tab !== "callback"} className="rounded-3xl bg-white/[0.06] p-5 ring-1 ring-white/10">
         <p className="mb-4 text-sm text-ink-200">Four quick fields and a licensed installer will ring you at a time that suits.</p>
-        <CallbackForm tone="dark" />
+        <CallbackForm tone="dark" placement="lead-block" />
       </div>
     </div>
   );

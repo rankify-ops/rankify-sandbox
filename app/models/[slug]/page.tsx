@@ -75,7 +75,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
           <div id="model-quote" className="w-full scroll-mt-24 lg:self-start lg:pt-10">
-            <QuoteForm variant="compact" initialModel={model.slug} heading={`Quote the ${model.capacityLitres} L in 60s`} />
+            <QuoteForm variant="compact" placement="model-hero" initialModel={model.slug} heading={`Quote the ${model.capacityLitres} L in 60s`} />
           </div>
         </div>
       </section>

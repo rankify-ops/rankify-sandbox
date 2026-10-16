@@ -19,6 +19,7 @@ npm run lint && npm run typecheck
 | Testimonials | `lib/testimonials.ts`: **placeholders only**: names show as "[Placeholder name]" and each card is badged "Placeholder testimonial". Shown on the home page, model pages and `/quote`. Replace with real reviews (with permission) and set `sample: false`. |
 | Installer network line, rebate-help note | `installerNetwork` / `rebateHelpNote` in `lib/site.ts` |
 | Rebate programs, amounts, official links | `lib/rebates.ts`: **official figures only**, each with `officialUrl`, the page's own `sourceUpdated` date and our `lastChecked` date (`LAST_CHECKED`). If a page gives no figure, `amountConfirmed: false` shows "Not confirmed". Re-check the pages and bump `LAST_CHECKED` whenever you update a figure. All eight states/territories are covered: states without a program we could confirm have a `stateNotes` entry (what we found, official link, dates). |
+| City pages | `lib/cities.ts`: BOM station figures (re-check before launch: BOM showed a "problems with this product" banner when checked), NCC zones, picks, local tips. Prices, STCs and rebates are pulled from the shared data. |
 | Federal STC estimate | `lib/stc.ts`: CER heat pump postcode zones (Table 1, v3), the year multiplication factor and the $40 Clearing House cap (shown as an upper estimate). Sources in `STC_SOURCES`. Update the register counts in `lib/models.ts` if the CER register changes. |
 | Referral disclosure & consent | `referralDisclosure` / `privacyNote` in `lib/site.ts`, consent text in `components/QuoteForm.tsx` and `components/CallbackForm.tsx`, `/how-it-works`, `/about`, `/privacy`. All describe: free service, one licensed partner installer at a time (offered to the next if they pass), referral fee. Keep them in sync. |
 | Trust badges | `components/TrustBadges.tsx`: **placeholders**, visibly labelled, until licence, insurer and network details are confirmed |
@@ -31,7 +32,9 @@ npm run lint && npm run typecheck
 ## Conversion features
 
 - **Quote CTAs everywhere**: every page has "Get a free quote" + click-to-call above the fold (`HeroCtas` in `components/ui.tsx`) and repeated down the page
-- **60-second quote form** (`components/QuoteForm.tsx`): need → current system → household size (one tap each, auto-advance) → postcode (state auto-detected) → name, mobile, optional email, consent. Shows progress, "~Ns left" and a short reason for each question. Contact details come last. Pushes `quote_start`, `quote_step` and `lead_submitted` to `window.dataLayer`.
+- **60-second quote form** (`components/QuoteForm.tsx`): postcode (state auto-detected) → current system → need → household size (one tap each, auto-advance) → name, phone, optional email, consent. Shows a progress bar, "Step N of 5", "~Ns left" and a short reason for each question. Contact details come last. When the postcode is already known (rebate checker) it starts on step 2.
+- **Phone validation** (`lib/phone.ts`): Australian mobiles (04) and landlines (02, 03, 07, 08), with `+61` handled, specific messages (missing area code, wrong length, 13/1300/1800 numbers, obvious fakes), stored as `0412345678` and shown as `0412 345 678`. Shared by both forms and the API.
+- **City landing pages** (`/heat-pump-hot-water/[city]`, data in `lib/cities.ts`): Brisbane, Gold Coast, Sydney, Melbourne, Adelaide, Perth, Canberra and Hobart. Each has BOM climate figures (station, period and link), the ABCB NCC climate zone, the CER STC zone and estimate, the state's rebate programs or note from `lib/rebates.ts`, recommended models with a local reason, a guide price + STC table, local tips, FAQs (FAQPage schema), BreadcrumbList and Service schema, and a quote form plus quote/callback buttons above the fold. Index at `/heat-pump-hot-water`; linked from the footer and the rebate checker results.
 - **Where it appears**: as a popup from every link to `/quote` (`components/QuoteModal.tsx`; this covers the header "Free quote · 60s" button, sticky mobile bar, model cards and price cards); inline in the home hero, the footer of every page (`components/FooterQuote.tsx`), mid-post in every blog article (`<QuoteCta />`), at the end of the rebate checker (prefilled state + programs), on `/quote`, and in the lead capture blocks (`components/LeadCaptureBlock.tsx`, with a "Call me back" tab). Links stay real `/quote` links, so new tabs and no-JS visitors still get the full page.
 - **Callback form** (`components/CallbackForm.tsx`): name, phone, postcode, best time to call
 - **Sticky mobile bar** (`components/StickyMobileBar.tsx`, phones only): "Get my free quote" (opens the 60-second popup) and "Request a callback" (opens a callback popup via `/quote#callback`). It slides away while any lead form is on screen (starting 120px early) or a field has focus, so it never covers inputs, consent text or submit buttons.
@@ -43,7 +46,8 @@ npm run lint && npm run typecheck
 - **Rebate checker → quote**: after picking a state, the checker ends in a quote form prefilled with that state; the programs shown are sent with the lead as `rebatesViewed`
 - **Trust signals** next to every form (`components/FormTrust.tsx`); copy lives in `lib/site.ts` (`formTrustPoints`, `responseTime`, `privacyNote`)
 - **Thank-you page** (`/thank-you`) with next steps for quote vs callback
-- Each successful submit pushes `{ event: "lead_submitted", lead_type }` to `window.dataLayer` if GTM is added later
+- **Analytics events** (`lib/analytics.ts`), pushed to `window.dataLayer` only (no paid tools; add GTM later to use them): `form_start`, `form_step`, `form_submit`, `form_submit_error` (each with `form` and `placement`), `click_to_call` (any `tel:` link, with `link_location`), `quote_open` / `callback_open` and `rebate_check`. `form_submit` carries `utm_source`, `utm_medium`, `utm_campaign`, `has_gclid` and `has_fbclid`. Events never include names, phone numbers or emails.
+- **Ad attribution** (`lib/attribution.ts`, captured by `components/Analytics.tsx`): UTM parameters (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`), click IDs (`gclid`, `gbraid`, `wbraid`, `fbclid`, `msclkid`), the landing page and the external referrer. Kept in localStorage for 90 days: the latest ad click is the "last" touch, the first visit is kept as "first". Sent with every lead as `attribution` alongside `source` (the page the form was submitted on). Disclosed in the privacy policy.
 
 ## SEO & accessibility
 
@@ -51,13 +55,13 @@ npm run lint && npm run typecheck
 - `sitemap.xml` lists every page except `/thank-you`. Set `SITE_URL` at launch so sitemap, robots and canonicals use the real domain.
 - Forms: labelled fields, errors shown on blur and on submit, announced to screen readers, and focus moves to the first invalid field. Choice tiles work with arrow keys.
 - Blog images must have alt text: the build fails if an MDX image is missing it.
-- Structured data (`lib/schema.ts`, `components/JsonLd.tsx`): Organization + LocalBusiness on every page, FAQPage wherever an FAQ section shows, BreadcrumbList on model, blog and comparison pages, Product + Offer (guide price, AUD) on model pages, Article on posts, ItemList on the comparison page. **No Review or AggregateRating** while testimonials are samples.
+- Structured data (`lib/schema.ts`, `components/JsonLd.tsx`): Organization + LocalBusiness on every page, FAQPage wherever an FAQ section shows, BreadcrumbList on model, blog, city and comparison pages, Service on city pages, Product + Offer (guide price, AUD) on model pages, Article on posts, ItemList on the comparison page. **No Review or AggregateRating** while testimonials are samples.
 - Performance: fonts use `display: "optional"` (no late repaint, which keeps LCP low on mobile); form validation uses `zod/mini` to keep the client bundle small. No raster images are used.
 - Lighthouse (mobile) on every page: performance 96–99, accessibility 100, best practices 100. SEO reads 66 only because of the deliberate noindex (`is-crawlable`); it's the sole failing SEO audit.
 
 ## Leads
 
-Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`). Quote leads carry `need` (`replace`, `failed` = urgent, `new`, `prices`), `currentSystem`, `householdSize`, `postcode`, `state`, `preferredModel` (from the page they came from), `name`, `phone`, optional `email`, `consent`, and `rebatesViewed` when they came from the rebate checker. The API validates with zod
+Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`). Every lead carries `attribution` (see above). Quote leads carry `need` (`replace`, `failed` = urgent, `new`, `prices`), `currentSystem`, `householdSize`, `postcode`, `state`, `preferredModel` (from the page they came from), `name`, `phone`, optional `email`, `consent`, and `rebatesViewed` when they came from the rebate checker. The API validates with zod
 (`lib/lead.ts`) and checks a honeypot field. Each lead is:
 
 - logged to the console as `[lead] {...}` (on Vercel, check the function logs), and
@@ -65,7 +69,7 @@ Both forms POST to `POST /api/leads` (`type: "quote"` or `type: "callback"`). Qu
 
 Replace with a CRM, database or email hook before going live.
 
-A filled honeypot field (`company`, hidden from real visitors) gets a fake success response and is never stored or forwarded.
+A filled honeypot field (`hp_extra_info`, hidden from real visitors) gets a fake success response and is never stored or forwarded. The name is deliberately one browsers don't autofill, so a real visitor's autofill can't trigger it. Each lead also carries `formMs` (time from first interaction to submit), `phoneType` (`mobile` or `landline`) and `suspectedBot`, which is true when the form was completed faster than a person could (under 4 s for quotes, 2.5 s for callbacks) or the API was called directly. Flagged leads are still saved, so you decide whether to filter them.
 
 ### Forwarding leads with `LEAD_WEBHOOK_URL`
 
