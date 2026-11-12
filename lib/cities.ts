@@ -213,9 +213,9 @@ export const cities: City[] = [
       { slug: "emerald-all-in-one-220", why: "The budget pick for smaller homes, rated to −7 °C on the heat pump alone." },
     ],
     localTips: [
-      "Canberra postcodes are in STC zone 5, which earns more certificates than zones 1–3 for every model in our range. A 2026 install of the Sanden or Reclaim earns 17 STCs.",
+      "Most Canberra postcodes (2600–2617 and 2900–2914) are in STC zone 5, which earns more certificates than zones 1–3 for every model in our range. A 2026 install of the Sanden or Reclaim earns 17 STCs. Postcode 2618 (Hall) is zone 3.",
       "Defrost cycles are normal on frosty mornings. A CO2 split or a unit with active defrost copes best.",
-      "The ACT Government runs Home Energy Support rebates with a hot water heat pump category. We couldn't confirm the current amount, so check the official page.",
+      "ACT Home Energy Support (concession-card home owners): 50% of supply and installation, up to $2,500 for a heat pump (one Category B rebate; up to $5,000 across categories), plus a zero-interest loan of up to $10,000. Other home owners can borrow $2,000 to $20,000 at 3% under the Sustainable Household Scheme. From 1 November 2026, ActewAGL's gas-to-heat-pump offer is $1,500 off plus $400 in bill credits, for eligible concession card holders only.",
     ],
     nearby: ["Queanbeyan", "Belconnen", "Tuggeranong", "Gungahlin"],
   },
